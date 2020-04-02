@@ -26,7 +26,7 @@
   --gray-dark: #5a5c69;
   --primary: #4e73df;
   --secondary: #858796;
-  --success: #1cc88a;
+  --success: #345431;
   --info: #36b9cc;
   --warning: #f6c23e;
   --danger: #e74a3b;
@@ -9380,7 +9380,7 @@ a.text-secondary:hover, a.text-secondary:focus {
 }
 
 .text-success {
-  color: #1cc88a !important;
+  color: #51924b !important;
 }
 
 a.text-success:hover, a.text-success:focus {
@@ -9827,7 +9827,7 @@ a:focus {
 }
 
 .border-left-success {
-  border-left: 0.25rem solid #1cc88a !important;
+  border-left: 0.25rem solid #51924b !important;
 }
 
 .border-bottom-success {

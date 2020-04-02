@@ -69,3 +69,86 @@ h1 {
   background-image: url(../resources/images/menu2.svg) !important;
   background-size: cover;
 }
+
+
+/* MODAL FOR ENTERING BEST PRACTICES */
+/* ################################# */
+
+.modal-row {
+  margin: 0!important;
+}
+
+/* The Modal (background) */
+.bp-modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0 0 0 0 !important;
+  padding: 0!important;
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.bp-modal-content {
+  position: relative;
+  background-color: white;
+  margin: auto;
+  padding: 2% 2%;
+  border: 1px solid #888;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.2s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding: 2vh 2%;
+  position: relative;
+  z-index: 1000;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bp-modal-body {padding: 2vh 16px;}
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
+}
+
+.card {
+  margin-top: 10vh!important;
+}
+
+.form-divider {
+  margin: 10vh 0vw;
+}

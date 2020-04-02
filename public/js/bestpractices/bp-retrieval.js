@@ -1,3 +1,7 @@
+// ########################
+// Retrieves best practices from the repository
+// ########################
+
 // Create firestore (database) object
 var db = firebase.firestore();
 
@@ -37,7 +41,6 @@ function initTable() {
       //.where("categories", "array-contains", "Refugee")
       .get().then((snapshot) => {
           snapshot.docs.forEach(doc => {
-              console.log()
               // Pushing data to docdata array to populate the table
               let docdata = [`${doc.data().title}`, `${doc.data().description}`, `${doc.data().date}`];
               data.push(docdata);
