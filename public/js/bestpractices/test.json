@@ -1,17 +1,67 @@
 {
-    "test-domain": {
-        "model": "this is a model",
-        "bestpractices": {
-            
-        },
-        "users": {
-
-        },
-        "solutions": {
-
-        },
-        "problems": {
-
+    "domain": {
+        "domainstate": {
+            "displayfeature": false,
+            "model": "string",
+            "administrator": "document reference",
+            "bestpractices": {
+                "bpdocument": {
+                    "displayfeature": true,
+                    "title": "string",
+                    "author": "document reference",
+                    "categories":
+                        ["string"],
+                    "date": "string",
+                    "problems":
+                        ["document reference"],
+                    "comments": {
+                        "commentdocument": {
+                            "displayfeature": false,
+                            "comment": "string",
+                            "date": "string",
+                            "user": "document reference"
+                        }
+                    },
+                    "ratings":{
+                        "ratingdocument": {
+                            "displayfeature": false,
+                            "scale": ["integer"],
+                            "score": ["integer"],
+                            "user": "document reference"
+                        }
+                    }
+                }
+            },
+            "users": {
+                "userdocument": {
+                    "displayfeature": false,
+                    "email": "string",
+                    "name": "string",
+                    "role": "string"
+                }
+            },
+            "authors": {
+                "authordocument": {
+                    "displayfeature": false,
+                    "contactinfo": "string",
+                    "internal": "boolean",
+                    "name": "string"
+                }
+            },
+            "solutions": {
+                "solutiondocument": {
+                    "displayfeature": true,
+                    "name": "string",
+                    "description": "string"
+                }
+            },
+            "problems": {
+                "problemdocument": {
+                    "displayfeature": false,
+                    "name": "string",
+                    "description": "string"
+                }
+            }
         }
     }
 }
