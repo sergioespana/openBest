@@ -20,7 +20,8 @@ var jsontest = {
             //fields
             "displayfeature": false,
             "model": "string",
-            "administrator": "document reference",
+            "name": "Test Domain",
+            "administrator": "plomp1996@gmail.com",
             //collection
             "bestpractices": {
                 //document
@@ -28,11 +29,12 @@ var jsontest = {
                     //fields
                     "1displayfeature": true,
                     "2title": "string",
-                    "3author": "document reference",
-                    "4categories":
+                    "3description": "string",
+                    "4author": "document reference",
+                    "5categories":
                         ["string"],
-                    "5date": "string",
-                    "6problems":
+                    "6date": "string",
+                    "7problems":
                         ["document reference"],
                     //collection
                     "comments": {
@@ -56,6 +58,7 @@ var jsontest = {
                 }
             },
             //collection
+            // must ALWAYS be called users and have an email field
             "users": {
                 "userdocument": {
                     "displayfeature": false,
@@ -172,7 +175,7 @@ function extractFields() {
                 docInfo += ("{"+element+",");
             }
             else if (remaining[remaining.length - 1] === element){
-                docInfo += (element+"}")
+                docInfo += (element+"}");
             }
             else {
                 docInfo += (element+",");
