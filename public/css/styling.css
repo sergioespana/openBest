@@ -2,6 +2,10 @@ h1 {
   font-family: 'Vollkorn';
 }
 
+#domain-name {
+  font-weight: 800;
+}
+
 #sideMenu{
   position: -webkit- sticky !important;
   top: 0;
@@ -71,6 +75,11 @@ h1 {
 }
 
 
+#create-instance-btn{
+  display: none;
+}
+
+
 /* MODAL FOR ENTERING BEST PRACTICES */
 /* ################################# */
 
@@ -79,7 +88,7 @@ h1 {
 }
 
 /* The Modal (background) */
-.bp-modal {
+.bp-modal, .bp-view-modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -151,4 +160,12 @@ h1 {
 
 .form-divider {
   margin: 10vh 0vw;
+}
+
+#addItem {
+  cursor: pointer;
+}
+
+#dataTable , .bp-row {
+  cursor: pointer;
 }
