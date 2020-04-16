@@ -75,6 +75,11 @@ h1 {
 }
 
 
+#create-instance-btn{
+  display: none;
+}
+
+
 /* MODAL FOR ENTERING BEST PRACTICES */
 /* ################################# */
 

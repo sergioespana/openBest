@@ -45,6 +45,16 @@ $(document).ready(function() {
 });
 
 
+// Finds the collectionpath that corresponds to a wildcard filter
+function findPath(array, filter) {
+  var result = array.filter(function(item){
+    return typeof item == 'string' && item.indexOf(filter) > -1;            
+  });
+  // The first item is 
+  return result[0];
+}
+
+
 // First initialization of table when document is ready loading
 function initTable() {
 
@@ -53,8 +63,13 @@ function initTable() {
   indexArr = [];
   keyArray = [];
 
+  // extractJSON instantiates the collection paths
+  extractJSON(jsontest, 0, '');
+  // bpPath is the collection path to the bestpractices sub-collection
+  let bpPath = findPath(collectionPaths, 'bestpractices');
+
   //Getting all best practice documents
-  db.collection("domain/domainstate/bestpractices")
+  db.collection(`${bpPath}`)
     // This where clause makes sure we only get best practices that are created by users
     .where("created", "==", "true")
       .get().then((snapshot) => {
@@ -100,8 +115,10 @@ function delay() {
 
 // This function get the document info from all best practice documents
 async function getDocData(callback) {
+  // bpPath is the collection path to the bestpractices sub-collection
+  let bpPath = findPath(collectionPaths, 'bestpractices');
   //Getting all best practice documents
-  db.collection("domain/domainstate/bestpractices")
+  db.collection(`${bpPath}`)
     .where("created", "==", "true")
       .get().then((snapshot) => {
           snapshot.docs.forEach(doc => {

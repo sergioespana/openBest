@@ -99,15 +99,17 @@ var jsontest = {
 
 
 // Create a DB instance
-document.getElementById("create-instance-btn").addEventListener("click", function(){
-    // Emptying the collectionpaths and documentpaths
-    // This function is called for each BP that is created, so we need updated collectionpaths each time
-    collectionPaths = [];
-    documentPaths = [];
+if(document.getElementById("create-instance-btn")){
+    document.getElementById("create-instance-btn").addEventListener("click", function(){
+        // Emptying the collectionpaths and documentpaths
+        // This function is called for each BP that is created, so we need updated collectionpaths each time
+        collectionPaths = [];
+        documentPaths = [];
 
-    extractJSON(jsontest, 0, '');
-    extractFields();
-});
+        extractJSON(jsontest, 0, '');
+        extractFields();
+    })
+};
 
 
 

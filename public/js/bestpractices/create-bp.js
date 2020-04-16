@@ -266,13 +266,6 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
         }
     });
 
-    // let date = filledBPform.elements[0].value;
-    // // Checking the validity of the fields
-    // for (var z = 0; z < filledBPform.length; z++) {
-    //     if(filledBPform.elements[z].getAttribute('key') == 'date')
-    //     console.log(moment('01/12/2016', 'DD/MM/YYYY', true))
-    // }
-
     db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
     modal.style.display = "none";
