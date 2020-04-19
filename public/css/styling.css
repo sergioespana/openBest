@@ -6,12 +6,16 @@ h1 {
   font-weight: 800;
 }
 
-#sideMenu{
+.sidebar{
   position: -webkit- sticky !important;
   top: 0;
   background-image: url(../resources/images/menu-bg.svg) !important;
   background-repeat: no-repeat;
   background-size: 100% auto;
+}
+
+.sidebar.toggled{
+  background-size: 200% auto !important;
 }
 
 .vertical{
@@ -74,8 +78,11 @@ h1 {
   background-size: cover;
 }
 
+#administrator-card{
+  display: none;
+}
 
-#create-instance-btn{
+#user-card{
   display: none;
 }
 
@@ -154,7 +161,7 @@ h1 {
   margin: 0 auto;
 }
 
-.card {
+.card-margin {
   margin-top: 10vh!important;
 }
 

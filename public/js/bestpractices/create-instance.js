@@ -14,7 +14,7 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "domain": {
+    "domain2": {
         //document
         "domainstate": {
             //fields
@@ -27,9 +27,11 @@ var jsontest = {
                 //document
                 "bpdocument": {
                     //fields
+                    "01grouptitle": "Best practice",
+                    "02groupdesc": "Enter basic best practice information here.",
                     "1displayfeature": true,
                     "2title": "string",
-                    "3description": "string",
+                    "3description": "text",
                     "4author": "document reference",
                     "5categories":
                         ["string"],
@@ -88,9 +90,11 @@ var jsontest = {
             //collection
             "problems": {
                 "problemdocument": {
-                    "displayfeature": false,
-                    "name": "string",
-                    "description": "string"
+                    "01grouptitle": "Problem",
+                    "02groupdesc": "What problem does this best practice solve?",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3description": "string"
                 }
             }
         }

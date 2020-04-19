@@ -30,22 +30,32 @@ $(document).ready(function() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       userEmail = user.email;
+      let usercard = document.getElementById("user-card")
 
       checkUser(function() {
 
         // Checking if this person is the administrator
         db.collection(`${dName[0]}`).doc(`${dName[1]}`)
           .onSnapshot(function(doc) {
-            if(doc.data().administrator == userEmail){
-              console.log("administrator")
+            // Setting the domain name
+            domainName.innerHTML = doc.data().name;
 
-              let createInstanceBtn = document.getElementById("create-instance-btn");
-        
-              if(createInstanceBtn){
-                createInstanceBtn.style.display = "inline-block";
+            if(doc.data().administrator == userEmail){
+              let admincard = document.getElementById("administrator-card");
+              let usercard = document.getElementById("user-card");
+
+              if(admincard){
+                admincard.style.display = "inline-block";
+                usercard.setAttribute('class', 'col-lg-6 mb-4');
               }
             }
           });
+
+          // If dName is null, then the user belongs to no domain
+          // Otherwise, display the user actions
+          if(dName && usercard){
+            usercard.style.display = "inline-block";
+          }
       });
       
     }
@@ -65,9 +75,6 @@ async function checkUser(callback) {
         // The path to the users group of the currently logged in user
         userPath = doc.ref.parent.path;
         dName = userPath.split("/");
-
-        // Setting the domain name display
-        domainName.innerHTML = dName[0];
       });
     })
 
@@ -77,4 +84,14 @@ async function checkUser(callback) {
 
 function delay() {
   return new Promise(resolve => setTimeout(resolve, 600));
+}
+
+
+// Finds the collectionpath that corresponds to a wildcard filter
+function findPath(array, filter) {
+  var result = array.filter(function(item){
+    return typeof item == 'string' && item.indexOf(filter) > -1;            
+  });
+  // The first item is 
+  return result[0];
 }

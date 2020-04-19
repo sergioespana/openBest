@@ -22,7 +22,10 @@ function tableClick(e) {
 
 
 function retrieveBPinfo(BPid) {
-    db.collection("domain/domainstate/bestpractices")
+    // bpPath is the collection path to the bestpractices sub-collection
+    let bpPath = findPath(collectionPaths, 'bestpractices');
+
+    db.collection(`${bpPath}`)
         .where(firebase.firestore.FieldPath.documentId(), "==", `${BPid}`)
         .get().then((snapshot) => {
             snapshot.docs.forEach(doc => {
