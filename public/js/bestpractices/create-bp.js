@@ -51,164 +51,266 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
             db.collection(coll)
             .where(firebase.firestore.FieldPath.documentId(), "==", uniqueDocID.toString())
             // And where the document id matches the current docid
-            .get().then((snapshot) => {
+            .get().then(snapshot => {
+
                 snapshot.docs.forEach(doc => {
     
                     //Getting the fields of the document
                     var docdata = Object.entries(doc.data());
+
+                    loop(docdata, docdata.length);
+
+                    //Iterating over the key-value pairs of the documents in which features should be displayed
                     for (let [key, value] of docdata) {
-                        // Don't display the displayfeature field
-                        if(key != '1displayfeature'){
-                            
-                            let grouptitle = document.createElement('div');
-                            let label = document.createElement('label');
-                            let input = document.createElement('input');
-                            let textarea = document.createElement('textarea');
-                            let br = document.createElement('br');
-                            let addOther = document.createElement('div');
 
-                            if(key == '01grouptitle'){
-                                grouptitle.setAttribute('class', 'font-weight-bold text-success text-uppercase');
-                                grouptitle.textContent = value;
-                                BPform.appendChild(grouptitle);
-                                BPform.appendChild(br);
-                            }
-                            else if(key == '02groupdesc'){
-                                let groupdesc = document.createElement('p');
-                                groupdesc.textContent = value;
-                                BPform.appendChild(groupdesc);
-                                BPform.appendChild(br);
-                            }
-                            else{
+                        test(key)
 
-                                // Removing numbers from the string + capitalize first letter
-                                var keyText = key.replace(/[0-9]/g, '');
-                                var upperKey = keyText.charAt(0).toUpperCase() + keyText.substring(1);
-        
-                                label.textContent = upperKey;
-                                input.textContent = value;
+                        instantiateFeatures(key, value, coll, doc);
 
-                                // HTML code block for adding another element to the form group
-                                let addOtherHTML = 
-                                    "<a style=\"margin-top: 10px\" id=\"addItem-"+`${key}`+"\" class=\"btn btn-light btn-icon-split\"\>\
-                                        <span class=\"icon text-gray-600\"\>\
-                                        <i class=\"fas fa-plus\"></i\>\
-                                        </span\>\
-                                        <span class=\"text\">"+`${upperKey}`+"</span\>\
-                                    </a>"
-                                
-                                addOther.innerHTML = addOtherHTML;
-        
-                                input.setAttribute('class', 'form-control bg-light border-0 small');
-                                input.setAttribute('type', 'value');
-                                textarea.setAttribute('class', 'form-control bg-light border-0 small');
-                                textarea.setAttribute('type', 'value');
-        
-                                // For each element we need to know the collectionpath, docname and key type
-                                // That way we write the data to the correct document
-                                input.setAttribute('colpath', coll);
-                                input.setAttribute('docname', doc.id);
-                                input.setAttribute('key', key);
-                                textarea.setAttribute('colpath', coll);
-                                textarea.setAttribute('docname', doc.id);
-                                textarea.setAttribute('key', key);
-
-                                if(Array.isArray(value)){
-                                    input.setAttribute('type', 'array');
-                                }
-                                else {
-                                    input.setAttribute('type', 'field');
-                                    textarea.setAttribute('type', 'field');
-                                }
-
-                                if(value != "document reference"){
-        
-                                    // Adding all elements to the form
-                                    if(value == 'array'){
-                                        BPform.appendChild(label);
-                                        BPform.appendChild(br);
-                                        BPform.appendChild(input);
-                                        BPform.appendChild(br);
-                                        BPform.appendChild(addOther);
-                                        BPform.appendChild(br);
-                                    }
-                                    else if(value == 'text'){
-                                        BPform.appendChild(label);
-                                        BPform.appendChild(br);
-                                        BPform.appendChild(textarea);
-                                        BPform.appendChild(br);
-                                    }
-                                    else{
-                                        BPform.appendChild(label);
-                                        BPform.appendChild(br);
-                                        BPform.appendChild(input);
-                                        BPform.appendChild(br);
-                                    }
-                                }
-                                // Document reference dropdowns are created and populated here
-                                else{
-
-                                    let referenceSelect = document.createElement('select');
-                                    referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
-                                    BPform.appendChild(label);
-                                    BPform.appendChild(br);
-                                    BPform.appendChild(referenceSelect);
-                                    BPform.appendChild(br);
-
-                                    // Populate an array of authors
-                                    let authorArray = [];
-                                    // Finding the path to the author subcollection
-                                    let authorPath = findPath(collectionPaths, 'author');
-                                    db.collection(`${authorPath}`)
-                                        .get().then((snapshot) => {
-                                            snapshot.docs.forEach(doc => {
-                                                // authorArray will store an array for each author, with the name, documentid and path
-                                                let authorData = [];
-                                                authorData.push(doc.data().name);
-                                                authorData.push(doc.id);
-                                                authorData.push(authorPath);
-                                                authorArray.push(authorData);
-                                            })
-                                            
-                                            // Adding the values of the authorArray to the dropdown
-                                            authorArray.forEach(author => {
-                                                let option = document.createElement('option');
-                                                option.setAttribute('value', author[0]);
-                                                option.setAttribute('docid', author[1]);
-                                                option.setAttribute('path', author[2]);
-                                                option.textContent = author[0];
-                                                referenceSelect.add(option);
-                                            });
-                                        })
-                                }
-
-                                // addItem is the add button for the current key value
-                                let addItem = document.getElementById("addItem-"+`${key}`);
-                                // Checking if the button exists yet
-                                if(addItem){
-                                    addItem.addEventListener('click', function() {
-                                        
-                                        // Element is the parent element of the clicked button
-                                        let element = this.parentElement;
-                                        let newInput = input;
-                                        newInput.setAttribute('style', 'margin-top: 10px');
-                                        // Inserting the field before the button
-                                        $(newInput).clone().insertBefore(element);
-        
-                                    });
-                                }
-
-                            }
-                        }
                     }
-                    // Adding a hr element between each group of features
-                    let rule = document.createElement('hr');
-                    BPform.appendChild(rule);
                 })
-            });
+            })
+
         });
     })
 })
+
+
+function loop(docdata, length) {
+    setTimeout(() => {
+        //console.log("hallo");
+        console.log(docdata)
+    }, 8000);
+}
+
+
+function test(key){
+    let keyText = key.replace(/[0-9]/g, '');
+    let docrefPath = findPath(collectionPaths, keyText);
+    // This query is executed for each subcollection that a document reference points to, such as authors
+    db.collection(`${docrefPath}`)
+    .get().then(snapshot => {
+        snapshot.docs.forEach(doc => {
+
+            console.log(key);
+            
+        })
+    })
+
+    setTimeout(() => {
+        //console.log("hallo");
+        console.log(key)
+    }, 8000);
+}
+
+
+function instantiateFeatures(key, value, coll, doc){
+    
+    // Don't display the displayfeature field
+    if(key != '1displayfeature'){
+                            
+        let grouptitle = document.createElement('div');
+        let label = document.createElement('label');
+        let input = document.createElement('input');
+        let textarea = document.createElement('textarea');
+        let br = document.createElement('br');
+        let addOther = document.createElement('div');
+
+        // Setting the title and description of the group of form elements
+        if(key == '01grouptitle'){
+            grouptitle.setAttribute('class', 'font-weight-bold text-success text-uppercase');
+            grouptitle.textContent = value;
+            BPform.appendChild(grouptitle);
+            BPform.appendChild(br);
+        }
+        else if(key == '02groupdesc'){
+            let groupdesc = document.createElement('p');
+            groupdesc.textContent = value;
+            BPform.appendChild(groupdesc);
+            BPform.appendChild(br);
+        }
+        // Every other key-value pair
+        else{
+            // Removing numbers from the key + capitalize first letter
+            let keyText = key.replace(/[0-9]/g, '');
+            var upperKey = keyText.charAt(0).toUpperCase() + keyText.substring(1);
+
+            label.textContent = upperKey;
+            input.textContent = value;
+
+            // HTML code block for adding another element to the form group
+            let addOtherHTML = 
+                "<a style=\"margin-top: 10px\" id=\"addItem-"+`${key}`+"\" class=\"btn btn-light btn-icon-split\"\>\
+                    <span class=\"icon text-gray-600\"\>\
+                    <i class=\"fas fa-plus\"></i\>\
+                    </span\>\
+                    <span class=\"text\">"+`${upperKey}`+"</span\>\
+                </a>"
+            addOther.innerHTML = addOtherHTML;
+
+            // Styling of the input fields
+            input.setAttribute('class', 'form-control bg-light border-0 small');
+            input.setAttribute('type', 'value');
+            textarea.setAttribute('class', 'form-control bg-light border-0 small');
+            textarea.setAttribute('type', 'value');
+
+            // For each element we need to know the collectionpath, docname and key type
+            // That way we write the data to the correct document
+            input.setAttribute('colpath', coll);
+            input.setAttribute('docname', doc.id);
+            input.setAttribute('key', key);
+            textarea.setAttribute('colpath', coll);
+            textarea.setAttribute('docname', doc.id);
+            textarea.setAttribute('key', key);
+
+            // Assigning attribute types to the input fields
+            if(Array.isArray(value)){
+                input.setAttribute('type', 'array');
+            }
+            else {
+                input.setAttribute('type', 'field');
+                textarea.setAttribute('type', 'field');
+            }
+
+            // Adding elements that do not require population with document references
+            if(value != "document reference"){
+                // Arrays
+                if(Array.isArray(value)){
+                    BPform.appendChild(label);
+                    BPform.appendChild(br);
+                    BPform.appendChild(input);
+                    BPform.appendChild(br);
+                    BPform.appendChild(addOther);
+                    BPform.appendChild(br);
+                }
+                // Text fields
+                else if(value == 'text'){
+                    BPform.appendChild(label);
+                    BPform.appendChild(br);
+                    BPform.appendChild(textarea);
+                    BPform.appendChild(br);
+                }
+                // Other
+                else{
+                    BPform.appendChild(label);
+                    BPform.appendChild(br);
+                    BPform.appendChild(input);
+                    BPform.appendChild(br);
+                }
+            }
+            // Document reference dropdowns are created and populated here
+            else{
+                let referenceSelect = document.createElement('select');
+                referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
+                BPform.appendChild(label);
+                BPform.appendChild(br);
+                BPform.appendChild(referenceSelect);
+                BPform.appendChild(br);
+                if(Array.isArray(value)){
+                    BPform.appendChild(addOther);
+                    BPform.appendChild(br);
+                }
+
+                // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
+                let docrefPath = findPath(collectionPaths, keyText);
+                // Populate an array of document references
+                let docrefArray = [];
+
+                // This query is executed for each subcollection that a document reference points to, such as authors
+                db.collection(`${docrefPath}`)
+                    .get().then((snapshot) => {
+                        snapshot.docs.forEach(doc => {
+
+                            let keyIndexArr = [];
+                            for (let [key, value] of Object.entries(doc.data())){
+                                let keyname = JSON.stringify(key).replace(/[ˆ0-9]+|"/g, '');
+                                keyIndexArr.push(keyname)
+                            };
+
+                            // Specifies at which point in the array the "name" field is specified
+                            let entryPoint;
+
+                            for(var keyIndex = 0; keyIndex < keyIndexArr.length; keyIndex++){
+                                if(keyIndexArr[keyIndex] == 'name'){
+                                    entryPoint = keyIndex;
+                                }
+                            }
+
+                            // authorArray will store an array for each author, with the name, documentid and path
+                            let docData = [];
+                            // Don't include "string" > that's part of the initial model only
+                            if(!(doc.data()[Object.keys(doc.data())[entryPoint]] == 'string')){
+                                docData.push(doc.data()[Object.keys(doc.data())[entryPoint]]);
+                                docData.push(doc.id);
+                                docData.push(docrefPath);
+                                docrefArray.push(docData);
+                            }
+                        })
+                        
+                    // Adding the values of the docrefArray to the dropdown
+                    docrefArray.forEach(docref => {
+                        let option = document.createElement('option');
+                        option.setAttribute('value', docref[0]);
+                        option.setAttribute('docname', docref[1]);
+                        option.setAttribute('colpath', docref[2]);
+                        option.setAttribute('key', key);
+                        option.textContent = docref[0];
+                        referenceSelect.add(option);
+                    });
+
+                    // // No current entries in the docref subcollection
+                    // // For example, no authors
+                    // if(docrefArray.length == 0){
+                    //     BPform.appendChild(label);
+                    //     BPform.appendChild(br);
+                    //     BPform.appendChild(textarea);
+                    //     BPform.appendChild(br);
+                    // }
+                    // else{
+                    //     // A selectbox is added if there are document references to be found
+                    //     let referenceSelect = document.createElement('select');
+                    //     referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
+                    //     BPform.appendChild(label);
+                    //     BPform.appendChild(br);
+                    //     BPform.appendChild(referenceSelect);
+                    //     BPform.appendChild(br);
+                    //     if(Array.isArray(value)){
+                    //         BPform.appendChild(addOther);
+                    //         BPform.appendChild(br);
+                    //     }
+
+                    //     // Adding the option for the user to add something else
+                    //     let option = document.createElement('option');
+                    //     option.textContent = 'Add other';
+                    //     referenceSelect.setAttribute('colpath', coll)
+                    //     referenceSelect.setAttribute('docname', doc.id);
+                    //     referenceSelect.setAttribute('key', key);
+                    //     referenceSelect.setAttribute('type', 'select');
+                    //     referenceSelect.add(option);
+                    // }
+                })
+            }
+
+            // addItem is the add button for the current key value
+            let addItem = document.getElementById("addItem-"+`${key}`);
+            // Checking if the button exists yet
+            if(addItem){
+                addItem.addEventListener('click', function() {
+                    
+                    // Element is the parent element of the clicked button
+                    let element = this.parentElement;
+                    console.log(element)
+                    let newInput = input;
+                    newInput.setAttribute('style', 'margin-top: 10px');
+                    // Inserting the field before the button
+                    $(newInput).clone().insertBefore(element);
+
+                });
+            }
+
+        }
+    }
+}
 
 
 // Delay function specifies how long to wait on an async function
@@ -273,6 +375,11 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
         var JSONarray = ["\"created\": \"true\""];
         var JSONstring = "";
 
+        // docRef stores the references for any docref that needs to be written to the db
+        let docRef = [];
+        // keyRef stores the corresponding key
+        let keyRef = [];
+
         // For each element in the BP entry form
         for (var i = 0; i < filledBPform.length; i++) {
             if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps]){
@@ -284,6 +391,12 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                 // Regular fields
                 if(entryType === 'field'){
                     JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
+                }
+                // Selected fields in selectbox
+                else if(entryType == 'select'){
+                    let selectedOption = filledBPform.elements[i].options[filledBPform.elements[i].selectedIndex];
+                    docRef.push(selectedOption.getAttribute('colpath') + '/' + selectedOption.getAttribute('docname'));
+                    keyRef.push(selectedOption.getAttribute('key'));
                 }
                 // Array fields
                 else{
@@ -349,7 +462,16 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
             }
         });
 
+        console.log(JSONstring);
+
         db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
+
+        // Adding references to the document
+        if(docRef.length){
+            for(var key = 0; key < keyRef.length; key++){
+                db.collection(entryColPath).doc(entryDocName).set({[keyRef[key]]: db.doc(docRef[key])}, { merge: true });
+            }
+        }
     }
 
     modal.style.display = "none";
