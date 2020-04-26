@@ -1,0 +1,28 @@
+.liking-options{
+    color: black;
+    font-size: 2.0rem;
+    overflow: hidden;
+    padding-right: 20px;
+
+}
+.linking-option-up{
+    float:left;
+}
+.linking-option-up:hover{
+    color: green;
+}
+#linking-option-up.checked{
+    color: green;
+  }
+
+.linking-option-down{
+    float:left;
+}
+
+.linking-option-down:hover{
+    color: red;
+}
+#linking-option-down.checked{
+    color: red;
+  }
+

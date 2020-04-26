@@ -1,0 +1,32 @@
+
+
+
+.stars{
+
+  overflow: hidden;
+}
+
+
+#text_rating123{
+
+  float: left;
+}
+
+.star{
+    color: goldenrod;
+    font-size: 2.0rem;
+    padding: 0 1rem; /* space out the stars */
+    float: left;
+  }
+  .star::before{
+    content: '\2606';
+    cursor: pointer;
+    float: left;
+  }
+  .star.rated::before{
+    content: '\2605';
+  }
+  
+  .star.hover::before{
+    content: '\2605';
+  }

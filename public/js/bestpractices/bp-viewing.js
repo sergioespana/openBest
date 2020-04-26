@@ -15,7 +15,6 @@ var span = document.getElementsByClassName("close")[0];
 function tableClick(e) {
     let clickedRow = e.target.parentElement;
     let BPid = clickedRow.getAttribute('doc-id');
-
     modal.style.display = "block";
     retrieveBPinfo(BPid);
 }
@@ -35,12 +34,52 @@ function retrieveBPinfo(BPid) {
                 let BPdescription = document.getElementById("bp-description");
                 let description = indexArr[1];
                 BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
+                fillbars(BPid);
+                startup(BPid);
 
             })
         })
 }
 
-
 span.onclick = function() {
     modal.style.display = "none";
+    remove_comment_elements();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

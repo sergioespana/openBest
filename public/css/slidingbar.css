@@ -1,0 +1,68 @@
+
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+.sliding-unit {
+    display: block;
+}
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 40%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+  
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+  
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background:  rgb(69, 145, 72); /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 15px; /* Set a specific slider handle width */
+    height: 10px; /* Slider handle height */
+    background:  rgb(69, 145, 72); /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
+  input[type="range"] { 
+    margin: auto;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 25px;
+    width: 200px;
+    cursor: pointer;
+    border-radius: 0; 
+}
+
+::-webkit-slider-runnable-track {
+    background: #ddd;
+}
+
+::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; 
+    height: 25px;
+    background: #fff;
+    box-shadow: -100vw 0 0 100vw #4CAF50;
+}

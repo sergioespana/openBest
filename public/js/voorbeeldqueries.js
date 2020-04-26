@@ -4,8 +4,9 @@ var db = firebase.firestore();
 // Store data
 function storeData() {
     db.collection("testpractice").add({
-        title: "test1",
+        title: "test123",
         author: "Milo",
+        author: "Stefan",
         author: "Sergio"
     })
 }
