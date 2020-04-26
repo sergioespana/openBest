@@ -7,9 +7,13 @@ var db = firebase.firestore();
 
 // userEmail is used to match the email of the current user to the database of users
 var userEmail;
+var userName;
 // userPath and dName are used to determine the domain of the current user
 var userPath;
 var dName;
+
+// Variable that stores if a domain has been instantiated
+var domainInstantiated;
 
 // ############################################
 
@@ -30,22 +34,45 @@ $(document).ready(function() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       userEmail = user.email;
+      userName = user.displayName;
+      let usercard = document.getElementById("user-card");
+      let admincard = document.getElementById("administrator-card");
+      let admintext = document.getElementById("admin-text");
 
       checkUser(function() {
 
         // Checking if this person is the administrator
-        db.collection(`${dName[0]}`).doc(`${dName[1]}`)
-          .onSnapshot(function(doc) {
-            if(doc.data().administrator == userEmail){
-              console.log("administrator")
+        if(dName){
+          db.collection(`${dName[0]}`).doc(`${dName[1]}`)
+            .onSnapshot(function(doc) {
+              // Setting the domain name
+              domainName.innerHTML = doc.data().name;
 
-              let createInstanceBtn = document.getElementById("create-instance-btn");
-        
-              if(createInstanceBtn){
-                createInstanceBtn.style.display = "inline-block";
+              if(doc.data().administrator == userEmail){
+                let admincard = document.getElementById("administrator-card");
+                let usercard = document.getElementById("user-card");
+
+                if(admincard){
+                  admincard.style.display = "inline-block";
+                  usercard.setAttribute('class', 'col-lg-6 mb-4');
+                }
               }
+            });
+
+            // If dName is null, then the user belongs to no domain
+            // Otherwise, display the user actions
+            if(dName && usercard){
+              domainInstantiated = true;
+              usercard.style.display = "inline-block";
             }
-          });
+          }
+
+          // If the user belongs to no domain
+          if(!(dName)){
+            domainInstantiated = false;
+            admincard.style.display = "inline-block";
+            admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+          }
       });
       
     }
@@ -65,9 +92,6 @@ async function checkUser(callback) {
         // The path to the users group of the currently logged in user
         userPath = doc.ref.parent.path;
         dName = userPath.split("/");
-
-        // Setting the domain name display
-        domainName.innerHTML = dName[0];
       });
     })
 
@@ -77,4 +101,14 @@ async function checkUser(callback) {
 
 function delay() {
   return new Promise(resolve => setTimeout(resolve, 600));
+}
+
+
+// Finds the collectionpath that corresponds to a wildcard filter
+function findPath(array, filter) {
+  var result = array.filter(function(item){
+    return typeof item == 'string' && item.indexOf(filter) > -1;            
+  });
+  // The first item is 
+  return result[0];
 }

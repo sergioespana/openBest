@@ -45,16 +45,6 @@ $(document).ready(function() {
 });
 
 
-// Finds the collectionpath that corresponds to a wildcard filter
-function findPath(array, filter) {
-  var result = array.filter(function(item){
-    return typeof item == 'string' && item.indexOf(filter) > -1;            
-  });
-  // The first item is 
-  return result[0];
-}
-
-
 // First initialization of table when document is ready loading
 function initTable() {
 
@@ -208,7 +198,8 @@ $("#category-select").change(function() {
     initTable();
   }
   else{
-    db.collection("domain/domainstate/bestpractices")
+    let bpPath = findPath(collectionPaths, 'bestpractices');
+    db.collection(`${bpPath}`)
         .where(catKeyName, "array-contains", `${selectedCat}`)
         .get().then((snapshot) => {
 

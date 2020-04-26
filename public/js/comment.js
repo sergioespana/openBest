@@ -5,15 +5,9 @@ function startup(BPID){
     BPid = BPID;
     create_comment_input();
     getcomments(BPid);
+    console.log(BPid);
+    
 }
-
-// document.getElementById('textbox').addEventListener("focus", function(){addbuttons()});
-//document.addEventListener('DOMContentLoaded', (event) => {
-//    create_comment_input();
-//    getcomments(BPid);
-  //  draw_comment("Dick Hole", "3 months ago", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tristique malesuada orci, non dapibus ligula varius ut. In eget imperdiet magna. In nec felis scelerisque,","https://www.w3schools.com/images/w3schools_green.jpg");
-  //  draw_comment("This Sucks", "1 month ago", "dapibus lorem vel, elementum nulla. Proin id tincidunt odio. Sed vulputate dolor nulla, nec tempus purus bibendum eget. Etiam sed erat ante.","https://www.w3schools.com/images/w3schools_green.jpg");
-//});
 
 function showtext(see_more_id,text_id){
     var tbutton  = document.getElementById(see_more_id);
@@ -43,7 +37,7 @@ function create_comment_input(){
     comment_input.setAttribute("hasbeendrawn", "false");
 
     newdiv.appendChild(comment_input);
-    document.getElementById("commentsection").appendChild(newdiv);
+    document.getElementById("searchbar").appendChild(newdiv);
     document.getElementById(comment_input.id).addEventListener("focus", function(){addbuttons(newdiv.id, comment_input.id)});
 }
 
@@ -75,6 +69,11 @@ function addbuttons(divid,textid){
     }
 }
 
+function getcurrentDateTime(){
+    var d = new Date();
+    return (d.toUTCString());
+}
+
 
 function cancel(cancel_id,submit_id,text_id){
     document.getElementById(text_id).innerText = "";
@@ -87,10 +86,9 @@ function submit(cancel_id,submit_id,text_id){
     var message = document.getElementById(text_id).innerText;
     if(lengte(message) >= 1){
     cancel(cancel_id,submit_id,text_id);
-    pushcomment(BPid,"just now",getUserName(),getUserImage(),message);
-    draw_comment(getUserName(), "Just now", message, getUserImage());
-    // document.getElementsByClassName("comment_wrapper").forEach.remove();
-    // getcomments(BPid);
+    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message);
+    remove_comment_elements();
+    getcomments(BPid);
     }
 }
 
@@ -180,11 +178,18 @@ function showcursor(id){
     document.getElementById(id).style.cursor = "pointer";
 }
 
-// function remove_comment_elements(){
-//     myNode = document.getElementById("commentsection");
-//     while(myNode.hasChildnodes()){
-//         mynode.removeChild(myNode.firstChild);
-//         console.log("verwijder!!");
-//     }
+function remove_comment_elements(){
+    myNode = document.getElementById("commentsection");
+    while(myNode.hasChildNodes()){
+        myNode.removeChild(myNode.firstChild);
+    }
 
-// }
+}
+function remove_top_searchbar(){
+    myNode = document.getElementById("searchbar");
+    while(myNode.hasChildNodes()){
+        myNode.removeChild(myNode.firstChild);
+    }
+
+}
+

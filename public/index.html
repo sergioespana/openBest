@@ -87,6 +87,13 @@
             <i class="far fa-lightbulb"></i>
             <span>Practices</span></a>
         </li>
+
+        <!-- Nav Item - ToC -->
+        <li class="nav-item">
+          <a class="nav-link" href="toc.html">
+            <i class="fas fa-ruler-combined"></i>
+            <span>ToC</span></a>
+        </li>
   
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
@@ -145,13 +152,13 @@
                 <h1>Welcome</h1>
             </div>
 
-            <fieldset>
+            <!-- <fieldset>
               <h4>Comment section</h4>
             </fieldset>
 
             <fieldset id = "commentsection">
            
-            </fieldset>
+            </fieldset> -->
 
             <!-- <fieldset class="add_new_comment">
               <div class="new_comment">
@@ -252,6 +259,64 @@
               </span>
               <span class="text">Create BP</span>
             </a>  -->
+            <p>
+              Welcome to the OpenBP platform. Please refer to the actions for your role below.
+            </p>
+
+            <div class="row">
+              <div id="user-card" class="col-lg-12 mb-4">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="text-success font-weight-bold text-uppercase">User</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="text-center">
+                          <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;" src="resources/images/bp-drawing.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <p>As a user, you are able to create store best practices by clicking on the button below.</p>
+                        <a id="create-BP-btn" class="btn btn-light btn-icon-split">
+                          <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                          </span>
+                          <span class="text">Create BP</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="administrator-card" class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="text-success font-weight-bold text-uppercase">Administrator</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="text-center">
+                          <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;" src="resources/images/administrator.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <p id="admin-text">As an adminstrator, you can review and update the domain model using the buttons below.</p>
+                        <a id="create-instance-btn" class="btn btn-light btn-icon-split">
+                          <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                          </span>
+                          <span class="text">Create domain</span>
+                        </a>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
   
         </div>
         <!-- End of Main Content -->
@@ -273,7 +338,7 @@
             <div class="bp-modal-body">
               <h1>Best practice entry</h1>
               
-                <div class="card border-left-success shadow">
+                <div class="card card-margin border-left-success shadow">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
                       <div class="col mr-2">
@@ -292,8 +357,6 @@
               <form id="bp-entry-form" class="needs-validation" novalidate>
                 <!-- Items for BP entry will be displayed here -->
               </form>
-
-              <hr class="form-divider">
 
               <a id="store-BP-btn" class="btn btn-light btn-icon-split">
                 <span class="icon text-gray-600">
