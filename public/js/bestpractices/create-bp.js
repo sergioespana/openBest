@@ -58,14 +58,54 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                     //Getting the fields of the document
                     var docdata = Object.entries(doc.data());
 
-                    loop(docdata, docdata.length);
+                    // Populate an array of document references
+                    let docrefArray = [];
 
                     //Iterating over the key-value pairs of the documents in which features should be displayed
                     for (let [key, value] of docdata) {
 
-                        test(key)
+                        if(value == "document reference"){
+                            let keyText = key.replace(/[0-9]/g, '');
+                            // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
+                            let docrefPath = findPath(collectionPaths, keyText);
 
-                        instantiateFeatures(key, value, coll, doc);
+                            db.collection(`${docrefPath}`)
+                            .get().then((snapshot) => {
+                                snapshot.docs.forEach(doc => {
+
+                                    let keyIndexArr = [];
+                                    for (let [key, value] of Object.entries(doc.data())){
+                                        let keyname = JSON.stringify(key).replace(/[ˆ0-9]+|"/g, '');
+                                        keyIndexArr.push(keyname)
+                                    };
+
+                                    // Specifies at which point in the array the "name" field is specified
+                                    let entryPoint;
+
+                                    for(var keyIndex = 0; keyIndex < keyIndexArr.length; keyIndex++){
+                                        if(keyIndexArr[keyIndex] == 'name'){
+                                            entryPoint = keyIndex;
+                                        }
+                                    }
+
+                                    // authorArray will store an array for each author, with the name, documentid and path
+                                    let docData = [];
+                                    // Don't include "string" > that's part of the initial model only
+                                    if(!(doc.data()[Object.keys(doc.data())[entryPoint]] == 'string')){
+                                        docData.push(doc.data()[Object.keys(doc.data())[entryPoint]]);
+                                        docData.push(doc.id);
+                                        docData.push(docrefPath);
+                                        docrefArray.push(docData);
+                                    }
+                                })
+                            })
+                        }
+
+                        // Setting a timeout so that instantiateFeatures is called only after the query above has had a chance to complete
+                        // The result of the query is needed to determine if selectboxes for the document references are instantiated
+                        setTimeout(() => {
+                            instantiateFeatures(key, value, coll, doc, docrefArray);
+                        }, 1000)
 
                     }
                 })
@@ -76,35 +116,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
 })
 
 
-function loop(docdata, length) {
-    setTimeout(() => {
-        //console.log("hallo");
-        console.log(docdata)
-    }, 8000);
-}
-
-
-function test(key){
-    let keyText = key.replace(/[0-9]/g, '');
-    let docrefPath = findPath(collectionPaths, keyText);
-    // This query is executed for each subcollection that a document reference points to, such as authors
-    db.collection(`${docrefPath}`)
-    .get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-
-            console.log(key);
-            
-        })
-    })
-
-    setTimeout(() => {
-        //console.log("hallo");
-        console.log(key)
-    }, 8000);
-}
-
-
-function instantiateFeatures(key, value, coll, doc){
+function instantiateFeatures(key, value, coll, doc, docrefArray){
     
     // Don't display the displayfeature field
     if(key != '1displayfeature'){
@@ -199,96 +211,48 @@ function instantiateFeatures(key, value, coll, doc){
                 }
             }
             // Document reference dropdowns are created and populated here
-            else{
-                let referenceSelect = document.createElement('select');
-                referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
-                BPform.appendChild(label);
-                BPform.appendChild(br);
-                BPform.appendChild(referenceSelect);
-                BPform.appendChild(br);
-                if(Array.isArray(value)){
-                    BPform.appendChild(addOther);
+            else{       
+                // Adding the values of the docrefArray to the dropdown
+                docrefArray.forEach(docref => {
+                    let option = document.createElement('option');
+                    option.setAttribute('value', docref[0]);
+                    option.setAttribute('docname', docref[1]);
+                    option.setAttribute('colpath', docref[2]);
+                    option.setAttribute('key', key);
+                    option.textContent = docref[0];
+                    referenceSelect.add(option);
+                });
+
+                // No current entries in the docref subcollection
+                // For example, no authors
+                if(docrefArray.length == 0){
+                    BPform.appendChild(label);
+                    BPform.appendChild(br);
+                    BPform.appendChild(input);
                     BPform.appendChild(br);
                 }
+                else{
+                    // A selectbox is added if there are document references to be found
+                    let referenceSelect = document.createElement('select');
+                    referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
+                    BPform.appendChild(label);
+                    BPform.appendChild(br);
+                    BPform.appendChild(referenceSelect);
+                    BPform.appendChild(br);
+                    if(Array.isArray(value)){
+                        BPform.appendChild(addOther);
+                        BPform.appendChild(br);
+                    }
 
-                // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
-                let docrefPath = findPath(collectionPaths, keyText);
-                // Populate an array of document references
-                let docrefArray = [];
-
-                // This query is executed for each subcollection that a document reference points to, such as authors
-                db.collection(`${docrefPath}`)
-                    .get().then((snapshot) => {
-                        snapshot.docs.forEach(doc => {
-
-                            let keyIndexArr = [];
-                            for (let [key, value] of Object.entries(doc.data())){
-                                let keyname = JSON.stringify(key).replace(/[ˆ0-9]+|"/g, '');
-                                keyIndexArr.push(keyname)
-                            };
-
-                            // Specifies at which point in the array the "name" field is specified
-                            let entryPoint;
-
-                            for(var keyIndex = 0; keyIndex < keyIndexArr.length; keyIndex++){
-                                if(keyIndexArr[keyIndex] == 'name'){
-                                    entryPoint = keyIndex;
-                                }
-                            }
-
-                            // authorArray will store an array for each author, with the name, documentid and path
-                            let docData = [];
-                            // Don't include "string" > that's part of the initial model only
-                            if(!(doc.data()[Object.keys(doc.data())[entryPoint]] == 'string')){
-                                docData.push(doc.data()[Object.keys(doc.data())[entryPoint]]);
-                                docData.push(doc.id);
-                                docData.push(docrefPath);
-                                docrefArray.push(docData);
-                            }
-                        })
-                        
-                    // Adding the values of the docrefArray to the dropdown
-                    docrefArray.forEach(docref => {
-                        let option = document.createElement('option');
-                        option.setAttribute('value', docref[0]);
-                        option.setAttribute('docname', docref[1]);
-                        option.setAttribute('colpath', docref[2]);
-                        option.setAttribute('key', key);
-                        option.textContent = docref[0];
-                        referenceSelect.add(option);
-                    });
-
-                    // // No current entries in the docref subcollection
-                    // // For example, no authors
-                    // if(docrefArray.length == 0){
-                    //     BPform.appendChild(label);
-                    //     BPform.appendChild(br);
-                    //     BPform.appendChild(textarea);
-                    //     BPform.appendChild(br);
-                    // }
-                    // else{
-                    //     // A selectbox is added if there are document references to be found
-                    //     let referenceSelect = document.createElement('select');
-                    //     referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
-                    //     BPform.appendChild(label);
-                    //     BPform.appendChild(br);
-                    //     BPform.appendChild(referenceSelect);
-                    //     BPform.appendChild(br);
-                    //     if(Array.isArray(value)){
-                    //         BPform.appendChild(addOther);
-                    //         BPform.appendChild(br);
-                    //     }
-
-                    //     // Adding the option for the user to add something else
-                    //     let option = document.createElement('option');
-                    //     option.textContent = 'Add other';
-                    //     referenceSelect.setAttribute('colpath', coll)
-                    //     referenceSelect.setAttribute('docname', doc.id);
-                    //     referenceSelect.setAttribute('key', key);
-                    //     referenceSelect.setAttribute('type', 'select');
-                    //     referenceSelect.add(option);
-                    // }
-                })
+                    // Adding the option for the user to add something else
+                    let option = document.createElement('option');
+                    option.textContent = 'Add other';
+                    referenceSelect.setAttribute('colpath', coll)
+                    referenceSelect.setAttribute('docname', doc.id);
+                    referenceSelect.setAttribute('key', key);
+                    referenceSelect.setAttribute('type', 'select');
+                    referenceSelect.add(option);
+                }
             }
 
             // addItem is the add button for the current key value
