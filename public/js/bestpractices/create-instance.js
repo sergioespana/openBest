@@ -14,7 +14,7 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "domain": {
+    "domain2": {
         //document
         "domainstate": {
             //fields
@@ -27,15 +27,16 @@ var jsontest = {
                 //document
                 "bpdocument": {
                     //fields
+                    "01grouptitle": "Best practice",
+                    "02groupdesc": "Enter basic best practice information here.",
                     "1displayfeature": true,
                     "2title": "string",
-                    "3description": "string",
-                    "4author": "document reference",
+                    "3description": "text",
+                    "4author": 
+                        ["document reference"],
                     "5categories":
                         ["string"],
                     "6date": "string",
-                    "7problems":
-                        ["document reference"],
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -61,20 +62,20 @@ var jsontest = {
             // must ALWAYS be called users and have an email field
             "users": {
                 "userdocument": {
-                    "displayfeature": false,
-                    "email": "string",
-                    "name": "string",
-                    "role": "string"
+                    "1displayfeature": false,
+                    "2email": "string",
+                    "3name": "string",
+                    "4role": "string"
                 }
             },
             //collection
             "authors": {
                 //document
                 "authordocument": {
-                    "displayfeature": false,
-                    "contactinfo": "string",
-                    "internal": "boolean",
-                    "name": "string"
+                    "1displayfeature": false,
+                    "2contactinfo": "string",
+                    "3internal": "boolean",
+                    "4name": "string"
                 }
             },
             //collection
@@ -88,9 +89,11 @@ var jsontest = {
             //collection
             "problems": {
                 "problemdocument": {
-                    "displayfeature": false,
-                    "name": "string",
-                    "description": "string"
+                    "01grouptitle": "Problem",
+                    "02groupdesc": "What problem does this best practice solve?",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3description": "text"
                 }
             }
         }
@@ -190,11 +193,35 @@ function extractFields() {
     }
 }
 
+// Writing to DB and then reloading the page
 function writeDB(coll, doci, docp) {
-    var JSONinfo = JSON.parse(doci);
+    let JSONinfo = JSON.parse(doci);
     // Getting the name of the document related to the fields
-    var x = docp.split("/");
-    var docName = x[x.length - 1];
+    let x = docp.split("/");
+    let docName = x[x.length - 1];
 
+    // Page refreshed after write to DB
+    writeCallback(coll, docName, JSONinfo, function() {
+        if(domainInstantiated == false){
+            location.reload();
+        }
+    })
+}
+
+function delay() {
+    return new Promise(resolve => setTimeout(resolve, 800));
+}
+
+async function writeCallback(coll, docName, JSONinfo, callback) {
     db.collection(coll).doc(docName).set(JSONinfo);
+
+    let userPath = findPath(collectionPaths, 'user');
+
+    // Only writing this info when the domain hasn't been instantiated yet
+    if(domainInstantiated == false){
+        db.collection(userPath).doc('d-user').set({'email': userEmail, 'name': userName, 'role': 'administrator'});
+    }
+
+    await delay();
+    callback();
 }
