@@ -13,6 +13,7 @@
     font-family: inherit;
     font-size: inherit;
     margin-bottom: 10px;
+    margin-top: 10px;
     resize: none;
   }
   
@@ -30,7 +31,7 @@
     float: right;
     margin-left: 10px;
     border: none;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
 
   .textarea:focus {
@@ -81,7 +82,7 @@
   }
   .name{
     float: left;
-    padding-right: 10px;
+    margin-right: 10px;
     height: 1em;
     width: auto;
     font-weight: bold;
@@ -92,6 +93,20 @@
     color: gray;
     height: 1em;
     width: auto;
+    margin-right: 10px;
+  }
+
+  .remove_button{
+    float: left;
+    height: 1em;
+    width: auto;
+    margin-right: 10px;
+    margin-top: 5px;
+  }
+
+  .remove_button:hover{
+    color:red;
+
   }
   .picture{
     width:  inherit;

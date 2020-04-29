@@ -1,35 +1,65 @@
 var db = firebase.firestore();
-
+var amountOfComments = 0
 function getcomments(BPid) {
     startstring = "/domain/domainstate/bestpractices/"
     endstring   = "/comments"
-    doelstring = startstring.concat(BPid,endstring);
+    doelstring = startstring.concat(BPid,endstring);    
     now =  getcurrentDateTime();
      // Getting a reference to all documents in the comment sub-collection for bp1
      db.collection(doelstring)
          .get().then((snapshot) => {
              // Each document that matches the query is cycled through
              snapshot.docs.forEach(doc => {
+                 // for every comment get de relevant info
                 comment_date = getTimeDifference(now,doc.data().date);
                 comment_author = doc.data().author; 
                 comment_img = doc.data().img; 
                 comment_text = doc.data().text;
-                draw_comment(comment_author,comment_date,comment_text,comment_img);
+                comment_id = doc.id;   
+                // draw the comment
+                draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid);
+                // adjust the counter
+                higherCounter();
              })
      })
    }
+
+ function  higherCounter(){
+    amountOfComments += 1;  
+    document.getElementById("comment_counter").innerText = amountOfComments + " comments";
+   }
+ function  lowerCounter(){
+    amountOfComments -= 1;  
+    document.getElementById("comment_counter").innerText = amountOfComments + " comments";
+   }
+
+   function removeComment(id,BPid,cid){
+        startstring = "/domain/domainstate/bestpractices/"
+        endstring   = "/comments"
+        doelstring = startstring.concat(BPid,endstring);
+        db.collection(doelstring).doc(id).delete();
+        //remove_comment_elements("commentsection");  // online update
+        //getcomments(BPid);                         //  online update
+        remove_comment_element(cid);
+        lowerCounter();
+   }
+
 
     function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text){
         startstring = "/domain/domainstate/bestpractices/";
         endstring   = "/comments";       
         doelstring = startstring.concat(BPid,endstring);
-        db.collection(doelstring).add({
+        db.collection(doelstring).add({ //write comment to db
                 date: comment_date,
                 author: comment_author,
                 img: comment_img,
                 text: comment_text  
+            }).then(docRef => {
+                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid); //once comment has been written to db draw it locally     
+                higherCounter();             
             })
         }
+
         
   function getTimeDifference(now,then){
       date_now = Date.parse(now);

@@ -1,12 +1,19 @@
-
-
 var BPid = null;
+
 function startup(BPID){
-    BPid = BPID;
+    create_meta_info();
     create_comment_input();
-    getcomments(BPid);
-    console.log(BPid);
-    
+    BPid = BPID
+    getcomments(BPID);
+}
+
+function create_meta_info(){
+    var root = document.getElementById("searchbar");
+    var comment_counter   = document.createElement("p");
+    comment_counter.classList.add("comment_counter");
+    comment_counter.id = "comment_counter";
+    comment_counter.innerText =  amountOfComments + " comments";    
+    root.appendChild(comment_counter);
 }
 
 function showtext(see_more_id,text_id){
@@ -47,6 +54,10 @@ function addbuttons(divid,textid){
     if(draw == "false"){
     document.getElementById(textid).setAttribute("hasbeendrawn","true");
 
+    newbuttonbar = document.createElement("DIV");
+    newbuttonbar.id = getid();
+    newbuttonbar.classList.add("button_bar");
+    
     newcancelbutton = document.createElement("INPUT"); 
     newcancelbutton.type = "button";
     newcancelbutton.value = "Cancel";
@@ -59,12 +70,13 @@ function addbuttons(divid,textid){
     newsubmitbutton.classList.add ("comment_button","submit_button");
     newsubmitbutton.id = getid();
 
+    newbuttonbar.appendChild(newsubmitbutton); 
+    newbuttonbar.appendChild(newcancelbutton);
     newcomment = document.getElementById(divid);
-    newcomment.appendChild(newsubmitbutton); 
-    newcomment.appendChild(newcancelbutton);
-
-    document.getElementById(newcancelbutton.id).addEventListener("click", function(){cancel(newcancelbutton.id,newsubmitbutton.id,textid)});
-    document.getElementById(newsubmitbutton.id).addEventListener("click", function(){submit(newcancelbutton.id,newsubmitbutton.id,textid)});
+    newcomment.appendChild(newbuttonbar);
+    
+    newcancelbutton.addEventListener("click", function(){cancel(newbuttonbar.id,textid)});
+    newsubmitbutton.addEventListener("click", function(){submit(newbuttonbar.id,textid)});
     document.getElementById(textid).addEventListener("input", function(){checklength(newsubmitbutton.id,textid)});
     }
 }
@@ -74,21 +86,19 @@ function getcurrentDateTime(){
     return (d.toUTCString());
 }
 
-
-function cancel(cancel_id,submit_id,text_id){
+function cancel(buttonbar_id,text_id){
     document.getElementById(text_id).innerText = "";
-    document.getElementById(cancel_id).remove();
-    document.getElementById(submit_id).remove();
+    remove_all_elements(buttonbar_id);
     document.getElementById(text_id).setAttribute("hasbeendrawn","false");
 }
 
-function submit(cancel_id,submit_id,text_id){
+function submit(buttonbar_id,text_id){
     var message = document.getElementById(text_id).innerText;
     if(lengte(message) >= 1){
-    cancel(cancel_id,submit_id,text_id);
-    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message);
-    remove_comment_elements();
-    getcomments(BPid);
+    cancel(buttonbar_id,text_id);
+    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message); //write comment to db and afterwards draw it locally
+    // remove_comment_elements("commentsection"); // online update
+    // getcomments(BPid);         // online update
     }
 }
 
@@ -102,12 +112,12 @@ function checklength(newsubmitbutton,textid){
   }
 }
 
-function draw_comment(name,date,text,img){
-
+function draw_comment(name,date,text,img,commentid,BP_id){
    var root = document.getElementById("commentsection");
 
    var comment_wrapper   = document.createElement("DIV");
    comment_wrapper.classList.add("comment_wrapper");
+   comment_wrapper.id = getid();
 
    var picture_wrapper   = document.createElement("DIV");
    picture_wrapper.classList.add("picture_wrapper");
@@ -130,6 +140,10 @@ function draw_comment(name,date,text,img){
    var date_posted_text = document.createElement("p");
    date_posted_text.classList.add("date_poster");
    date_posted_text.innerText = date;
+
+   var remove_comment = document.createElement("i");
+   remove_comment.classList.add("fa","fa-trash","remove_button");
+   remove_comment.id = getid();
    
    var comment_text = document.createElement("p");
    comment_text.innerText = text;
@@ -142,7 +156,9 @@ function draw_comment(name,date,text,img){
    see_more.id = getid();
    
    meta_info_wrapper.appendChild(name_text);
+   meta_info_wrapper.appendChild(remove_comment);
    meta_info_wrapper.appendChild(date_posted_text);
+   
    content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
    content_wrapper.appendChild(comment_text);
    content_wrapper.appendChild(see_more);
@@ -154,6 +170,7 @@ function draw_comment(name,date,text,img){
    showtext(see_more.id,comment_text.id);
    document.getElementById(see_more.id).addEventListener("click", function(){showtext(see_more.id,comment_text.id)});
    document.getElementById(see_more.id).addEventListener("mouseover",function(){showcursor(see_more.id)});
+   document.getElementById(remove_comment.id).addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper.id)}); 
 }
 
 function getUserImage(){
@@ -178,18 +195,33 @@ function showcursor(id){
     document.getElementById(id).style.cursor = "pointer";
 }
 
+function remove_comment_element(id){
+    myNode = document.getElementById(id);
+    while(myNode.hasChildNodes()){
+        myNode.removeChild(myNode.firstChild);
+    }
+    myNode.remove();
+}
+
 function remove_comment_elements(){
     myNode = document.getElementById("commentsection");
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
     }
-
 }
+
 function remove_top_searchbar(){
     myNode = document.getElementById("searchbar");
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
     }
+}
 
+function remove_all_elements(id){
+    myNode = document.getElementById(id);
+    while(myNode.hasChildNodes()){
+        myNode.removeChild(myNode.firstChild);
+    }
+    myNode.remove();
 }
 
