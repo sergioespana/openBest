@@ -1,5 +1,5 @@
 var db = firebase.firestore();
-var amountOfComments = 0
+var amountOfComments = 0;
 function getcomments(BPid) {
     startstring = "/domain/domainstate/bestpractices/"
     endstring   = "/comments"
@@ -15,9 +15,10 @@ function getcomments(BPid) {
                 comment_author = doc.data().author; 
                 comment_img = doc.data().img; 
                 comment_text = doc.data().text;
+                comment_email = doc.data().email;
                 comment_id = doc.id;   
-                // draw the comment
-                draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid);
+                // draw the comment       
+                draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email));
                 // adjust the counter
                 higherCounter();
              })
@@ -45,7 +46,7 @@ function getcomments(BPid) {
    }
 
 
-    function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text){
+    function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email){
         startstring = "/domain/domainstate/bestpractices/";
         endstring   = "/comments";       
         doelstring = startstring.concat(BPid,endstring);
@@ -53,9 +54,10 @@ function getcomments(BPid) {
                 date: comment_date,
                 author: comment_author,
                 img: comment_img,
-                text: comment_text  
+                text: comment_text, 
+                email: comment_email
             }).then(docRef => {
-                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid); //once comment has been written to db draw it locally     
+                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid,"true"); //once comment has been written to db draw it locally     
                 higherCounter();             
             })
         }
@@ -110,6 +112,12 @@ function getcomments(BPid) {
         return (string);}
     }
   
-    
-
-    
+function issame (email){
+    var currentuser = getUserEmail();
+    if (currentuser == email){
+        return "true";
+    }
+    else{
+        return "false";
+    }
+}

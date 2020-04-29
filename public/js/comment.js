@@ -96,7 +96,7 @@ function submit(buttonbar_id,text_id){
     var message = document.getElementById(text_id).innerText;
     if(lengte(message) >= 1){
     cancel(buttonbar_id,text_id);
-    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message); //write comment to db and afterwards draw it locally
+    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail()); //write comment to db and afterwards draw it locally
     // remove_comment_elements("commentsection"); // online update
     // getcomments(BPid);         // online update
     }
@@ -112,9 +112,9 @@ function checklength(newsubmitbutton,textid){
   }
 }
 
-function draw_comment(name,date,text,img,commentid,BP_id){
+function draw_comment(name,date,text,img,commentid,BP_id,issame){
    var root = document.getElementById("commentsection");
-
+    
    var comment_wrapper   = document.createElement("DIV");
    comment_wrapper.classList.add("comment_wrapper");
    comment_wrapper.id = getid();
@@ -140,11 +140,7 @@ function draw_comment(name,date,text,img,commentid,BP_id){
    var date_posted_text = document.createElement("p");
    date_posted_text.classList.add("date_poster");
    date_posted_text.innerText = date;
-
-   var remove_comment = document.createElement("i");
-   remove_comment.classList.add("fa","fa-trash","remove_button");
-   remove_comment.id = getid();
-   
+      
    var comment_text = document.createElement("p");
    comment_text.innerText = text;
    comment_text.classList.add("comment_text","line-clamp","line-clamp-2");
@@ -156,7 +152,14 @@ function draw_comment(name,date,text,img,commentid,BP_id){
    see_more.id = getid();
    
    meta_info_wrapper.appendChild(name_text);
+
+    if (issame == "true"){
+   var remove_comment = document.createElement("i");
+   remove_comment.classList.add("fa","fa-trash","remove_button");
+   remove_comment.id = getid();
    meta_info_wrapper.appendChild(remove_comment);
+   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper.id)}); 
+    }
    meta_info_wrapper.appendChild(date_posted_text);
    
    content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
@@ -168,10 +171,20 @@ function draw_comment(name,date,text,img,commentid,BP_id){
    
    root.appendChild(comment_wrapper);//plak totale comment in de commentsectie
    showtext(see_more.id,comment_text.id);
-   document.getElementById(see_more.id).addEventListener("click", function(){showtext(see_more.id,comment_text.id)});
-   document.getElementById(see_more.id).addEventListener("mouseover",function(){showcursor(see_more.id)});
-   document.getElementById(remove_comment.id).addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper.id)}); 
+   see_more.addEventListener("click", function(){showtext(see_more.id,comment_text.id)});
+   see_more.addEventListener("mouseover",function(){showcursor(see_more.id)});
+   
 }
+
+
+function getUserEmail(){
+    var user = firebase.auth().currentUser;
+    var photoUrl;
+        if (user != null) {
+            email = user.email;
+            return(email);
+            }   
+    }
 
 function getUserImage(){
 var user = firebase.auth().currentUser;

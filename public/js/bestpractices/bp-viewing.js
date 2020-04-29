@@ -46,8 +46,10 @@ function retrieveBPinfo(BPid) {
 
 span.onclick = function() {
     modal.style.display = "none";
+    //comment stuffffff
     remove_comment_elements();
     remove_top_searchbar();
+    amountOfComments = 0;
 }
 
 
