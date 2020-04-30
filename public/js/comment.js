@@ -1,11 +1,11 @@
 var BPid = null;
 
 function startup(BPID){
-    create_meta_info();
-    comment_input_location = document.getElementById("searchbar");
-    create_comment_input(comment_input_location);
-    BPid = BPID
-    getcomments(BPID);
+   create_meta_info();
+   comment_input_location = document.getElementById("searchbar");
+   create_comment_input(comment_input_location,"false");
+   BPid = BPID;
+   getcomments(BPid);
 }
 
 function create_meta_info(){
@@ -33,8 +33,11 @@ function showtext(see_more,text){
     }
 }
 
-function create_comment_input(elem){
-    var newdiv = document.createElement("DIV");
+function create_comment_input(elem, isSubComment,commentid){
+    if (isSubComment == "true"){ isdrawn = elem.getAttribute("SubInputisDrawn");}  
+    if (isSubComment == "true" && isdrawn == "false" || isSubComment == "false"){ 
+
+    var newdiv = document.createElement("DIV"); 
     newdiv.classList.add("newcomment");
 
     var comment_input = document.createElement("SPAN");
@@ -42,28 +45,39 @@ function create_comment_input(elem){
     comment_input.role = "textbox";
     comment_input.setAttribute("contenteditable", "true");
     comment_input.setAttribute("hasbeendrawn", "false");
+    if (isSubComment == "true"){comment_input.setAttribute("isSubComment", "true");}
 
     newdiv.appendChild(comment_input);
-    elem.appendChild(newdiv);
-    //document.getElementById("searchbar").appendChild(newdiv);
-    comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input)});
+
+    if (isSubComment == "true"){ //in het geval van een subcomment
+    
+    insertAfter(newdiv,elem);
+    comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input,elem,commentid)});
+    elem.setAttribute("SubInputisDrawn","true");
+    }
+
+    else{
+    elem.appendChild(newdiv); // in het geval van hoofdcomment
+    comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input)});//hoofdcomment
+    }
+   }
 }
 
-function addbuttons(div,text){
+function addbuttons(div,text,elem,commentid){
     draw = text.getAttribute("hasbeendrawn"); 
     
     if(draw == "false"){
     text.setAttribute("hasbeendrawn","true");
 
-    newbuttonbar = document.createElement("DIV");
+    var newbuttonbar = document.createElement("DIV");
     newbuttonbar.classList.add("button_bar");
     
-    newcancelbutton = document.createElement("INPUT"); 
+    var newcancelbutton = document.createElement("INPUT"); 
     newcancelbutton.type = "button";
     newcancelbutton.value = "Cancel";
     newcancelbutton.classList.add("comment_button","cancel_button");
 
-    newsubmitbutton = document.createElement("INPUT");
+    var newsubmitbutton = document.createElement("INPUT");
     newsubmitbutton.type = "button";
     newsubmitbutton.value = "Submit"; 
     newsubmitbutton.classList.add ("comment_button","submit_button");
@@ -72,11 +86,17 @@ function addbuttons(div,text){
     newbuttonbar.appendChild(newcancelbutton);
     newcomment = div;
     newcomment.appendChild(newbuttonbar);
-    
-    newcancelbutton.addEventListener("click", function(){cancel(newbuttonbar,text)});
-    newsubmitbutton.addEventListener("click", function(){submit(newbuttonbar,text)});
+
+    if (elem){// if input bar is below one comment
+    newcancelbutton.addEventListener("click", function(){subCancel(text,elem)});
+    newsubmitbutton.addEventListener("click", function(){subSubmit(text,elem,commentid)});
     text.addEventListener("input", function(){checklength(newsubmitbutton,text)});
     }
+    else{// if input bar is the main inputbar
+    newcancelbutton.addEventListener("click", function(){masterCancel(newbuttonbar,text)});
+    newsubmitbutton.addEventListener("click", function(){masterSubmit(newbuttonbar,text)});
+    text.addEventListener("input", function(){checklength(newsubmitbutton,text)});}
+    }    
 }
 
 function getcurrentDateTime(){
@@ -84,17 +104,18 @@ function getcurrentDateTime(){
     return (date.toUTCString());
 }
 
-function cancel(buttonbar,text){
+function masterCancel(buttonbar,text){
     text.innerText = "";
     remove_element(buttonbar);
     text.setAttribute("hasbeendrawn","false");
+    
 }
 
-function submit(buttonbar,text){
+function masterSubmit(buttonbar,text){
     var message = text.innerText;
     if(lengte(message) >= 1){
-    cancel(buttonbar,text);
-    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail()); //write comment to db and afterwards draw it locally
+    masterCancel(buttonbar,text);
+    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),"main",0,"none"); //write comment to db and afterwards draw it locally
     }
 }
 
@@ -108,12 +129,17 @@ function checklength(newsubmitbutton,text){
   }
 }
 
-function draw_comment(name,date,text,img,commentid,BP_id,issame){
-   
-   var root = document.getElementById("commentsection");
+function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level){
     
    var comment_wrapper = document.createElement("DIV");
+   //determine the width of the comment based on its level
+   movement = level * 10 + "px";
+   comment_wrapper.style.marginLeft = movement;
+   comment_wrapper.style.width = 'calc(100% - '+ movement +')';
+   
    comment_wrapper.classList.add("comment_wrapper");
+   comment_wrapper.setAttribute("SubInputisDrawn","false");
+   comment_wrapper.setAttribute("level",level);
 
    var picture_wrapper = document.createElement("DIV");
    picture_wrapper.classList.add("picture_wrapper");
@@ -147,6 +173,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
    
    meta_info_wrapper.appendChild(name_text);
 
+   //if current user is the same as the comment writer he can remove the comment
    if (issame == "true"){
    var remove_comment = document.createElement("i");
    remove_comment.classList.add("fa","fa-trash","remove_button");
@@ -154,25 +181,62 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
    remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper)}); 
    }
    
-   var react_button = document.createElement("p");
-   react_button.classList.add("react_button");
-   react_button.innerText = "React";
-
    meta_info_wrapper.appendChild(date_posted_text);
    
    content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
    content_wrapper.appendChild(comment_text);
    content_wrapper.appendChild(see_more);
-
-   content_wrapper.appendChild(react_button);
-
+   
+   if (level < 5){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
+    var react_button = document.createElement("p");
+    react_button.classList.add("react_button");
+    react_button.innerText = "React";
+    content_wrapper.appendChild(react_button);
+    react_button.addEventListener("mouseover",function(){showcursor(react_button)});
+    react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",commentid)});
+    }
+ 
    comment_wrapper.appendChild(picture_wrapper); // plak de picture wrapper in de grote wrapper
    comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
    
+   if(thread == "main"){
+   var root = document.getElementById("commentsection");
    root.appendChild(comment_wrapper);//plak totale comment in de commentsectie
+   }
+   else{
+   var root = thread;
+   insertAfter(comment_wrapper,root);
+   }
    showtext(see_more,comment_text);
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    see_more.addEventListener("mouseover",function(){showcursor(see_more)});
+ 
+}
+
+function subCancel(text,elem){
+    text.innerText = "";
+    if (text.getAttribute("isSubComment") == "true"){
+        remove_element(text.parentElement);
+        elem.setAttribute("SubInputisDrawn","false");
+    }
+}
+
+function subSubmit(text,elem,commentid){
+    var message = text.innerText;
+    if(lengte(message) >= 1){
+    subCancel(text,elem);
+    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),elem,updateLevel(elem),commentid); //write comment to db and afterwards draw it locally
+    }
+}
+
+function updateLevel(elem){
+    level = parseInt(elem.getAttribute("level"));
+    level += 1;
+    return level;
+}
+
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 function getUserEmail(){
@@ -227,6 +291,3 @@ function remove_top_searchbar(){
         myNode.removeChild(myNode.firstChild);
     }
 }
-
-
-

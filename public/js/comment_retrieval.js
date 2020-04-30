@@ -1,11 +1,13 @@
+uberlijst = [];
 var db = firebase.firestore();
 var amountOfComments = 0;
 function getcomments(BPid) {
+   
     startstring = "/domain/domainstate/bestpractices/"
     endstring   = "/comments"
     doelstring = startstring.concat(BPid,endstring);    
     now =  getcurrentDateTime();
-     // Getting a reference to all documents in the comment sub-collection for bp1
+     // Getting a reference to all documents in the comment sub-collection for a best practice
      db.collection(doelstring)
          .get().then((snapshot) => {
              // Each document that matches the query is cycled through
@@ -16,14 +18,82 @@ function getcomments(BPid) {
                 comment_img = doc.data().img; 
                 comment_text = doc.data().text;
                 comment_email = doc.data().email;
-                comment_id = doc.id;   
-                // draw the comment       
-                draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email));
-                // adjust the counter
-                higherCounter();
+                comment_level = doc.data().level;
+                comment_parent = doc.data().parent;
+                comment_id = doc.id; 
+                  // draw the comment   
+                 addtolist([comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email),"main",comment_level,comment_parent]);
+                // draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email),"main",comment_level);
+                //adjust the counter
+             //  higherCounter();
              })
+            // drawtree();
+            splitlist();
      })
    }
+
+ function addtolist(sublist){
+     var tussenlijst = [];
+     tussenlijst.push(sublist);
+     uberlijst.push(tussenlijst);
+ }
+
+ function splitlist(){
+    var head   = [];
+    var first  = [];
+    var second = [];
+    var third  = [];
+    var fourth = [];
+    for (doc of uberlijst){
+        document1 = doc[0];
+        if (document1[8] == 0){head.push(doc[0]);}
+        if (document1[8] == 1){first.push(doc[0]);}
+        if (document1[8] == 2){second.push(doc[0]);}
+        if (document1[8] == 3){third.push(doc[0]);}
+        if (document1[8] == 4){fourth.push(doc[0]);}
+    }
+    
+    for (doc1 of head){
+        draw_comment_db(doc1);
+        higherCounter();
+        id = doc1[4];
+        for (doc2 of first){
+            if (doc2[9] == id){
+                draw_comment_db(doc2);
+                id = doc2[4];
+                higherCounter();
+                for (doc3 of second){
+                    if (doc3[9] == id){
+                        draw_comment_db(doc3);
+                        id = doc3[4];
+                        higherCounter();
+                        for (doc4 of third){
+                            if(doc4[9] == id){
+                                draw_comment_db(doc4);
+                                id = doc4[4];
+                                higherCounter();
+                                for (doc5 of fourth){
+                                    if(doc5[9] == id){
+                                        draw_comment_db(doc5);
+                                        id = doc5[4];
+                                        higherCounter();
+                                    }     
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } 
+ }
+
+ function draw_comment_db(doc){
+    draw_comment(doc[0],doc[1],doc[2],doc[3],doc[4],doc[5],doc[6],doc[7],doc[8],doc[9]);
+ }
+ 
+
+
 
  function  higherCounter(){
     amountOfComments += 1;  
@@ -39,12 +109,12 @@ function getcomments(BPid) {
         endstring   = "/comments"
         doelstring = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
-        remove_element(cid);
+        remove_element(comment_element);
         lowerCounter();
    }
 
 
-    function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email){
+    function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
         startstring = "/domain/domainstate/bestpractices/";
         endstring   = "/comments";       
         doelstring = startstring.concat(BPid,endstring);
@@ -53,9 +123,11 @@ function getcomments(BPid) {
                 author: comment_author,
                 img: comment_img,
                 text: comment_text, 
-                email: comment_email
+                email: comment_email,
+                level: comment_level,
+                parent: comment_parent
             }).then(docRef => {
-                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid,"true"); //once comment has been written to db draw it locally     
+                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid,"true",comment_thread,comment_level); //once comment has been written to db draw it locally     
                 higherCounter();             
             })
         }

@@ -47,7 +47,6 @@
 }
 
 .button_bar{
-
   width: 100%;
   height: 30px;
   margin-bottom: 5px;
@@ -55,6 +54,11 @@
 
   /* COMMENTS */
   /* ######## */
+
+  #comment_section {
+    width: 100%;
+    height:auto;
+  }
 
   .comment_wrapper {
     font-family: inherit;
@@ -64,10 +68,13 @@
     width: 100%;
     height: auto;
     margin-top: 5px;
+    margin-right: 20px;
     border: 1px solid black;
   }
-  .comment_text {
+
+  p.comment_text {
     width: inherit;
+    margin-bottom: 5px;
   }
 
   .picture_wrapper {
@@ -112,8 +119,8 @@
 
   .remove_button:hover{
     color:red;
-
   }
+
   .picture{
     width:  inherit;
     margin-top: 10px;
@@ -122,12 +129,18 @@
     border-radius: 50%;
   }
 
-  .see_more{
+
+  p.see_more{
     size: 0.8em; 
+    margin-bottom: 5px;
   }
 
   .see_more:hover{
     cursor: pointer ;
+  }
+
+  p.react_button{
+    margin-bottom: 5px;
   }
 
   /* LINE CLAMPING */

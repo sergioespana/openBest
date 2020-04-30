@@ -49,6 +49,7 @@ span.onclick = function() {
     //comment stuffffff
     remove_comment_elements();
     remove_top_searchbar();
+    uberlijst = [];
     amountOfComments = 0;
 }
 
