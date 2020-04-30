@@ -29,7 +29,8 @@ function showtext(see_more_id,text_id){
         tbutton.innerText = "See more";
         tekstvak.classList.add("line-clamp","line-clamp-2");
         document.getElementById(text_id).hasbeendrawn = "false";
-}}
+    }
+}
 
 function create_comment_input(){
     var newdiv = document.createElement("DIV");
@@ -113,16 +114,17 @@ function checklength(newsubmitbutton,textid){
 }
 
 function draw_comment(name,date,text,img,commentid,BP_id,issame){
+   
    var root = document.getElementById("commentsection");
     
-   var comment_wrapper   = document.createElement("DIV");
+   var comment_wrapper = document.createElement("DIV");
    comment_wrapper.classList.add("comment_wrapper");
    comment_wrapper.id = getid();
 
-   var picture_wrapper   = document.createElement("DIV");
+   var picture_wrapper = document.createElement("DIV");
    picture_wrapper.classList.add("picture_wrapper");
 
-   var content_wrapper   = document.createElement("DIV");
+   var content_wrapper = document.createElement("DIV");
    content_wrapper.classList.add("content");
 
    var meta_info_wrapper = document.createElement("DIV");
@@ -153,29 +155,35 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
    
    meta_info_wrapper.appendChild(name_text);
 
-    if (issame == "true"){
+   if (issame == "true"){
    var remove_comment = document.createElement("i");
    remove_comment.classList.add("fa","fa-trash","remove_button");
    remove_comment.id = getid();
    meta_info_wrapper.appendChild(remove_comment);
    remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper.id)}); 
-    }
+   }
+   
+   var react_button = document.createElement("p");
+   react_button.classList.add("react_button");
+   react_button.id = getid();
+   react_button.innerText = "React";
+
    meta_info_wrapper.appendChild(date_posted_text);
    
    content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
    content_wrapper.appendChild(comment_text);
    content_wrapper.appendChild(see_more);
-   
+
+   content_wrapper.appendChild(react_button);
+
    comment_wrapper.appendChild(picture_wrapper); // plak de picture wrapper in de grote wrapper
    comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
    
    root.appendChild(comment_wrapper);//plak totale comment in de commentsectie
    showtext(see_more.id,comment_text.id);
    see_more.addEventListener("click", function(){showtext(see_more.id,comment_text.id)});
-   see_more.addEventListener("mouseover",function(){showcursor(see_more.id)});
-   
+   see_more.addEventListener("mouseover",function(){showcursor(see_more)});
 }
-
 
 function getUserEmail(){
     var user = firebase.auth().currentUser;
@@ -183,8 +191,8 @@ function getUserEmail(){
         if (user != null) {
             email = user.email;
             return(email);
-            }   
-    }
+    }   
+}
 
 function getUserImage(){
 var user = firebase.auth().currentUser;
@@ -201,11 +209,11 @@ function getUserName(){
         if (user != null) {
             name = user.displayName;
             return(name);
-            }   
-    }
+        }   
+}
 
-function showcursor(id){
-    document.getElementById(id).style.cursor = "pointer";
+function showcursor(showmore){
+    showmore.style.cursor = "pointer";
 }
 
 function remove_comment_element(id){

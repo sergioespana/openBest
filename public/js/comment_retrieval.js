@@ -39,8 +39,6 @@ function getcomments(BPid) {
         endstring   = "/comments"
         doelstring = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
-        //remove_comment_elements("commentsection");  // online update
-        //getcomments(BPid);                         //  online update
         remove_comment_element(cid);
         lowerCounter();
    }
