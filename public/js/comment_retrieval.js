@@ -34,12 +34,12 @@ function getcomments(BPid) {
     document.getElementById("comment_counter").innerText = amountOfComments + " comments";
    }
 
-   function removeComment(id,BPid,cid){
+   function removeComment(id,BPid,comment_element){
         startstring = "/domain/domainstate/bestpractices/"
         endstring   = "/comments"
         doelstring = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
-        remove_comment_element(cid);
+        remove_element(cid);
         lowerCounter();
    }
 

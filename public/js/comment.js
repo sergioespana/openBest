@@ -2,7 +2,8 @@ var BPid = null;
 
 function startup(BPID){
     create_meta_info();
-    create_comment_input();
+    comment_input_location = document.getElementById("searchbar");
+    create_comment_input(comment_input_location);
     BPid = BPID
     getcomments(BPID);
 }
@@ -16,100 +17,94 @@ function create_meta_info(){
     root.appendChild(comment_counter);
 }
 
-function showtext(see_more_id,text_id){
-    var tbutton  = document.getElementById(see_more_id);
-    var tekstvak = document.getElementById(text_id);
+function showtext(see_more,text){
+    var tbutton  = see_more;
+    var tekstvak = text;
     var isshown  = tekstvak.hasbeendrawn;  
     if (isshown == "false"){
         tbutton.innerText = "See less";
         tekstvak.classList.remove("line-clamp","line-clamp-2");
-        document.getElementById(text_id).hasbeendrawn = "true";
+        text.hasbeendrawn = "true";
     }
     else {
         tbutton.innerText = "See more";
         tekstvak.classList.add("line-clamp","line-clamp-2");
-        document.getElementById(text_id).hasbeendrawn = "false";
+        text.hasbeendrawn = "false";
     }
 }
 
-function create_comment_input(){
+function create_comment_input(elem){
     var newdiv = document.createElement("DIV");
     newdiv.classList.add("newcomment");
-    newdiv.id = getid();
 
     var comment_input = document.createElement("SPAN");
-    comment_input.id = getid();
     comment_input.classList.add("textarea");
     comment_input.role = "textbox";
     comment_input.setAttribute("contenteditable", "true");
     comment_input.setAttribute("hasbeendrawn", "false");
 
     newdiv.appendChild(comment_input);
-    document.getElementById("searchbar").appendChild(newdiv);
-    document.getElementById(comment_input.id).addEventListener("focus", function(){addbuttons(newdiv.id, comment_input.id)});
+    elem.appendChild(newdiv);
+    //document.getElementById("searchbar").appendChild(newdiv);
+    comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input)});
 }
 
-function addbuttons(divid,textid){
-    draw = document.getElementById(textid).getAttribute("hasbeendrawn"); 
+function addbuttons(div,text){
+    draw = text.getAttribute("hasbeendrawn"); 
     
     if(draw == "false"){
-    document.getElementById(textid).setAttribute("hasbeendrawn","true");
+    text.setAttribute("hasbeendrawn","true");
 
     newbuttonbar = document.createElement("DIV");
-    newbuttonbar.id = getid();
     newbuttonbar.classList.add("button_bar");
     
     newcancelbutton = document.createElement("INPUT"); 
     newcancelbutton.type = "button";
     newcancelbutton.value = "Cancel";
     newcancelbutton.classList.add("comment_button","cancel_button");
-    newcancelbutton.id = getid();
 
     newsubmitbutton = document.createElement("INPUT");
     newsubmitbutton.type = "button";
     newsubmitbutton.value = "Submit"; 
     newsubmitbutton.classList.add ("comment_button","submit_button");
-    newsubmitbutton.id = getid();
 
     newbuttonbar.appendChild(newsubmitbutton); 
     newbuttonbar.appendChild(newcancelbutton);
-    newcomment = document.getElementById(divid);
+    newcomment = div;
     newcomment.appendChild(newbuttonbar);
     
-    newcancelbutton.addEventListener("click", function(){cancel(newbuttonbar.id,textid)});
-    newsubmitbutton.addEventListener("click", function(){submit(newbuttonbar.id,textid)});
-    document.getElementById(textid).addEventListener("input", function(){checklength(newsubmitbutton.id,textid)});
+    newcancelbutton.addEventListener("click", function(){cancel(newbuttonbar,text)});
+    newsubmitbutton.addEventListener("click", function(){submit(newbuttonbar,text)});
+    text.addEventListener("input", function(){checklength(newsubmitbutton,text)});
     }
 }
 
 function getcurrentDateTime(){
-    var d = new Date();
-    return (d.toUTCString());
+    var date = new Date();
+    return (date.toUTCString());
 }
 
-function cancel(buttonbar_id,text_id){
-    document.getElementById(text_id).innerText = "";
-    remove_all_elements(buttonbar_id);
-    document.getElementById(text_id).setAttribute("hasbeendrawn","false");
+function cancel(buttonbar,text){
+    text.innerText = "";
+    remove_element(buttonbar);
+    text.setAttribute("hasbeendrawn","false");
 }
 
-function submit(buttonbar_id,text_id){
-    var message = document.getElementById(text_id).innerText;
+function submit(buttonbar,text){
+    var message = text.innerText;
     if(lengte(message) >= 1){
-    cancel(buttonbar_id,text_id);
+    cancel(buttonbar,text);
     pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail()); //write comment to db and afterwards draw it locally
-    // remove_comment_elements("commentsection"); // online update
-    // getcomments(BPid);         // online update
     }
 }
 
-function checklength(newsubmitbutton,textid){
-  var text = document.getElementById(textid).innerText;  
-  if (lengte(text) >= 1){
-    document.getElementById(newsubmitbutton).style.background = "rgb( 48, 158, 191)";
+function checklength(newsubmitbutton,text){
+  var label = text.innerText;  
+  if (lengte(label) >= 1){
+    newsubmitbutton.style.background = "rgb( 48, 158, 191)";
   }
   else{
-  document.getElementById(newsubmitbutton).style.background = "buttonface";
+    newsubmitbutton.style.background = "buttonface";
   }
 }
 
@@ -119,7 +114,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
     
    var comment_wrapper = document.createElement("DIV");
    comment_wrapper.classList.add("comment_wrapper");
-   comment_wrapper.id = getid();
 
    var picture_wrapper = document.createElement("DIV");
    picture_wrapper.classList.add("picture_wrapper");
@@ -146,26 +140,22 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
    var comment_text = document.createElement("p");
    comment_text.innerText = text;
    comment_text.classList.add("comment_text","line-clamp","line-clamp-2");
-   comment_text.id = getid();
    comment_text.setAttribute("hasbeendrawn", "false");
 
    var see_more = document.createElement("p");
    see_more.classList.add("see_more");
-   see_more.id = getid();
    
    meta_info_wrapper.appendChild(name_text);
 
    if (issame == "true"){
    var remove_comment = document.createElement("i");
    remove_comment.classList.add("fa","fa-trash","remove_button");
-   remove_comment.id = getid();
    meta_info_wrapper.appendChild(remove_comment);
-   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper.id)}); 
+   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper)}); 
    }
    
    var react_button = document.createElement("p");
    react_button.classList.add("react_button");
-   react_button.id = getid();
    react_button.innerText = "React";
 
    meta_info_wrapper.appendChild(date_posted_text);
@@ -180,8 +170,8 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame){
    comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
    
    root.appendChild(comment_wrapper);//plak totale comment in de commentsectie
-   showtext(see_more.id,comment_text.id);
-   see_more.addEventListener("click", function(){showtext(see_more.id,comment_text.id)});
+   showtext(see_more,comment_text);
+   see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    see_more.addEventListener("mouseover",function(){showcursor(see_more)});
 }
 
@@ -216,8 +206,8 @@ function showcursor(showmore){
     showmore.style.cursor = "pointer";
 }
 
-function remove_comment_element(id){
-    myNode = document.getElementById(id);
+function remove_element(element){
+    myNode = element;
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
     }
@@ -238,11 +228,5 @@ function remove_top_searchbar(){
     }
 }
 
-function remove_all_elements(id){
-    myNode = document.getElementById(id);
-    while(myNode.hasChildNodes()){
-        myNode.removeChild(myNode.firstChild);
-    }
-    myNode.remove();
-}
+
 
