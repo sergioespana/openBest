@@ -1,3 +1,6 @@
+
+
+
 document.getElementById('option-negative').addEventListener("click", function(){changeColor("red")});  
 document.getElementById('option-positive').addEventListener("click", function(){changeColor("green")});
 document.getElementById('option-neutral').addEventListener("click", function(){changeColor("orange")}); 

@@ -37,8 +37,11 @@ function retrieveBPinfo(BPid) {
                 let BPdescription = document.getElementById("bp-description");
                 let description = indexArr[1];
                 BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
+
+                //dit is het opstart deel van mij
                 fillbars(BPid);
                 startup(BPid);
+                //////////////////////////////////
 
             })
         })
@@ -46,11 +49,12 @@ function retrieveBPinfo(BPid) {
 
 span.onclick = function() {
     modal.style.display = "none";
-    //comment stuffffff
+    //dit is mijn deel van het afsluiten
     remove_comment_elements();
     remove_top_searchbar();
     uberlijst = [];
     amountOfComments = 0;
+    ///////////////////////////////////
 }
 
 

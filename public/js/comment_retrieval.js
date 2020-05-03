@@ -21,29 +21,24 @@ function getcomments(BPid) {
                 comment_level = doc.data().level;
                 comment_parent = doc.data().parent;
                 comment_id = doc.id; 
-                  // draw the comment   
                  addtolist([comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email),"main",comment_level,comment_parent]);
-                // draw_comment(comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email),"main",comment_level);
-                //adjust the counter
-             //  higherCounter();
              })
-            // drawtree();
             splitlist();
      })
-   }
-
- function addtolist(sublist){
+}
+// helper function to produce a list from the serepate data entries.
+function addtolist(sublist){
      var tussenlijst = [];
      tussenlijst.push(sublist);
      uberlijst.push(tussenlijst);
- }
-
- function splitlist(){
-    var head   = [];
-    var first  = [];
-    var second = [];
-    var third  = [];
-    var fourth = [];
+}
+// splits the list gotten from the database into levels so that not the complete list schould be gone over on each ordering.
+function splitlist(){
+    head   = [];
+    first  = [];
+    second = [];
+    third  = [];
+    fourth = [];
     for (doc of uberlijst){
         document1 = doc[0];
         if (document1[8] == 0){head.push(doc[0]);}
@@ -52,30 +47,66 @@ function getcomments(BPid) {
         if (document1[8] == 3){third.push(doc[0]);}
         if (document1[8] == 4){fourth.push(doc[0]);}
     }
+    console.log(head);
     
+    draw_all();
+}
+// this function calls a function to draw all comments and offers a text if there is no comment to be shown.
+function draw_all(){
+    if (lengte(head) < 1){
+    //create_encouragement();
+    }
+    else{
+        recursive();
+    }
+}
+
+function checkChildren(messageID,level){
+   var hasChildren = getLevelList(level+1).map(x => x[9]).includes(messageID);
+   return hasChildren;  
+}
+
+function getLevelList(level){
+    switch(level){
+        case 0:
+            return head;
+        case 1:
+            return first;
+        case 2:
+            return second;
+        case 3:
+            return third;
+        case 4:
+            return fourth;
+
+
+    }
+}
+
+// this function uses draw_comment_db to translate and draw all comments of all levels, every comment above level 0 is not shown but already retrieved.
+function recursive(){   
     for (doc1 of head){
-        draw_comment_db(doc1);
+        id1 = doc1[4];
+        draw_comment_db(doc1,checkChildren(id1,0),"flex");
         higherCounter();
-        id = doc1[4];
         for (doc2 of first){
-            if (doc2[9] == id){
-                draw_comment_db(doc2);
-                id = doc2[4];
+            if (doc2[9] == id1){
+                id2 = doc2[4];
+                draw_comment_db(doc2,checkChildren(id2,1),"none");
                 higherCounter();
                 for (doc3 of second){
-                    if (doc3[9] == id){
-                        draw_comment_db(doc3);
-                        id = doc3[4];
+                    if (doc3[9] == id2){
+                        id3 = doc3[4];
+                        draw_comment_db(doc3,checkChildren(id3,2),"none");
                         higherCounter();
                         for (doc4 of third){
-                            if(doc4[9] == id){
-                                draw_comment_db(doc4);
-                                id = doc4[4];
+                            if(doc4[9] == id3){
+                                id4 = doc4[4];
                                 higherCounter();
+                                draw_comment_db(doc4,checkChildren(id4,3),"none");
                                 for (doc5 of fourth){
-                                    if(doc5[9] == id){
-                                        draw_comment_db(doc5);
-                                        id = doc5[4];
+                                    if(doc5[9] == id4){
+                                        draw_comment_db(doc5,"none","none");
                                         higherCounter();
                                     }     
                                 }
@@ -86,55 +117,56 @@ function getcomments(BPid) {
             }
         }
     } 
- }
-
- function draw_comment_db(doc){
-    draw_comment(doc[0],doc[1],doc[2],doc[3],doc[4],doc[5],doc[6],doc[7],doc[8],doc[9]);
- }
- 
-
-
-
- function  higherCounter(){
-    amountOfComments += 1;  
+}
+// function to translate an entry gotten from the database to a way suitable for draw_comment
+function draw_comment_db(doc,haschildren,isdrawn){
+    draw_comment(doc[0],doc[1],doc[2],doc[3],doc[4],doc[5],doc[6],doc[7],doc[8],doc[9],haschildren,isdrawn);
+}
+// highers the total comment counter
+function  higherCounter(){
+    amountOfComments += 1;
     document.getElementById("comment_counter").innerText = amountOfComments + " comments";
-   }
- function  lowerCounter(){
+}
+// lowers the total counter
+function  lowerCounter(){
     amountOfComments -= 1;  
     document.getElementById("comment_counter").innerText = amountOfComments + " comments";
-   }
-
-   function removeComment(id,BPid,comment_element){
+}
+// remove one comment from the database and remove it from the screeen, last lower the counter.
+function removeComment(id,BPid,comment_element){
         startstring = "/domain/domainstate/bestpractices/"
         endstring   = "/comments"
-        doelstring = startstring.concat(BPid,endstring);
+        doelstring  = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
         remove_element(comment_element);
         lowerCounter();
-   }
-
-
-    function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
+}
+// push comment to the database and draw it on the screen using its ID once it has been pushed.
+function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
         startstring = "/domain/domainstate/bestpractices/";
         endstring   = "/comments";       
         doelstring = startstring.concat(BPid,endstring);
         db.collection(doelstring).add({ //write comment to db
-                date: comment_date,
+                date:   comment_date,
                 author: comment_author,
-                img: comment_img,
-                text: comment_text, 
-                email: comment_email,
-                level: comment_level,
+                img:    comment_img,
+                text:   comment_text, 
+                email:  comment_email,
+                level:  comment_level,
                 parent: comment_parent
             }).then(docRef => {
-                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid,"true",comment_thread,comment_level); //once comment has been written to db draw it locally     
+                //append.....
+                //add to local representation of database
+                add_comment_db_repr(comment_author,comment_date,comment_text,comment_img,docRef.id,BPid, "true",comment_thread,comment_level,comment_parent);
+
+                //drawlocally
+                draw_comment(comment_author,"just now",comment_text,comment_img,docRef.id,BPid,"true",comment_thread,comment_level,comment_parent,checkChildren(docRef.id,comment_level) ,"flex"); //once comment has been written to db draw it locally     
                 higherCounter();             
             })
-        }
-
-        
-  function getTimeDifference(now,then){
-      date_now = Date.parse(now);
+}  
+// get time difference for the "posted .... ago" statement.    
+function getTimeDifference(now,then){
+      date_now  = Date.parse(now);
       date_then = Date.parse(then);
       difference_seconds = Math.floor((date_now-date_then)/1000); 
       difference_minutes = Math.floor(difference_seconds/60);
@@ -180,14 +212,36 @@ function getcomments(BPid) {
         else{grootte = " years";}
         string = difference_years + grootte + stam;
         return (string);}
-    }
-  
+}
+
+// function to check if the current logged in user is the same as the one who made the comment.
 function issame (email){
     var currentuser = getUserEmail();
-    if (currentuser == email){
-        return "true";
+    if (currentuser == email){return "true";}
+    else{return "false";}
+}
+
+function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent){
+    switch (comment_level){
+        case 0:
+            head.push([comment_author,"just now",comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent]);
+            break;
+        case 1:
+            first.push([comment_author,"just now",comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent]);
+            document.getElementById("answers" + comment_parent).style.display = "block";
+            break;
+        case 2:
+            second.push([comment_author,"just now",comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent]);
+            document.getElementById("answers" + comment_parent).style.display = "block";
+            break;
+        case 3:
+            third.push([comment_author,"just now",comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent]);
+            document.getElementById("answers" + comment_parent).style.display = "block";
+            break;
+        case 4:
+            fourth.push([comment_author,"just now",comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent]);
+            document.getElementById("answers" + comment_parent).style.display = "block";
+            break;
     }
-    else{
-        return "false";
-    }
+
 }

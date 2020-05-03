@@ -1,11 +1,20 @@
 var BPid = null;
 
+
 function startup(BPID){
    create_meta_info();
    comment_input_location = document.getElementById("searchbar");
    create_comment_input(comment_input_location,"false");
    BPid = BPID;
    getcomments(BPid);
+}
+
+function create_encouragement(){
+    var encouragement = document.createElement("p");
+    encouragement.innerText = "There are currently no comments, become the first to comment!";
+    var root = document.getElementById("commentsection");
+    root.appendChild(encouragement);//plak totale comment in de commentsectie
+    encouragementOBJ = encouragement;
 }
 
 function create_meta_info(){
@@ -38,7 +47,7 @@ function create_comment_input(elem, isSubComment,commentid){
     if (isSubComment == "true" && isdrawn == "false" || isSubComment == "false"){ 
 
     var newdiv = document.createElement("DIV"); 
-    newdiv.classList.add("newcomment");
+    newdiv.classList.add("newcomment",commentid);
 
     var comment_input = document.createElement("SPAN");
     comment_input.classList.add("textarea");
@@ -128,17 +137,20 @@ function checklength(newsubmitbutton,text){
     newsubmitbutton.style.background = "buttonface";
   }
 }
+                
+function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn){
 
-function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level){
-    
    var comment_wrapper = document.createElement("DIV");
-   //determine the width of the comment based on its level
+   //determine the width of the comment based on its level (indent)
    movement = level * 10 + "px";
    comment_wrapper.style.marginLeft = movement;
    comment_wrapper.style.width = 'calc(100% - '+ movement +')';
+   comment_wrapper.style.display = isdrawn;
    
+   comment_wrapper.id = commentid;
    comment_wrapper.classList.add("comment_wrapper");
    comment_wrapper.setAttribute("SubInputisDrawn","false");
+   comment_wrapper.setAttribute("SubCommentDrawn","false");
    comment_wrapper.setAttribute("level",level);
 
    var picture_wrapper = document.createElement("DIV");
@@ -180,14 +192,14 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level){
    meta_info_wrapper.appendChild(remove_comment);
    remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper)}); 
    }
-   
+
    meta_info_wrapper.appendChild(date_posted_text);
-   
    content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
    content_wrapper.appendChild(comment_text);
    content_wrapper.appendChild(see_more);
-   
-   if (level < 5){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
+ 
+     
+   if (level < 4){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
     var react_button = document.createElement("p");
     react_button.classList.add("react_button");
     react_button.innerText = "React";
@@ -195,6 +207,20 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level){
     react_button.addEventListener("mouseover",function(){showcursor(react_button)});
     react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",commentid)});
     }
+      
+    
+    var see_answers = document.createElement("p");
+    see_answers.innerText = "see answers";
+    see_answers.classList.add("see_answers");
+    see_answers.id = "answers" + commentid;
+    see_answers.addEventListener("click",function(){getallChildren(level,commentid)});
+    see_more.addEventListener("mouseover",function(){showcursor(see_answers)});
+    content_wrapper.appendChild(see_answers);
+
+   if (haschildren == true){
+    see_answers.style.display = "block";
+    }
+    else{see_answers.style.display = "none";}
  
    comment_wrapper.appendChild(picture_wrapper); // plak de picture wrapper in de grote wrapper
    comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
@@ -210,7 +236,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level){
    showtext(see_more,comment_text);
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    see_more.addEventListener("mouseover",function(){showcursor(see_more)});
- 
 }
 
 function subCancel(text,elem){
@@ -219,6 +244,24 @@ function subCancel(text,elem){
         remove_element(text.parentElement);
         elem.setAttribute("SubInputisDrawn","false");
     }
+}
+
+function getallChildren(level,commentid,reason){
+   var isdrawn =  document.getElementById(commentid).getAttribute("subCommentDrawn");
+   for (item of getLevelList(level+1)){
+    if(item[9] == commentid){
+        if (isdrawn == "false" && reason != "removechildren"){
+        document.getElementById(item[4]).style.display = "flex";}
+        else {
+            document.getElementById(item[4]).style.display = "none";
+            getallChildren(level+1,item[4],"removechildren");
+        }
+    }
+}
+
+if (isdrawn == "false" && reason != "removechildren"){document.getElementById(commentid).setAttribute("SubCommentDrawn","true");}
+else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");
+}
 }
 
 function subSubmit(text,elem,commentid){
@@ -269,7 +312,7 @@ function getUserName(){
 function showcursor(showmore){
     showmore.style.cursor = "pointer";
 }
-
+// remove 1 comment
 function remove_element(element){
     myNode = element;
     while(myNode.hasChildNodes()){
@@ -277,14 +320,14 @@ function remove_element(element){
     }
     myNode.remove();
 }
-
+// remove whole comment section
 function remove_comment_elements(){
     myNode = document.getElementById("commentsection");
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
     }
 }
-
+// remove top commentbar
 function remove_top_searchbar(){
     myNode = document.getElementById("searchbar");
     while(myNode.hasChildNodes()){
