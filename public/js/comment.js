@@ -1,6 +1,5 @@
 var BPid = null;
 
-
 function startup(BPID){
    create_meta_info();
    comment_input_location = document.getElementById("searchbar");
@@ -8,7 +7,6 @@ function startup(BPID){
    BPid = BPID;
    getcomments(BPid);
 }
-
 function create_encouragement(){
     var encouragement = document.createElement("p");
     encouragement.innerText = "There are currently no comments, become the first to comment!";
@@ -16,7 +14,6 @@ function create_encouragement(){
     root.appendChild(encouragement);//plak totale comment in de commentsectie
     encouragementOBJ = encouragement;
 }
-
 function create_meta_info(){
     var root = document.getElementById("searchbar");
     var comment_counter   = document.createElement("p");
@@ -25,7 +22,6 @@ function create_meta_info(){
     comment_counter.innerText =  amountOfComments + " comments";    
     root.appendChild(comment_counter);
 }
-
 function showtext(see_more,text){
     var tbutton  = see_more;
     var tekstvak = text;
@@ -41,7 +37,6 @@ function showtext(see_more,text){
         text.hasbeendrawn = "false";
     }
 }
-
 function create_comment_input(elem, isSubComment,commentid){
     if (isSubComment == "true"){ isdrawn = elem.getAttribute("SubInputisDrawn");}  
     if (isSubComment == "true" && isdrawn == "false" || isSubComment == "false"){ 
@@ -71,7 +66,6 @@ function create_comment_input(elem, isSubComment,commentid){
     }
    }
 }
-
 function addbuttons(div,text,elem,commentid){
     draw = text.getAttribute("hasbeendrawn"); 
     
@@ -107,19 +101,16 @@ function addbuttons(div,text,elem,commentid){
     text.addEventListener("input", function(){checklength(newsubmitbutton,text)});}
     }    
 }
-
 function getcurrentDateTime(){
     var date = new Date();
     return (date.toUTCString());
 }
-
 function masterCancel(buttonbar,text){
     text.innerText = "";
     remove_element(buttonbar);
     text.setAttribute("hasbeendrawn","false");
     
 }
-
 function masterSubmit(buttonbar,text){
     var message = text.innerText;
     if(lengte(message) >= 1){
@@ -127,7 +118,6 @@ function masterSubmit(buttonbar,text){
     pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),"main",0,"none"); //write comment to db and afterwards draw it locally
     }
 }
-
 function checklength(newsubmitbutton,text){
   var label = text.innerText;  
   if (lengte(label) >= 1){
@@ -136,8 +126,7 @@ function checklength(newsubmitbutton,text){
   else{
     newsubmitbutton.style.background = "buttonface";
   }
-}
-                
+}               
 function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn){
 
    var comment_wrapper = document.createElement("DIV");
@@ -224,6 +213,8 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
  
    comment_wrapper.appendChild(picture_wrapper); // plak de picture wrapper in de grote wrapper
    comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
+   //createEbayRating(comment_wrapper);//create eBay
+   createLikeDislikeRating(comment_wrapper);//createdislikelike
    
    if(thread == "main"){
    var root = document.getElementById("commentsection");
@@ -237,7 +228,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    see_more.addEventListener("mouseover",function(){showcursor(see_more)});
 }
-
 function subCancel(text,elem){
     text.innerText = "";
     if (text.getAttribute("isSubComment") == "true"){
@@ -245,7 +235,6 @@ function subCancel(text,elem){
         elem.setAttribute("SubInputisDrawn","false");
     }
 }
-
 function getallChildren(level,commentid,reason){
    var isdrawn =  document.getElementById(commentid).getAttribute("subCommentDrawn");
    for (item of getLevelList(level+1)){
@@ -260,10 +249,8 @@ function getallChildren(level,commentid,reason){
 }
 
 if (isdrawn == "false" && reason != "removechildren"){document.getElementById(commentid).setAttribute("SubCommentDrawn","true");}
-else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");
+else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");}
 }
-}
-
 function subSubmit(text,elem,commentid){
     var message = text.innerText;
     if(lengte(message) >= 1){
@@ -271,17 +258,14 @@ function subSubmit(text,elem,commentid){
     pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),elem,updateLevel(elem),commentid); //write comment to db and afterwards draw it locally
     }
 }
-
 function updateLevel(elem){
     level = parseInt(elem.getAttribute("level"));
     level += 1;
     return level;
 }
-
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
-
 function getUserEmail(){
     var user = firebase.auth().currentUser;
     var photoUrl;
@@ -290,7 +274,6 @@ function getUserEmail(){
             return(email);
     }   
 }
-
 function getUserImage(){
 var user = firebase.auth().currentUser;
 var photoUrl;
@@ -299,7 +282,6 @@ var photoUrl;
         return(photoUrl);
         }   
 }
-
 function getUserName(){
     var user = firebase.auth().currentUser;
     var name;
@@ -308,7 +290,6 @@ function getUserName(){
             return(name);
         }   
 }
-
 function showcursor(showmore){
     showmore.style.cursor = "pointer";
 }

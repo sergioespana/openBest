@@ -3,28 +3,28 @@
     font-size: 2.0rem;
     padding: 0 1rem; 
   }
-  .eBay-options::before{
+.eBay-options::before{
     cursor: pointer;
-  }
-#option-negative:hover::before{
+}
+.neg:hover::before{
 color: red;
 }
-#option-negative.checked{
+.neg.checked{
   color : red;
 }
 
-#option-neutral:hover::before{
+.neut:hover::before{
   color: orange;
 }
-#option-neutral.checked{
+.neut.checked{
   color: orange;
 }
 
 
-#option-positive:hover::before{
+.pos:hover::before{
   color:green;
 }
-#option-positive.checked{
+.pos.checked{
   color:green;
 }
 

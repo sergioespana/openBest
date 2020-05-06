@@ -82,7 +82,6 @@ function getLevelList(level){
 
     }
 }
-
 // this function uses draw_comment_db to translate and draw all comments of all levels, every comment above level 0 is not shown but already retrieved.
 function recursive(){   
     for (doc1 of head){
@@ -213,14 +212,12 @@ function getTimeDifference(now,then){
         string = difference_years + grootte + stam;
         return (string);}
 }
-
 // function to check if the current logged in user is the same as the one who made the comment.
 function issame (email){
     var currentuser = getUserEmail();
     if (currentuser == email){return "true";}
     else{return "false";}
 }
-
 function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent){
     switch (comment_level){
         case 0:
