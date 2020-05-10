@@ -78,14 +78,21 @@ h1 {
   background-size: cover;
 }
 
-#administrator-card{
+#administrator-card, #user-card{
   display: none;
 }
 
-#user-card{
+#menu-bp-item, #menu-toc-item{
   display: none;
 }
 
+.general-info {
+  margin-top: 10px!important;
+}
+
+#bp-categories > a, #bp-authors > a, #bp-data > a{
+  margin-right: 5px;
+}
 
 /* MODAL FOR ENTERING BEST PRACTICES */
 /* ################################# */
@@ -95,7 +102,7 @@ h1 {
 }
 
 /* The Modal (background) */
-.bp-modal, .bp-view-modal {
+.bp-modal, .bp-view-modal, .model-modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -109,7 +116,7 @@ h1 {
 }
 
 /* Modal Content */
-.bp-modal-content {
+.bp-modal-content, .model-modal-content {
   position: relative;
   background-color: white;
   margin: auto;
@@ -154,7 +161,7 @@ h1 {
   cursor: pointer;
 }
 
-.bp-modal-body {padding: 2vh 16px;}
+.bp-modal-body, .model-model-body {padding: 2vh 16px;}
 
 .col-centered{
   float: none;
@@ -162,7 +169,7 @@ h1 {
 }
 
 .card-margin {
-  margin-top: 10vh!important;
+  margin-top: 30px!important;
 }
 
 .form-divider {
@@ -175,4 +182,12 @@ h1 {
 
 #dataTable , .bp-row {
   cursor: pointer;
+}
+
+#dsl-create-form > input {
+  margin-bottom: 10px;
+}
+
+::placeholder {
+  font-style: italic;
 }

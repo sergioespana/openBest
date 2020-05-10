@@ -79,14 +79,6 @@ var jsontest = {
                 }
             },
             //collection
-            "solutions": {
-                "solutiondocument": {
-                    "displayfeature": false,
-                    "name": "string",
-                    "description": "string"
-                }
-            },
-            //collection
             "problems": {
                 "problemdocument": {
                     "01grouptitle": "Problem",
@@ -94,6 +86,25 @@ var jsontest = {
                     "1displayfeature": true,
                     "2name": "string",
                     "3description": "text"
+                }
+            },
+            //collection
+            "solutions": {
+                "solutiondocument": {
+                    "01grouptitle": "Solution",
+                    "02groupdesc": "What is the prescribed solution to the problem?",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3description": "text"
+                }
+            },
+            "chapters": {
+                "chapterdocument": {
+                    "01grouptitle": "Chapters",
+                    "02groupdesc": "Specify various chapters here.",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3content": "text"
                 }
             }
         }
@@ -115,7 +126,7 @@ if(document.getElementById("create-instance-btn")){
 };
 
 
-
+// Instantiates the collectionPaths and documentPaths arrays
 function extractJSON(obj, int, prev) {
     // looping over the elements in the json file
     for (const i in obj) {
