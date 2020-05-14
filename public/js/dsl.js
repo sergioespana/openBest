@@ -429,7 +429,7 @@ document.getElementById("dsl-create").addEventListener("click", function(){
 
     console.log(JSON.parse(JSONmodel))
 
-    //console.log(JSONmodel);
+    console.log(JSONmodel);
 
 })
 

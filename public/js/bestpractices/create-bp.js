@@ -8,6 +8,9 @@ var db = firebase.firestore();
 // The form to enter new BP information
 const BPform = document.querySelector('#bp-entry-form');
 
+// How many docrefs are stored
+var docRefCounter = 0;
+
 
 // ############################################
 
@@ -138,6 +141,7 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
         let textarea = document.createElement('textarea');
         let br = document.createElement('br');
         let addOther = document.createElement('div');
+        let addEx = document.createElement('div');
 
         // Setting the title and description of the group of form elements
         if(key == '01grouptitle'){
@@ -170,6 +174,15 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     <span class=\"text\">"+`${upperKey}`+"</span\>\
                 </a>"
             addOther.innerHTML = addOtherHTML;
+            // HTML code block for adding another docref drowpdown to the form group
+            let addExistingHTML = 
+                "<a style=\"margin-top: 10px\" id=\"addExisting-"+`${key}`+"\" class=\"btn btn-light btn-icon-split\"\>\
+                    <span class=\"icon text-gray-600\"\>\
+                    <i class=\"fas fa-plus\"></i\>\
+                    </span\>\
+                    <span class=\"text\">Existing</span\>\
+                </a>"
+            addEx.innerHTML = addExistingHTML;
 
             // Styling of the input fields
             input.setAttribute('class', 'form-control bg-light border-0 small');
@@ -203,6 +216,8 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     BPform.appendChild(br);
                     BPform.appendChild(input);
                     BPform.appendChild(br);
+                    // Setting this attribute helps in determining the type of input to be added
+                    addOther.setAttribute('add-type', 'regular');
                     BPform.appendChild(addOther);
                     BPform.appendChild(br);
                 }
@@ -231,11 +246,19 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     BPform.appendChild(br);
                     BPform.appendChild(input);
                     BPform.appendChild(br);
+                    if(Array.isArray(value)){
+                        // Setting this attribute helps in determining the type of input to be added
+                        addOther.setAttribute('add-type', 'docref');
+                        BPform.appendChild(addOther);
+                        BPform.appendChild(br);
+                    }
 
                     // Setting the path to the docref subcollection as attribute
                     let keyText = key.replace(/[0-9]/g, '');
                     let docrefPath = findPath(collectionPaths, keyText);
-                    input.setAttribute('docrefpath', docrefPath+'/'+doc.id)
+                    input.setAttribute('docrefpath', docrefPath+'/'+doc.id);
+                    input.setAttribute('docrefcoll', docrefPath);
+                    input.setAttribute('docref-docname', doc.id);
                 }
                 // Current entries already exist > we create a dropdown
                 else{
@@ -247,6 +270,10 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     BPform.appendChild(referenceSelect);
                     BPform.appendChild(br);
                     if(Array.isArray(value)){
+                        addEx.setAttribute('add-type', 'docref');
+                        BPform.appendChild(addEx);
+
+                        addOther.setAttribute('add-type', 'docref');
                         BPform.appendChild(addOther);
                         BPform.appendChild(br);
                     }
@@ -269,6 +296,11 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                 }
             }
 
+
+            // ADDING ANOTHER ELEMENT TO THE FORM
+            // >> Two element types that can be added: dropdowns or regular fields
+
+            // ADDING A REGULAR FIELD
             // addItem is the add button for the current key value
             let addItem = document.getElementById("addItem-"+`${key}`);
             // Checking if the button exists yet
@@ -278,21 +310,102 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     // Element is the parent element of the clicked button
                     let element = this.parentElement;
 
-                    let newInput = input;
-                    
-                    // If the other form element is select, than it's a document reference
-                    if(element.previousSibling.nodeName == 'SELECT'){
-                        // Setting the path to the docref subcollection as attribute
-                        let keyText = key.replace(/[0-9]/g, '');
-                        let docrefPath = findPath(collectionPaths, keyText);
-                        newInput.setAttribute('docrefpath', docrefPath+'/'+doc.id);
-                    }
-                    
-                    newInput.setAttribute('style', 'margin-top: 10px');
-                    // Inserting the field before the button
+                    let docrefPath = findPath(collectionPaths, keyText);
 
-                    // TODO: WE DON'T WANT TO CLONE ALL ATTRIBUTES > DOCREFPATH NEEDS TO BE UPDATED FOR EACH NEW FIELD
-                    $(newInput).clone().insertBefore(element);
+                    // HTML code for adding an input field
+                    let inputAddHTML;
+
+                    // Setting the correct attributes in the case of a docref
+                    if(element.getAttribute('add-type') == 'docref'){
+                        inputAddHTML = "\
+                        <div style=\"margin-top: 10px\" class=\"row\"\>\
+                            <div class=\"col-md-11\"\>\
+                                <input class=\"form-control bg-light border-0 small\" colpath=\""+coll+"\" docname=\""+doc.id+"\" key=\""+key+"\" docref-docname=\""+doc.id+'-'+docRefCounter+"\" docrefpath=\""+docrefPath+'/'+doc.id+'-'+docRefCounter+"\" docrefcoll=\""+docrefPath+"\" type=\"array\"></input\>\
+                            </div\>\
+                            <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+                                <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                                    <span class=\"icon text-gray-600\"\>\
+                                        <i class=\"fas fa-times\"></i\>\
+                                    </span\>\
+                                </a\>\
+                            </div\>\
+                        </div>"
+                    }
+                    else{
+                        inputAddHTML = "\
+                        <div style=\"margin-top: 10px\" class=\"row\"\>\
+                            <div class=\"col-md-11\"\>\
+                                <input class=\"form-control bg-light border-0 small\" colpath=\""+coll+"\" docname=\""+doc.id+"\" key=\""+key+"\" type=\"array\"></input\>\
+                            </div\>\
+                            <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+                                <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                                    <span class=\"icon text-gray-600\"\>\
+                                        <i class=\"fas fa-times\"></i\>\
+                                    </span\>\
+                                </a\>\
+                            </div\>\
+                        </div>"
+                    }
+
+                    // The previous input field
+                    let previousInput = element.previousElementSibling;
+                    // Adding the new input field
+                    $(inputAddHTML).insertAfter(previousInput);
+
+                    docRefCounter++;
+
+                });
+            }
+
+            // ADDING ANOTHER DROPDOWN FOR DOCREFS
+
+            let addExisting = document.getElementById("addExisting-"+`${key}`);
+            // Checking if the button exists yet
+            if(addExisting){
+                addExisting.addEventListener('click', function() {
+                    
+                    // Element is the parent element of the clicked button
+                    let element = this.parentElement;
+
+                    let referenceSelect = document.createElement('select');
+                    referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
+                    // Adding the values of the docrefArray to the dropdown
+                    docrefArray.forEach(docref => {
+                        let option = document.createElement('option');
+                        option.setAttribute('value', docref[0]);
+                        option.setAttribute('docname', docref[1]);
+                        option.setAttribute('colpath', docref[2]);
+                        option.setAttribute('key', key);
+                        option.textContent = docref[0];
+                        referenceSelect.add(option);
+                    });
+                    referenceSelect.setAttribute('colpath', coll);
+                    referenceSelect.setAttribute('docname', doc.id);
+                    referenceSelect.setAttribute('key', key);
+                    referenceSelect.setAttribute('type', 'select');
+
+                    console.log(referenceSelect.outerHTML)
+
+                    let referenceRow = "\
+                    <div style=\"margin-top: 10px\" class=\"row\"\>\
+                        <div class=\"col-md-11\"\>"
+                            +referenceSelect.outerHTML+
+                        "</div\>\
+                        <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+                            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                                <span class=\"icon text-gray-600\"\>\
+                                    <i class=\"fas fa-times\"></i\>\
+                                </span\>\
+                            </a\>\
+                        </div\>\
+                    </div>"
+
+                    // The previous input field
+                    let previousInput = element.previousElementSibling;
+                    // Adding the new input field
+                    $(referenceRow).insertAfter(previousInput);
+
+                    //docRefCounter++;
 
                 });
             }
@@ -300,6 +413,15 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
         }
     }
 }
+
+
+// Removing an input row for an attribute
+$("#bp-entry-form").on('click', '.attrDelete', function(event){
+    // The row in which the clicked delete button is located
+    let attrRow = $(this).parent().parent()[0];
+    attrRow.remove(attrRow);
+});
+
 
 
 // Delay function specifies how long to wait on an async function
@@ -353,8 +475,12 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
     // Getting an array of collectionpaths specified for the form elements
     let colpathArray = []
     for (var col = 0; col < filledBPform.length; col++) {
-        if(!(colpathArray.includes(filledBPform.elements[col].getAttribute('colpath')))){
-            colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+        // If the element has a colpath attribute
+        if(filledBPform.elements[col].getAttribute('colpath')){
+            // And that attribute is not already added to the array
+            if(!(colpathArray.includes(filledBPform.elements[col].getAttribute('colpath')))){
+                colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+            }
         }
     }
 
@@ -372,6 +498,10 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
         let docRef = [];
         // keyRef stores the corresponding key
         let keyRef = [];
+        // docRefColl stores the collectionpaths in which the documents created for the references should be stored
+        let docRefColl = [];
+        // docRefDocName stores the unique names for the documents, including the docRefCounter
+        let docRefDocName = [];
 
        
         // STEP 1
@@ -389,17 +519,26 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                     JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
                 }
                 // Selected fields in selectbox OR regular fields for document references
-                else if(entryType == 'select' || filledBPform.elements[i].textContent == 'document reference'){
+                //else if(entryType == 'select' || filledBPform.elements[i].textContent == 'document reference'){
+                else if(entryType == 'select' || filledBPform.elements[i].getAttribute('docref-docname')){
                     if(entryType == 'select'){
                         let selectedOption = filledBPform.elements[i].options[filledBPform.elements[i].selectedIndex];
                         docRef.push(selectedOption.getAttribute('colpath') + '/' + selectedOption.getAttribute('docname'));
+                        // The value 'none' is pushed to these arrays to keep it consistent with the amount of values in keyRef and docRef
+                        // Since we iterate over these arrays in step 5
+                        docRefColl.push('none');
+                        docRefDocName.push('none');
                         keyRef.push(selectedOption.getAttribute('key'));
                     }
                     else{
                         // For a regular field, we want to store the docrefpath (which is passed as an attribute), rather than the input value
                         // This docref points to a document which is created with the value the user has put in
                         docRef.push(filledBPform.elements[i].getAttribute('docrefpath'));
+                        docRefColl.push(filledBPform.elements[i].getAttribute('docrefcoll'));
+                        docRefDocName.push(filledBPform.elements[i].getAttribute('docref-docname'));
                         keyRef.push(filledBPform.elements[i].getAttribute('key'));
+
+                        console.log(filledBPform.elements[i].getAttribute('key'));
                     }
                 }
                 // Array fields
@@ -475,7 +614,6 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
 
         db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
-
         // STEP 5
         // So far only array information and regular field information is written. Docref writes requires extra info.
 
@@ -502,7 +640,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                 }
             }
 
-
+            // Writing the documents that are referenced to in their respective subcollections
             for(var key = 0; key < keyRef.length; key++){
 
                 // Getting the form that is responsible for this input
@@ -527,12 +665,17 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
 
                     let inputValue = inputFeature[key].value;
 
-                    let drp = docRef[key].replace('/'+entryDocName, '');
+                    // drp is the collectionpath in which docrefs are stored
+                    let drp = docRefColl[key];
+                    // drdn is the name of the document, including the docrefcounter
+                    let drdn = docRefDocName[key];
+
                     // Write a value to a new doc in the subcollection that is referenced
-                    db.collection(drp).doc(entryDocName).set({"name": inputValue});
+                    db.collection(drp).doc(drdn).set({"name": inputValue});
                 }
             }
 
+            // Writing an array of docrefs to the best practice document
             for(let ui = 0; ui < uniqueIndex.length; ui++){
 
                 // Construct an array to write to the database for every docref field
@@ -568,7 +711,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
 
                 }
 
-                // writing the writeArr 
+                // writing the writeArr to the best practice doc
                 db.collection(entryColPath).doc(entryDocName).set({[writeKey]: writeArr}, { merge: true });
 
             }
@@ -577,17 +720,38 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
         }
     }
 
+    // Closing the modal
     modal.style.display = "none";
+    // Resetting the counter
+    docRefCounter = 0;
 });
 
+
+// Closing the modal
 span.onclick = function() {
     modal.style.display = "none";
 
     let x = span.getAttribute('id');
 
     // Removing the document if the entry form is closed without sending
-    for(const coll of collectionPaths){
-        db.collection(coll).doc(x).delete().then(function() {
-        });
+
+    // Don't just delete all documents with the unique doc id > this does not delete nested subcollections
+    // For each documentpath (according to the JSON model), we find the name of the doc that's stored in that path
+    let docNames = [];
+    
+    // docNames is an array of arrays > the last entries in each array are the doc names
+    for(let docs of documentPaths){
+        docNames.push(docs.split('/'));
     }
+
+    for(let coll = 0; coll < collectionPaths.length; coll++){
+        // Don't delete the first document > that's the domainstate
+        if(coll != 0){
+            db.collection(collectionPaths[coll]).doc((docNames[coll])[docNames[coll].length - 1]).delete().then(function() {
+            });
+        }
+    }
+
+    // Resetting the counter
+    docRefCounter = 0;
 }
