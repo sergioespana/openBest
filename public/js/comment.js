@@ -129,6 +129,7 @@ function checklength(newsubmitbutton,text){
 }               
 function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn){
 
+   // comment wrapper e.g. the wrapper for all the comments contents
    var comment_wrapper = document.createElement("DIV");
    //determine the width of the comment based on its level (indent)
    movement = level * 10 + "px";
@@ -141,37 +142,43 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    comment_wrapper.setAttribute("SubInputisDrawn","false");
    comment_wrapper.setAttribute("SubCommentDrawn","false");
    comment_wrapper.setAttribute("level",level);
+   /////////////////////////////////////////////////////////////////
 
+   //picture wrapper
    var picture_wrapper = document.createElement("DIV");
    picture_wrapper.classList.add("picture_wrapper");
 
+   //content wrapper
    var content_wrapper = document.createElement("DIV");
    content_wrapper.classList.add("content");
 
+   //meta info wrapper, name, date, etc.
    var meta_info_wrapper = document.createElement("DIV");
    meta_info_wrapper.classList.add("meta_info");
 
+   //picture
    var picture = document.createElement("img");
    picture.src = img;
    picture.classList.add("picture");
    picture_wrapper.appendChild(picture);//plak de afbeelding in de picture wrapping
 
+   //author name
    var name_text = document.createElement("p");
    name_text.classList.add("name");
    name_text.innerText = name;
 
+   //comment date, e.g. 5 minutes ago...
    var date_posted_text = document.createElement("p");
    date_posted_text.classList.add("date_poster");
    date_posted_text.innerText = date;
       
+   //the comment text itself
    var comment_text = document.createElement("p");
    comment_text.innerText = text;
+   //comment_text.style.height = 'auto';
    comment_text.classList.add("comment_text","line-clamp","line-clamp-2");
    comment_text.setAttribute("hasbeendrawn", "false");
-
-   var see_more = document.createElement("p");
-   see_more.classList.add("see_more");
-   
+  
    meta_info_wrapper.appendChild(name_text);
 
    //if current user is the same as the comment writer he can remove the comment
@@ -179,16 +186,49 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    var remove_comment = document.createElement("i");
    remove_comment.classList.add("fa","fa-trash","remove_button");
    meta_info_wrapper.appendChild(remove_comment);
-   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper)}); 
+   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper);removeallChildren(level,commentid,BP_id);}); 
    }
 
    meta_info_wrapper.appendChild(date_posted_text);
-   content_wrapper.appendChild(meta_info_wrapper); // plak meta content in de tekstuele content
+   //paste meta content in the content wrapper
+   content_wrapper.appendChild(meta_info_wrapper); 
    content_wrapper.appendChild(comment_text);
+   //paste picture wrapper in the comment wrapper
+   comment_wrapper.appendChild(picture_wrapper); 
+   //paste content into the comment wrapper
+   comment_wrapper.appendChild(content_wrapper); 
+   
+   //statement to determine where to draw a comment
+   if(thread == "main"){
+   var root = document.getElementById("commentsection");
+   root.appendChild(comment_wrapper);
+   }
+   else{
+   var root = thread;
+   insertAfter(comment_wrapper,root);
+   }
+
+   //creation of the "see more" button to view reactions on comments
+   var see_more = document.createElement("p");
+   see_more.classList.add("see_more");
    content_wrapper.appendChild(see_more);
- 
-     
-   if (level < 4){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
+   see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
+   see_more.addEventListener("mouseover",function(){showcursor(see_more)});
+   showtext(see_more,comment_text);
+   displayMore(comment_text,see_more)
+
+   //clamping and see more button and functionality
+    window.onresize = function(event) {
+        displayMore(comment_text,see_more)
+    };
+   
+  //paste various rating systems
+   //createEbayRating(comment_wrapper);//create eBay
+   createLikeDislikeRating(content_wrapper);//create dislikelike
+ // createStarRating(comment_wrapper);//create starRating
+
+   //react button and functionality
+   if (level < 3){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
     var react_button = document.createElement("p");
     react_button.classList.add("react_button");
     react_button.innerText = "React";
@@ -196,37 +236,31 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
     react_button.addEventListener("mouseover",function(){showcursor(react_button)});
     react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",commentid)});
     }
-      
-    
-    var see_answers = document.createElement("p");
-    see_answers.innerText = "see answers";
-    see_answers.classList.add("see_answers");
-    see_answers.id = "answers" + commentid;
-    see_answers.addEventListener("click",function(){getallChildren(level,commentid)});
-    see_more.addEventListener("mouseover",function(){showcursor(see_answers)});
-    content_wrapper.appendChild(see_answers);
+   //see answers button and functionality
+   var see_answers = document.createElement("p");
+   see_answers.innerText = "see answers";
+   see_answers.classList.add("see_answers");
+   see_answers.id = "answers" + commentid;
+   see_answers.addEventListener("click",function(){getallChildren(level,commentid)});
+   content_wrapper.appendChild(see_answers);
 
-   if (haschildren == true){
-    see_answers.style.display = "block";
-    }
-    else{see_answers.style.display = "none";}
- 
-   comment_wrapper.appendChild(picture_wrapper); // plak de picture wrapper in de grote wrapper
-   comment_wrapper.appendChild(content_wrapper); // plak de tekstuele content in de grote wrapper
-   //createEbayRating(comment_wrapper);//create eBay
-   createLikeDislikeRating(comment_wrapper);//createdislikelike
-   
-   if(thread == "main"){
-   var root = document.getElementById("commentsection");
-   root.appendChild(comment_wrapper);//plak totale comment in de commentsectie
+   //only display the "see more" button if a comment has children
+  if (haschildren == true){
+   see_answers.style.display = "block";
    }
-   else{
-   var root = thread;
-   insertAfter(comment_wrapper,root);
-   }
-   showtext(see_more,comment_text);
-   see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
-   see_more.addEventListener("mouseover",function(){showcursor(see_more)});
+   else{see_answers.style.display = "none";}
+   see_answers.addEventListener("mouseover",function(){showcursor(see_answers)});
+}
+//function to check overflow of text to enable the see_more button if needed
+function showReadMoreButton(element){
+    if (element.offsetHeight < element.scrollHeight || element.offsetWidth < element.scrollWidth) {
+         // your element has an overflow
+         // show read more button
+         return "true";
+     } else {
+         // your element doesn't have overflow
+         return "false";
+     }
 }
 function subCancel(text,elem){
     text.innerText = "";
@@ -240,17 +274,33 @@ function getallChildren(level,commentid,reason){
    for (item of getLevelList(level+1)){
     if(item[9] == commentid){
         if (isdrawn == "false" && reason != "removechildren"){
+           // text.innerText = "hide answers";
         document.getElementById(item[4]).style.display = "flex";}
         else {
+           // text.innerText = "see answers";
             document.getElementById(item[4]).style.display = "none";
-            getallChildren(level+1,item[4],"removechildren");
+            getallChildren(level+1,item[4],"removechildren");        
         }
     }
 }
-
 if (isdrawn == "false" && reason != "removechildren"){document.getElementById(commentid).setAttribute("SubCommentDrawn","true");}
 else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");}
 }
+
+
+function removeallChildren(level,commentid,BP_id){
+    for (item of getLevelList(level+1)){
+     if(item[9] == commentid){
+        removeComment(commentid,BP_id)
+        removeallChildren(level+1,item[4],"removechildren");        
+         }
+     }
+ }
+
+
+
+
+
 function subSubmit(text,elem,commentid){
     var message = text.innerText;
     if(lengte(message) >= 1){
@@ -314,4 +364,10 @@ function remove_top_searchbar(){
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
     }
+}
+function displayMore(comment_text,see_more){
+    if (showReadMoreButton(comment_text) == "true" ){
+        see_more.style.display = "block";
+        }
+        else {see_more.style.display = "none";}
 }

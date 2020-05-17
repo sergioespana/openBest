@@ -133,12 +133,16 @@ function  lowerCounter(){
 }
 // remove one comment from the database and remove it from the screeen, last lower the counter.
 function removeComment(id,BPid,comment_element){
+   
         startstring = "/domain/domainstate/bestpractices/"
         endstring   = "/comments"
         doelstring  = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
+        if (comment_element){
         remove_element(comment_element);
+        }
         lowerCounter();
+    
 }
 // push comment to the database and draw it on the screen using its ID once it has been pushed.
 function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
@@ -218,6 +222,8 @@ function issame (email){
     if (currentuser == email){return "true";}
     else{return "false";}
 }
+
+//function to add comments to the local list of comments to display them
 function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent){
     switch (comment_level){
         case 0:
