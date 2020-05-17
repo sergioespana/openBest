@@ -16,6 +16,8 @@ var dslspan = document.getElementsByClassName("close")[1];
 // Counts the amount of concept instances
 var counter = 0;
 var subcounter = 100;
+// The JSON model
+var JSONmodel;
 
 var addConceptHTML;
 
@@ -24,7 +26,12 @@ function addConceptFunction(c, pc) {
     // HTML blob for adding a new concept
     addConceptHTML = "\
     <div counter=\""+c+"\" parent-counter=\""+pc+"\" class=\"conceptdiv\" style=\"border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px\">\
-        <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
+        <div class=\"row\">\
+            <div class=\"col-lg-11\">\
+                <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
+            </div>\
+            <div class=\"col-lg-1\"><span class=\"deleteConcept\"><i style=\"margin-top: 40px; float: right\" class=\"fas fa-times\"></i></span></div>\
+        </div>\
         <br>\
         <label>Group title</label>\
         <input class=\"new-group-title-"+c+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Example\"></input>\
@@ -164,7 +171,10 @@ $(".new-concept").on('click', '.attrDelete', function(event){
 
 
 // Creating the JSON model
-document.getElementById("dsl-create").addEventListener("click", function(){
+document.getElementById("dsl-create").addEventListener("click", async function(){
+
+    // Emptying the JSON model
+    JSONmodel = "";
 
     // Information filled in by user
     let domainName = document.getElementById('input-domain-name').value;
@@ -176,7 +186,7 @@ document.getElementById("dsl-create").addEventListener("click", function(){
     let solGroupDesc = document.getElementById('sol-group-description').value;
 
     // The initial JSON model (as string). After this, variable data can be appended.
-    let JSONmodel = "\
+    JSONmodel += "\
     \{\""+domainName.replace(' ', '')+"\": \{\
         \"domainstate\": \{\
             \"displayfeature\": false\,\
@@ -312,8 +322,48 @@ document.getElementById("dsl-create").addEventListener("click", function(){
             JSONmodel += ","
         }
 
-        let newGroupTitle = document.getElementsByClassName('new-group-title-'+counterArray[c])[0].value;
-        let newGroupDesc = document.getElementsByClassName('new-group-description-'+counterArray[c])[0].value;
+        // The last counter element in the array
+        let finalcounter = counterArray[counterArray.length - 1];
+
+        // Calling the function for every concept on level 1
+        // This function will handle the addition of sub-concepts for THAT concept
+        addConcepts(counterArray[c], counterArray.length, 0, finalcounter);
+
+        // If no more non-nested concepts need to be added, add closing brackets and log the model
+        if(c == counterArray.length - 1){
+            JSONmodel += "}}}";
+            console.log(JSONmodel)
+        }
+        // If there are more non-nested concepts to be added, add a comma
+        else{
+            JSONmodel += ",";
+        }
+    }
+
+    // If no other concepts are added by the user
+    if(counterArray.length == 0){
+        JSONmodel += "\
+        \}\
+        \}\
+        \}\
+        "
+    
+        console.log(JSONmodel);
+    }
+
+})
+
+
+function addConcepts(c, clength, subConceptCount, finalcounter) {
+
+    // ###########
+    // ADDING THE INFO TO THE JSON MODEL FOR THE CURRENT COUNTER
+    // ###########
+
+    $(`[counter='${c}']`).filter('.conceptdiv').each(function(index){
+        
+        let newGroupTitle = document.getElementsByClassName('new-group-title-'+c)[0].value;
+        let newGroupDesc = document.getElementsByClassName('new-group-description-'+c)[0].value;
 
         let newConceptString = "\
         \""+newGroupTitle.replace(' ', '')+"\": \{\
@@ -324,23 +374,21 @@ document.getElementById("dsl-create").addEventListener("click", function(){
     
         JSONmodel += newConceptString
 
-        // Storing the attribute contents of the additional concepts
+        //Storing the attribute contents of the additional concepts
         let attrNames = [];
         let attrTypes = [];
         let checkedArrays = [];
 
         // Adding the attribute type to an array
-        $(`[counter='${counterArray[c]}']`).find('select').each(function(){
-            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
-            if($(this).attr('counter') < 100){
-                attrTypes.push($(this).children("option:selected").val());
-            }
+        $(`[counter='${c}']`).find('select').each(function(){
+        if($(this).attr('counter')){
+            attrTypes.push($(this).children("option:selected").val());
+        }
         });
         // Addding the attribute name to an array
         // Search for all input fields within the attribute-add div that has the counter attribute with the current counter value
-        $(`[counter='${counterArray[c]}']`).find('input').each(function(){
-            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
-            if($(this).attr('counter') < 100){
+        $(`[counter='${c}']`).find('input').each(function(){
+            if($(this).attr('counter')){
                 if($(this).attr("id") != "array-checkbox"){
                     attrNames.push($(this).val());
                 }
@@ -356,10 +404,9 @@ document.getElementById("dsl-create").addEventListener("click", function(){
             }
         });
 
-        addConcepts(counterArray[c]);
-
-
+        // Iterating over the filled in attributes
         for(let attr = 0; attr < attrNames.length; attr++){
+            
             // Adding 2 because the first two attributes are the group title and description
             let number = (attr+2).toString();
 
@@ -367,91 +414,26 @@ document.getElementById("dsl-create").addEventListener("click", function(){
             if(attr == attrNames.length - 1){
                 // If this attribute is an ARRAY, add the square brackets
                 if(checkedArrays[attr] == "checked"){
-                    // The attributes for the final concept should be closed off with more curly brackets
-                    if(c == counterArray.length - 1){
-                        // But if comments and/or rating are added, less brackets are needed
-                        if((commentsCheckbox.checked || ratingsCheckbox.checked) || (!commentsCheckbox.checked || !ratingsCheckbox.checked)){
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
+                    // But if there are subconcepts to be found
+                    // Subconcepts are closed off later
 
-                            JSONmodel += addAttrString;
-                        }
-                        else{
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
+                    let addAttrString = "\
+                    \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
+                    "
 
-                            JSONmodel += addAttrString;
-                        }
-                    }
-                    else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                        \}\
-                        \}\
-                        "
-
-                        JSONmodel += addAttrString;
-                    }
+                    JSONmodel += addAttrString;
                 }
+
                 // Don't add square brackets for REGULAR ATTRIBUTES
                 else{
-                    // The attributes for the final concept should be closed off with more curly brackets
-                    if(c == counterArray.length - 1){
-                        // But if comments and/or rating are added, less brackets are needed
-                        if((commentsCheckbox.checked || ratingsCheckbox.checked) || (!commentsCheckbox.checked || !ratingsCheckbox.checked)){
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-                    
-                            JSONmodel += addAttrString;
-                        }
-                        else{
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-                    
-                            JSONmodel += addAttrString;
-                        }
-                    }
-                    else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                        \}\
-                        \}\
-                        "
-                
-                        JSONmodel += addAttrString;
-                    }
+                    let addAttrString = "\
+                    \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
+                    "
+            
+                    JSONmodel += addAttrString;
                 }
             }
+            // If other attributes still need to be added
             else{
                 // Add square brackets for arrays
                 if(checkedArrays[attr] == "checked"){
@@ -470,38 +452,38 @@ document.getElementById("dsl-create").addEventListener("click", function(){
                 }
             }
         }
-        if(c < counterArray.length - 1){
-            JSONmodel += ",";
+
+        // // Adding a comma after each added concept except the final one
+        // if(c < clength - 1){
+        //     JSONmodel += ",";
+        // }
+
+    })
+
+    // CHECKING IF THERE ARE SUB-CONCEPTS
+    // Subconcepts found
+    if($(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').length != 0){
+        JSONmodel += ",";
+
+        // Reiterating the addConcepts function for this subconcept
+        let subconcept = $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div');
+        subConceptCount ++;
+        addConcepts($(subconcept).attr('counter'), 0, subConceptCount, finalcounter);
+    }
+    // No further subconcepts found
+    else{
+        // For each added subconcept, two closing brackets should be added to close the concept
+        for(let scc = 0; scc < subConceptCount + 1; scc++){
+            JSONmodel += "}}";
         }
     }
-
-    // If no other concepts are added
-    if(counterArray.length == 0){
-        JSONmodel += "\
-        \}\
-        \}\
-        \}\
-        "
-    }
-
-    //console.log(JSON.parse(JSONmodel))
-
-    //console.log(JSONmodel);
-
-})
-
-
-function addConcepts(c) {
-
-    $(`[counter='${c}']`).find('div').filter('.conceptdiv').each(function(){
-        console.log($(this))
-      //console.log("Im adding " + $(this));  
-    })
-
-    $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').each(function(){
-        addConcepts($(this).attr('counter'));
-    })
 }
+
+
+// Removing (sub-)concepts
+$(".new-concept").on('click', '.deleteConcept', function(event){
+    $('.new-concept')[0].remove($(this).parent().parent().parent()[0]);
+});
 
 
 // Closing the modal
