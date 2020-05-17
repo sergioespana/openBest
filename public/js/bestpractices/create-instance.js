@@ -37,6 +37,14 @@ var jsontest = {
                     "5categories":
                         ["string"],
                     "6date": "string",
+                    "test": {
+                        "testdocument":{
+                            "01grouptitle": "Test",
+                            "02groupdesc": "Enter basic test information here.",
+                            "1displayfeature": true,
+                            "testfield": "string"
+                        }
+                    },
                     //collection
                     "comments": {
                         "commentdocument": {

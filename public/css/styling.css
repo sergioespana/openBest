@@ -2,6 +2,10 @@ h1 {
   font-family: 'Vollkorn';
 }
 
+.row{
+  width: 100%!important;
+}
+
 #domain-name {
   font-weight: 800;
 }

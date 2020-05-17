@@ -15,6 +15,67 @@ var dslbtn = document.getElementById("create-model-btn");
 var dslspan = document.getElementsByClassName("close")[1];
 // Counts the amount of concept instances
 var counter = 0;
+var subcounter = 100;
+
+var addConceptHTML;
+
+function addConceptFunction(c, pc) {
+
+    // HTML blob for adding a new concept
+    addConceptHTML = "\
+    <div counter=\""+c+"\" parent-counter=\""+pc+"\" class=\"conceptdiv\" style=\"border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px\">\
+        <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
+        <br>\
+        <label>Group title</label>\
+        <input class=\"new-group-title-"+c+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Example\"></input>\
+        <br>\
+        <label>Group description</label>\
+        <input class=\"new-group-description-"+c+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Describe an example here\"></input>\
+        <br>\
+            <input id=\"required-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"required\" value=\"Required\"></input>\
+            <label for=\"required\">This is a required concept</label>\
+        <br>\
+        <div class=\"row\">\
+            <div class=\"col-md-6\">\
+            <label>Attribute name</label>\
+            </div>\
+            <div class=\"col-md-6\">\
+            <label>Attribute type</label>\
+            </div>\
+        </div>\
+        <div class=\"attribute-add\" counter=\""+c+"\">\
+            <div number=\"1\" class=\"row\">\
+            <div class=\"col-md-6\">\
+                <input counter=\""+c+"\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Description\"></input>\
+            </div>\
+            <div class=\"col-md-6\">\
+                <select counter=\""+c+"\" class=\"form-control bg-light border-0 small\">\
+                <option>String</option>\
+                <option>Text</option>\
+                <option>Document reference</option>\
+                </select>\
+                <input counter=\""+c+"\" id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input>\
+                <label for=\"array\">Multiple</label>\
+            </div>\
+            </div>\
+        </div>\
+        <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+            <span class=\"icon text-gray-600\">\
+            <i class=\"fas fa-arrow-right\"></i>\
+            </span>\
+            <span class=\"text\">Add attribute</span>\
+        </a>\
+        <a style=\"margin-top: 20px\" id=\"add-sub-concept\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+            <span class=\"icon text-gray-600\">\
+            <i class=\"fas fa-arrow-right\"></i>\
+            </span>\
+            <span class=\"text\">Add sub-concept</span>\
+        </a>\
+    </div>\
+    " 
+}
+
+
 
 
 // displaying the modal
@@ -26,90 +87,71 @@ if(dslbtn){
 
 
 document.getElementById("add-concept").addEventListener("click", function(){
-    
-    let addConceptHTML = "\
-    <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
-    <br>\
-    <label>Group title</label>\
-    <input class=\"new-group-title-"+counter+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Example\"></input>\
-    <br>\
-    <label>Group description</label>\
-    <input class=\"new-group-description-"+counter+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Describe an example here\"></input>\
-    <br>\
-        <input id=\"required-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"required\" value=\"Required\"></input>\
-        <label for=\"required\">This is a required concept</label>\
-    <br>\
-    <div class=\"row\">\
-        <div class=\"col-md-6\">\
-        <label>Attribute name</label>\
-        </div>\
-        <div class=\"col-md-6\">\
-        <label>Attribute type</label>\
-        </div>\
-    </div>\
-    <div class=\"attribute-add\" counter=\""+counter+"\">\
-        <div number=\"1\" class=\"row\">\
-        <div class=\"col-md-6\">\
-            <input class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Description\"></input>\
-        </div>\
-        <div class=\"col-md-6\">\
-            <select class=\"form-control bg-light border-0 small\">\
-            <option>String</option>\
-            <option>Text</option>\
-            <option>Document reference</option>\
-            </select>\
-            <input id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input>\
-            <label for=\"array\">Multiple</label>\
-        </div>\
-        </div>\
-    </div>\
-    <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+counter+"\">\
-        <span class=\"icon text-gray-600\">\
-        <i class=\"fas fa-arrow-right\"></i>\
-        </span>\
-        <span class=\"text\">Add attribute</span>\
-    </a>\
-    " 
-    
+
+    // Making sure addConceptHTML is available
+    // parentcounter is set at 0 for every new concept
+    addConceptFunction(counter, 0);
+
+    // Adding the HTML to the new-concept div
     $('.new-concept').append(addConceptHTML);
 
+    // Counter is increased for every added concept
     counter++;
 })
 
 
-// Adding the possibility to add another attribute
+// Adding an attribute or sub-concept
 $(".new-concept").on('click', 'a', function(event){
 
-    // HTML blob in which user can add a new attribute
-    let attributeAddHTML = "\
-    <div class=\"row\"\>\
-        <div class=\"col-md-6\"\>\
-            <input class=\"form-control bg-light border-0 small\" type=\"value\"></input\>\
-        </div\>\
-        <div class=\"col-md-5\"\>\
-            <select class=\"form-control bg-light border-0 small\"\>\
-                <option>String</option\>\
-                <option>Text</option\>\
-                <option>Document reference</option\>\
-            </select\>\
-            <input id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input\>\
-            <label for=\"array\">Multiple</label\>\
-        </div\>\
-        <div class=\"col-md-1\"\>\
-            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
-                <span class=\"icon text-gray-600\"\>\
-                    <i class=\"fas fa-times\"></i\>\
-                </span\>\
-            </a\>\
-        </div\>\
-    </div>"
-    
+    // When a sub-concept is added, the parentcounter attribute should be filled in
+    subcounter++;
+    parentcounter = $(this).attr('btn-counter');
+    addConceptFunction(subcounter, parentcounter);
 
-    // The counter of the "Add attribute" button that was pressed
-    let attrCounter = $(this).attr("btn-counter");
-    // The div to which the new row should be appended
-    let attributeAdd = $(this).closest("div").find(`[counter='${attrCounter}']`);
-    $(attributeAdd).append(attributeAddHTML);
+    // Adding a sub-concept
+    if($(this).attr('id') == 'add-sub-concept'){
+        let btncounter = $(this).attr('btn-counter');
+        
+        // The parent concept of the newly added sub-concept
+        let parentConcept = $('.new-concept').find('.attribute-add').filter('[counter='+`${btncounter}`+']');
+
+        $(addConceptHTML).insertAfter(parentConcept);
+    }
+    else{
+        let btncounter = $(this).attr('btn-counter');
+
+        // HTML blob in which user can add a new attribute
+        let attributeAddHTML = "\
+        <div class=\"row\"\>\
+            <div class=\"col-md-6\"\>\
+                <input counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\" type=\"value\"></input\>\
+            </div\>\
+            <div class=\"col-md-5\"\>\
+                <select counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\"\>\
+                    <option>String</option\>\
+                    <option>Text</option\>\
+                    <option>Document reference</option\>\
+                </select\>\
+                <input counter=\""+btncounter+"\" id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input\>\
+                <label for=\"array\">Multiple</label\>\
+            </div\>\
+            <div class=\"col-md-1\"\>\
+                <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                    <span class=\"icon text-gray-600\"\>\
+                        <i class=\"fas fa-times\"></i\>\
+                    </span\>\
+                </a\>\
+            </div\>\
+        </div>"
+        
+
+        // The counter of the "Add attribute" button that was pressed
+        let attrCounter = $(this).attr("btn-counter");
+        // The div to which the new row should be appended
+        let attributeAdd = $(this).closest("div").find(`[counter='${attrCounter}']`).filter('.attribute-add');
+
+        $(attributeAdd).append(attributeAddHTML);
+    }
 })
 
 
@@ -254,12 +296,18 @@ document.getElementById("dsl-create").addEventListener("click", function(){
     // Creating an array of counters that for each attribute-add row
     let counterArray = [];
     $('.attribute-add').each(function(){
-        counterArray.push($(this).attr("counter"));
+        // Only adding counters lower than 100 to the array, everything higher than 100 is a subconcept
+        if($(this).attr("counter") < 100){
+            counterArray.push($(this).attr("counter"));
+        }
     });
 
+
     // Iterating over the counterarray to find the info for each attribute-add row
+    // For each new concept, we add info to the JSONmodel
     for(let c = 0; c < counterArray.length; c++){
 
+        // Before the first concept is added, we should append a comma to the JSONmodel
         if(c == 0){
             JSONmodel += ","
         }
@@ -282,26 +330,34 @@ document.getElementById("dsl-create").addEventListener("click", function(){
         let checkedArrays = [];
 
         // Adding the attribute type to an array
-        //$('.attribute-add').find('select').each(function(){
         $(`[counter='${counterArray[c]}']`).find('select').each(function(){
-            attrTypes.push($(this).children("option:selected").val());
+            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
+            if($(this).attr('counter') < 100){
+                attrTypes.push($(this).children("option:selected").val());
+            }
         });
         // Addding the attribute name to an array
-        //$('.attribute-add').find('input').each(function(){
+        // Search for all input fields within the attribute-add div that has the counter attribute with the current counter value
         $(`[counter='${counterArray[c]}']`).find('input').each(function(){
-            if($(this).attr("id") != "array-checkbox"){
-                attrNames.push($(this).val());
-            }
-            // Adding the checkbox information to an array
-            if($(this).attr("id") == "array-checkbox"){
-                if($(this)[0].checked){
-                    checkedArrays.push("checked");
+            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
+            if($(this).attr('counter') < 100){
+                if($(this).attr("id") != "array-checkbox"){
+                    attrNames.push($(this).val());
                 }
-                else{
-                    checkedArrays.push("unchecked");
+                // Adding the checkbox information to an array
+                if($(this).attr("id") == "array-checkbox"){
+                    if($(this)[0].checked){
+                        checkedArrays.push("checked");
+                    }
+                    else{
+                        checkedArrays.push("unchecked");
+                    }
                 }
             }
         });
+
+        addConcepts(counterArray[c]);
+
 
         for(let attr = 0; attr < attrNames.length; attr++){
             // Adding 2 because the first two attributes are the group title and description
@@ -419,6 +475,7 @@ document.getElementById("dsl-create").addEventListener("click", function(){
         }
     }
 
+    // If no other concepts are added
     if(counterArray.length == 0){
         JSONmodel += "\
         \}\
@@ -427,11 +484,25 @@ document.getElementById("dsl-create").addEventListener("click", function(){
         "
     }
 
-    console.log(JSON.parse(JSONmodel))
+    //console.log(JSON.parse(JSONmodel))
 
-    console.log(JSONmodel);
+    //console.log(JSONmodel);
 
 })
+
+
+function addConcepts(c) {
+
+    $(`[counter='${c}']`).find('div').filter('.conceptdiv').each(function(){
+        console.log($(this))
+      //console.log("Im adding " + $(this));  
+    })
+
+    $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').each(function(){
+        addConcepts($(this).attr('counter'));
+    })
+}
+
 
 // Closing the modal
 dslspan.onclick = function() {

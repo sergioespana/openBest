@@ -177,17 +177,13 @@
                         </div>
                       </div>
                       <div class="col-lg-6">
-                        <p id="admin-text">As an adminstrator, you can review and update the domain model using the buttons below.</p>
-                        <a id="create-instance-btn" class="btn btn-light btn-icon-split">
-                          <span class="icon text-gray-600">
-                            <i class="fas fa-arrow-right"></i>
-                          </span>
+                        <div class="row">
+                          <p id="admin-text">As an adminstrator, you can review and update the domain model using the buttons below.</p>
+                        </div>
+                        <a style="display: block" id="create-instance-btn" class="btn btn-light btn-icon-split">
                           <span class="text">Create domain</span>
                         </a>
-                        <a style="margin-top: 10px" id="create-model-btn" class="btn btn-light btn-icon-split">
-                          <span class="icon text-gray-600">
-                            <i class="fas fa-arrow-right"></i>
-                          </span>
+                        <a style="margin-top: 10px; display: block" id="create-model-btn" class="btn btn-light btn-icon-split">
                           <span class="text">Create model</span>
                         </a>
                       </div>
@@ -208,7 +204,7 @@
 
     <!-- The Modal for entering a BP -->
     <div id="bp-modal" style="display:none" id="wrapper" class="bp-modal container-fluid">
-      <div class="row">
+      <div class="row" style="margin: 0px">
 
         <!-- Modal content -->
         <div class="bp-modal-content">
@@ -253,7 +249,7 @@
 
     <!-- The Modal for creating a model -->
     <div id="model-modal" style="display:none" id="wrapper" class="model-modal container-fluid">
-      <div class="row">
+      <div class="row" style="margin: 0px">
 
         <!-- Modal content -->
         <div class="model-modal-content">
@@ -267,43 +263,51 @@
               <form id="dsl-create-form">
 
               <!-- General info -->
-              <div style="margin-top: 20px" class="font-weight-bold text-success text-uppercase">General info</div>
-              <br>
-              <label>Name of the domain</label>
-              <input id="input-domain-name" class="form-control bg-light border-0 small" type="value" placeholder="e.g. My Domain"></input>
+              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                <div style="margin-top: 20px" class="font-weight-bold text-success text-uppercase">General info</div>
+                <br>
+                <label>Name of the domain</label>
+                <input id="input-domain-name" class="form-control bg-light border-0 small" type="value" placeholder="e.g. My Domain"></input>
+              </div>
 
               <!-- Best practice info -->
-              <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Best practices</div>
-              <br>
-              <label>Group title</label>
-              <input id="bp-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Best Practice"></input>
-              <br>
-              <label>Group description</label>
-              <input id="bp-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Enter best practice info here"></input>
-              <br>
-                <label style="display: block">Want to add these recommended subcollections?</label>
-                <input id="comments-checkbox" class="bg-light border-0 small" type="checkbox" name="comments" value="Comments"></input>
-                <label for="comments">Comments</label>
-                <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings" value="Ratings"></input>
-                <label id="comments-checkbox" for="ratings">Ratings</label>
-            
-              <!-- Problem info -->
-              <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Problems</div>
-              <br>
-              <label>Group title</label>
-              <input id="prob-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Problem"></input>
-              <br>
-              <label>Group description</label>
-              <input id="prob-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe problem info here"></input>
+              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Best practices</div>
+                <br>
+                <label>Group title</label>
+                <input id="bp-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Best Practice"></input>
+                <br>
+                <label>Group description</label>
+                <input id="bp-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Enter best practice info here"></input>
+                <br>
+                  <label style="display: block">Want to add these recommended subcollections?</label>
+                  <input id="comments-checkbox" class="bg-light border-0 small" type="checkbox" name="comments" value="Comments"></input>
+                  <label for="comments">Comments</label>
+                  <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings" value="Ratings"></input>
+                  <label id="comments-checkbox" for="ratings">Ratings</label>
+              </div>
 
-              <!-- Solution info -->
-              <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Solutions</div>
-              <br>
-              <label>Group title</label>
-              <input id="sol-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Solution"></input>
-              <br>
-              <label>Group description</label>
-              <input id="sol-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe solution info here"></input>
+              <!-- Problem info -->
+              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Problems</div>
+                <br>
+                <label>Group title</label>
+                <input id="prob-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Problem"></input>
+                <br>
+                <label>Group description</label>
+                <input id="prob-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe problem info here"></input>
+              </div>
+
+              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                <!-- Solution info -->
+                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Solutions</div>
+                <br>
+                <label>Group title</label>
+                <input id="sol-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Solution"></input>
+                <br>
+                <label>Group description</label>
+                <input id="sol-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe solution info here"></input>
+              </div>
 
               <div class="new-concept">
                 <!-- HTML for adding new concepts is added here -->
