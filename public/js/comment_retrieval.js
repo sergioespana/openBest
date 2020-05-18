@@ -218,7 +218,6 @@ function issame (email){
     if (currentuser == email){return "true";}
     else{return "false";}
 }
-
 //function to add comments to the local list of comments to display them
 function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_id,BPid,comment_same_author,comment_thread,comment_level,comment_parent){
     switch (comment_level){
@@ -244,7 +243,6 @@ function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_
     }
 
 }
-
 function editCommentDB(newcommenttext,BPid,id){
     startstring    = "/domain/domainstate/bestpractices/"
     tussenstring   = "/comments/"

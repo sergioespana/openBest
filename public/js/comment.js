@@ -22,6 +22,7 @@ function create_meta_info(){
     comment_counter.innerText =  amountOfComments + " comments";    
     root.appendChild(comment_counter);
 }
+//function used for assingen line-clamp class tags, this function enables the shortening of the messages to two lines
 function showtext(see_more,text){
     var tbutton  = see_more;
     var isshown  = text.hasbeendrawn;  
@@ -114,6 +115,8 @@ function masterSubmit(buttonbar,text){
     var message = text.innerText;
     if(lengte(message) >= 1){
     masterCancel(buttonbar,text);
+    console.log(message);
+    
     pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),"main",0,"none"); //write comment to db and afterwards draw it locally
     }
 }
@@ -205,7 +208,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         edit_comment.classList.add("far","fa-edit","edit_button");
         //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
         edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
-        // toolbar_wrapper.appendChild(edit_comment);
+        toolbar_wrapper.appendChild(edit_comment);
 
         //remove comment component
         var remove_comment = document.createElement("i");
@@ -214,7 +217,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         remove_comment.addEventListener("click", function(){
         // removeallChildren(level,commentid,BP_id);
         // ask for confirmation that a user indeed wants to delete his comments
-            if (confirm("Are you sure you want to delete this comment? please not that reactions to this comment will also be lost")== true){
+            if (confirm("Are you sure you want to delete this comment? please notE that reactions to this comment will also be lost")== true){
                 removeComment(commentid,BP_id,comment_wrapper);
             }
         }); 
@@ -258,19 +261,20 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    //initial assesment if the text is larger than the 2 line comment box
    displayMore(comment_text,see_more);
 
+
    var confirm_edit = document.createElement("p");
    confirm_edit.classList.add("confirm_edit","bottomOption");
    confirm_edit.innerText = "Confirm edit";
    confirm_edit.style.display = "none";
-   confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BP_id,commentid);})
-   // bottomtoolbar_wrapper.appendChild(confirm_edit);
+   confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BP_id,commentid,edit_comment);})
+   bottomtoolbar_wrapper.appendChild(confirm_edit);
 
    var cancel_edit = document.createElement("p");
    cancel_edit.classList.add("cancel_edit","bottomOption");
    cancel_edit.innerText = "Cancel edit";
    cancel_edit.style.display = "none";
-   cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text);})
-   // bottomtoolbar_wrapper.appendChild(cancel_edit);
+   cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text,edit_comment);})
+   bottomtoolbar_wrapper.appendChild(cancel_edit);
 
    content_wrapper.appendChild(bottomtoolbar_wrapper);
 
@@ -279,10 +283,10 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         displayMore(comment_text,see_more);
     };
    
-  //paste various rating systems
-   //createEbayRating(comment_wrapper);//create eBay
-   createLikeDislikeRating(content_wrapper);//create dislikelike
- // createStarRating(comment_wrapper);//create starRating
+    //paste various rating systems
+    //createEbayRating(comment_wrapper);//create eBay
+    createLikeDislikeRating(content_wrapper);//create dislikelike
+    // createStarRating(comment_wrapper);//create starRating
 
    //react button and functionality
    if (level < 3){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
@@ -308,9 +312,9 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    else{see_answers.style.display = "none";}
    see_answers.addEventListener("mouseover",function(){showcursor(see_answers)});
 }
-
 function editComment(see_more,comment_text,confirm,cancel,edit){  
-    edit.classList.toggle("selected");
+   
+    
     comment_text.toggleAttribute("contentEditable");
     if (comment_text.isContentEditable){
         //select the comments text box
@@ -318,48 +322,39 @@ function editComment(see_more,comment_text,confirm,cancel,edit){
         //display the confirm and cancel buttons
         confirm.style.display = "inline-block";
         cancel.style.display = "inline-block";
-
         //de-clamp the comment
         if (comment_text.hasbeendrawn == "true"){
         comment_text.hasbeendrawn = "false"; }
         showtext(see_more,comment_text);
+        edit.classList.add("selected");
     }
     else {
         //hide confirm and cancel buttons
         confirm.style.display = "none";
         cancel.style.display = "none";
-
         if(showReadMoreButton(comment_text) == true){
             //re-clamp the comment
             if (comment_text.hasbeendrawn == "false"){
                 comment_text.hasbeendrawn = "true"; }
                 showtext(see_more,comment_text);
         }
+        edit.classList.remove("selected");
     }
 }
-
-function confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BPid,messageid){
+function confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BPid,messageid,edit){
    //hide the cancel and confirm buttons
-   cancel_edit.style.display  = "none";
-   confirm_edit.style.display = "none";
-      
-   if (showReadMoreButton(comment_text) == true){
-        //re-clamp the comment
-        comment_text.hasbeendrawn = "true"; 
-        showtext(see_more,comment_text);
-   }
+    cancel_edit.style.display  = "none";
+    confirm_edit.style.display = "none";
     //make the comment not editable
     comment_text.toggleAttribute("contentEditable");
-
     //if current content of the comment differs from the original text
     if (text != comment_text.innerText){
     //function to write changes to the db
     editCommentDB(comment_text.innerText,BPid,messageid);
     }
-
+    edit.classList.remove("selected");
 }
-
-function cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text){
+function cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text,edit){
     //hide the cancel and confirm buttons
     cancel_edit.style.display  = "none";
     confirm_edit.style.display = "none";
@@ -373,9 +368,8 @@ function cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text){
 
     //make the comment not editable
     comment_text.toggleAttribute("contentEditable");
+    edit.classList.remove("selected");
 }
-
-
 function changeflag(element){
     element.classList.toggle("far");
     element.classList.toggle("fas");
@@ -484,9 +478,12 @@ function remove_top_searchbar(){
         myNode.removeChild(myNode.firstChild);
     }
 }
+// display the See more button if and only if there is overflow
 function displayMore(comment_text,see_more){
     if (showReadMoreButton(comment_text) == "true" ){
-        see_more.style.display = "block";
+        see_more.style.display = "inline-block";
+        return true;
         }
         else {see_more.style.display = "none";}
+        return false;
 }

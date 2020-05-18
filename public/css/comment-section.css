@@ -78,11 +78,26 @@
     margin-right: 5px;
   }
 
-  p.comment_text[contenteditable]{
+  p.comment_text{
     outline: none;
-    word-break: break-word;
-    word-wrap: break-word;
+    /* overflow and word-wrap code from https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/ */
+    /* These are technically the same, but use both */
     overflow-wrap: break-word;
+    word-wrap: break-word;
+  
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+  
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  
+  
   }
 
   .picture_wrapper {
@@ -187,8 +202,6 @@
   p.see_more{
     size: 0.8em; 
     margin-bottom: 5px;
-    /* force inline block display to put every bottombar tool on one line */
-    display: inline-block !important;
   }
 
   p.react_button{
@@ -229,13 +242,12 @@
 	height     : calc(1em * 1.2);
 	background : linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
 }
-@supports (-webkit-line-clamp: 1)
-{
+
 	.line-clamp:after
 	{
 		display : none !important;
 	}
-}
+
 
 .line-clamp-2
 {
