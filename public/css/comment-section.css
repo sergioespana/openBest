@@ -6,7 +6,6 @@
     display: block;
     width: 100%;
     overflow: hidden;
-    resize: both;
     min-height: 1.3em;
     line-height: 1.1em;
     border-bottom: 1px solid #ccc;
@@ -14,7 +13,8 @@
     font-size: inherit;
     margin-bottom: 10px;
     margin-top: 10px;
-    resize: none;
+    resize: none; 
+
   }
   
   .textarea[contenteditable]:empty::before {
@@ -75,6 +75,14 @@
   p.comment_text {
     width: inherit;
     margin-bottom: 5px;
+    margin-right: 5px;
+  }
+
+  p.comment_text[contenteditable]{
+    outline: none;
+    word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .picture_wrapper {
@@ -89,24 +97,40 @@
    flex: 2; 
   }
   
-  .meta_info{
+  .topbar{
+    margin-top: 5px;
+    height: auto;
+    width: auto;
     overflow: hidden;
-    display: block;
   }
-  .name{
+
+  .meta_info{
+    float: left;
+    overflow: hidden;
+    width: auto;
+    max-width: 80%;
+  }
+  p.name{
     float: left;
     margin-right: 10px;
     height: 1em;
     width: auto;
     font-weight: bold;
+    margin-bottom: 0px;
   }
 
-  .date_posted{
-    float: left;
+  p.date_posted{
+    float: right;
     color: gray;
     height: 1em;
     width: auto;
     margin-right: 10px;
+    margin-bottom: 5px;
+  }
+
+  /* button bar css */
+  .toolbar_wrapper{
+    float: right;
   }
 
   .remove_button{
@@ -119,28 +143,65 @@
 
   .remove_button:hover{
     color:red;
+    cursor: pointer;
   }
 
+  .edit_button{
+    float: left;
+    height: 1em;
+    width: auto;
+    margin-right: 10px;
+    margin-top: 5px;
+  }
+
+  .edit_button:hover{
+    color: darksalmon;
+    cursor: pointer;
+  }
+
+  .edit_button.selected{
+    color:darksalmon;
+  }
+
+  .flag_button{
+    float: left;
+    height: 1em;
+    width: auto;
+    margin-right: 10px;
+    margin-top: 5px;
+  }
+
+  .flag_button:hover{
+    cursor: pointer;
+  }
+
+  /* picture css */
   .picture{
     width:  inherit;
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 5px;
     margin-right: 5px;
     border-radius: 50%;
   }
 
-
   p.see_more{
     size: 0.8em; 
     margin-bottom: 5px;
-  }
-
-  .see_more:hover{
-    cursor: pointer ;
+    /* force inline block display to put every bottombar tool on one line */
+    display: inline-block !important;
   }
 
   p.react_button{
     margin-bottom: 5px;
+  }
+
+
+  p.bottomOption:hover{
+    color: black;
+    cursor: pointer;
+  }
+  p.bottomOption{
+    margin-right: 10px;
   }
 
   /* LINE CLAMPING */
@@ -175,28 +236,12 @@
 		display : none !important;
 	}
 }
-.line-clamp-1
-{
-	-webkit-line-clamp : 1;
-	height             : calc(1em * 1.2 * 1);
-}
+
 .line-clamp-2
 {
 	-webkit-line-clamp : 2;
 	height             : calc(1em * 1.2 * 2);
 }
-.line-clamp-3
-{
-	-webkit-line-clamp : 3;
-	height             : calc(1em * 1.2 * 3);
-}
-.line-clamp-4
-{
-	-webkit-line-clamp : 4;
-	height             : calc(1em * 1.2 * 4);
-}
-.line-clamp-5
-{
-	-webkit-line-clamp : 5;
-	height             : calc(1em * 1.2 * 5);
-}
+
+
+

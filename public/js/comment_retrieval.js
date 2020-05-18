@@ -60,12 +60,10 @@ function draw_all(){
         recursive();
     }
 }
-
 function checkChildren(messageID,level){
    var hasChildren = getLevelList(level+1).map(x => x[9]).includes(messageID);
    return hasChildren;  
 }
-
 function getLevelList(level){
     switch(level){
         case 0:
@@ -133,7 +131,6 @@ function  lowerCounter(){
 }
 // remove one comment from the database and remove it from the screeen, last lower the counter.
 function removeComment(id,BPid,comment_element){
-   
         startstring = "/domain/domainstate/bestpractices/"
         endstring   = "/comments"
         doelstring  = startstring.concat(BPid,endstring);
@@ -141,8 +138,7 @@ function removeComment(id,BPid,comment_element){
         if (comment_element){
         remove_element(comment_element);
         }
-        lowerCounter();
-    
+        lowerCounter();  
 }
 // push comment to the database and draw it on the screen using its ID once it has been pushed.
 function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
@@ -246,5 +242,17 @@ function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_
             document.getElementById("answers" + comment_parent).style.display = "block";
             break;
     }
+
+}
+
+function editCommentDB(newcommenttext,BPid,id){
+    startstring    = "/domain/domainstate/bestpractices/"
+    tussenstring   = "/comments/"
+    doelstring     = startstring.concat(BPid,tussenstring);
+    db.collection(doelstring).doc(id).update({
+        text:   newcommenttext
+    });
+
+
 
 }

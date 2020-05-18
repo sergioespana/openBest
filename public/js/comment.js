@@ -24,16 +24,15 @@ function create_meta_info(){
 }
 function showtext(see_more,text){
     var tbutton  = see_more;
-    var tekstvak = text;
-    var isshown  = tekstvak.hasbeendrawn;  
+    var isshown  = text.hasbeendrawn;  
     if (isshown == "false"){
         tbutton.innerText = "See less";
-        tekstvak.classList.remove("line-clamp","line-clamp-2");
+        text.classList.remove("line-clamp","line-clamp-2");
         text.hasbeendrawn = "true";
     }
     else {
         tbutton.innerText = "See more";
-        tekstvak.classList.add("line-clamp","line-clamp-2");
+        text.classList.add("line-clamp","line-clamp-2");
         text.hasbeendrawn = "false";
     }
 }
@@ -152,9 +151,21 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    var content_wrapper = document.createElement("DIV");
    content_wrapper.classList.add("content");
 
+   //topbar wrapper, wrapper for the meta info and toolbar
+   var topbar_wrapper = document.createElement("DIV");
+   topbar_wrapper.classList.add("topbar");
+
    //meta info wrapper, name, date, etc.
    var meta_info_wrapper = document.createElement("DIV");
    meta_info_wrapper.classList.add("meta_info");
+
+   //toolbar wrapper, delete, edit, flag, etc.
+   var toolbar_wrapper = document.createElement("DIV");
+   toolbar_wrapper.classList.add("toolbar_wrapper");
+
+   //toolbar wrapper for comment utilities under the comment text, confirm edit, cancel edit, show entire comment.
+   var bottomtoolbar_wrapper = document.createElement("DIV");
+   bottomtoolbar_wrapper.classList.add("bottomtoolbar");
 
    //picture
    var picture = document.createElement("img");
@@ -175,23 +186,51 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    //the comment text itself
    var comment_text = document.createElement("p");
    comment_text.innerText = text;
-   //comment_text.style.height = 'auto';
    comment_text.classList.add("comment_text","line-clamp","line-clamp-2");
    comment_text.setAttribute("hasbeendrawn", "false");
-  
-   meta_info_wrapper.appendChild(name_text);
 
-   //if current user is the same as the comment writer he can remove the comment
-   if (issame == "true"){
-   var remove_comment = document.createElement("i");
-   remove_comment.classList.add("fa","fa-trash","remove_button");
-   meta_info_wrapper.appendChild(remove_comment);
-   remove_comment.addEventListener("click", function(){removeComment(commentid,BP_id,comment_wrapper);removeallChildren(level,commentid,BP_id);}); 
+   //allow a user to flag a comment if comment in not from current logged in user
+   if (issame == "false"){
+    //flagging component
+    var flag_comment = document.createElement("i");
+    flag_comment.classList.add("far","fa-flag","flag_button","dropbtn");
+    flag_comment.addEventListener("mouseover",function(){changeflag(flag_comment);})
+    flag_comment.addEventListener("mouseleave",function(){changeflag(flag_comment);})
+    toolbar_wrapper.appendChild(flag_comment);}
+
+    //if current user is the same as the comment writer he can remove or edit the comment
+    if (issame == "true"){
+        //editing component
+        var edit_comment = document.createElement("i");
+        edit_comment.classList.add("far","fa-edit","edit_button");
+        //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
+        edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
+        // toolbar_wrapper.appendChild(edit_comment);
+
+        //remove comment component
+        var remove_comment = document.createElement("i");
+        remove_comment.classList.add("fa","fa-trash","remove_button");
+        toolbar_wrapper.appendChild(remove_comment);
+        remove_comment.addEventListener("click", function(){
+        // removeallChildren(level,commentid,BP_id);
+        // ask for confirmation that a user indeed wants to delete his comments
+            if (confirm("Are you sure you want to delete this comment? please not that reactions to this comment will also be lost")== true){
+                removeComment(commentid,BP_id,comment_wrapper);
+            }
+        }); 
    }
 
+   //add comment author and date to the meta info wrapper
+   meta_info_wrapper.appendChild(name_text);
    meta_info_wrapper.appendChild(date_posted_text);
-   //paste meta content in the content wrapper
-   content_wrapper.appendChild(meta_info_wrapper); 
+
+   //add meta info and the toolbar to the topbar
+   topbar_wrapper.appendChild(meta_info_wrapper);
+   topbar_wrapper.appendChild(toolbar_wrapper);
+
+   //add topbar in the content wrapper
+   content_wrapper.appendChild(topbar_wrapper); 
+   //paste the comment text into the content wrapper
    content_wrapper.appendChild(comment_text);
    //paste picture wrapper in the comment wrapper
    comment_wrapper.appendChild(picture_wrapper); 
@@ -210,16 +249,34 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
 
    //creation of the "see more" button to view reactions on comments
    var see_more = document.createElement("p");
-   see_more.classList.add("see_more");
-   content_wrapper.appendChild(see_more);
+   see_more.classList.add("see_more","bottomOption");
+   bottomtoolbar_wrapper.appendChild(see_more);
+
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    see_more.addEventListener("mouseover",function(){showcursor(see_more)});
    showtext(see_more,comment_text);
-   displayMore(comment_text,see_more)
+   //initial assesment if the text is larger than the 2 line comment box
+   displayMore(comment_text,see_more);
+
+   var confirm_edit = document.createElement("p");
+   confirm_edit.classList.add("confirm_edit","bottomOption");
+   confirm_edit.innerText = "Confirm edit";
+   confirm_edit.style.display = "none";
+   confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BP_id,commentid);})
+   // bottomtoolbar_wrapper.appendChild(confirm_edit);
+
+   var cancel_edit = document.createElement("p");
+   cancel_edit.classList.add("cancel_edit","bottomOption");
+   cancel_edit.innerText = "Cancel edit";
+   cancel_edit.style.display = "none";
+   cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text);})
+   // bottomtoolbar_wrapper.appendChild(cancel_edit);
+
+   content_wrapper.appendChild(bottomtoolbar_wrapper);
 
    //clamping and see more button and functionality
     window.onresize = function(event) {
-        displayMore(comment_text,see_more)
+        displayMore(comment_text,see_more);
     };
    
   //paste various rating systems
@@ -251,14 +308,83 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    else{see_answers.style.display = "none";}
    see_answers.addEventListener("mouseover",function(){showcursor(see_answers)});
 }
+
+function editComment(see_more,comment_text,confirm,cancel,edit){  
+    edit.classList.toggle("selected");
+    comment_text.toggleAttribute("contentEditable");
+    if (comment_text.isContentEditable){
+        //select the comments text box
+        comment_text.focus();
+        //display the confirm and cancel buttons
+        confirm.style.display = "inline-block";
+        cancel.style.display = "inline-block";
+
+        //de-clamp the comment
+        if (comment_text.hasbeendrawn == "true"){
+        comment_text.hasbeendrawn = "false"; }
+        showtext(see_more,comment_text);
+    }
+    else {
+        //hide confirm and cancel buttons
+        confirm.style.display = "none";
+        cancel.style.display = "none";
+
+        if(showReadMoreButton(comment_text) == true){
+            //re-clamp the comment
+            if (comment_text.hasbeendrawn == "false"){
+                comment_text.hasbeendrawn = "true"; }
+                showtext(see_more,comment_text);
+        }
+    }
+}
+
+function confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BPid,messageid){
+   //hide the cancel and confirm buttons
+   cancel_edit.style.display  = "none";
+   confirm_edit.style.display = "none";
+      
+   if (showReadMoreButton(comment_text) == true){
+        //re-clamp the comment
+        comment_text.hasbeendrawn = "true"; 
+        showtext(see_more,comment_text);
+   }
+    //make the comment not editable
+    comment_text.toggleAttribute("contentEditable");
+
+    //if current content of the comment differs from the original text
+    if (text != comment_text.innerText){
+    //function to write changes to the db
+    editCommentDB(comment_text.innerText,BPid,messageid);
+    }
+
+}
+
+function cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text){
+    //hide the cancel and confirm buttons
+    cancel_edit.style.display  = "none";
+    confirm_edit.style.display = "none";
+
+    //reset the comments content to the original text
+    comment_text.innerText = text;
+
+    //re-clamp the comment
+    comment_text.hasbeendrawn = "true"; 
+    showtext(see_more,comment_text);
+
+    //make the comment not editable
+    comment_text.toggleAttribute("contentEditable");
+}
+
+
+function changeflag(element){
+    element.classList.toggle("far");
+    element.classList.toggle("fas");
+}
 //function to check overflow of text to enable the see_more button if needed
 function showReadMoreButton(element){
     if (element.offsetHeight < element.scrollHeight || element.offsetWidth < element.scrollWidth) {
-         // your element has an overflow
-         // show read more button
          return "true";
      } else {
-         // your element doesn't have overflow
          return "false";
      }
 }
@@ -286,8 +412,6 @@ function getallChildren(level,commentid,reason){
 if (isdrawn == "false" && reason != "removechildren"){document.getElementById(commentid).setAttribute("SubCommentDrawn","true");}
 else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");}
 }
-
-
 function removeallChildren(level,commentid,BP_id){
     for (item of getLevelList(level+1)){
      if(item[9] == commentid){
@@ -295,12 +419,7 @@ function removeallChildren(level,commentid,BP_id){
         removeallChildren(level+1,item[4],"removechildren");        
          }
      }
- }
-
-
-
-
-
+}
 function subSubmit(text,elem,commentid){
     var message = text.innerText;
     if(lengte(message) >= 1){
