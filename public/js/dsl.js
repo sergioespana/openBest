@@ -65,16 +65,16 @@ function addConceptFunction(c, pc) {
                 <label for=\"array\">Multiple</label>\
             </div>\
             </div>\
+            <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+                <span class=\"text\">\
+                <i class=\"fas fa-plus\"></i>\
+                </span>\
+                <span class=\"text\">Add attribute</span>\
+            </a>\
         </div>\
-        <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
-            <span class=\"icon text-gray-600\">\
-            <i class=\"fas fa-arrow-right\"></i>\
-            </span>\
-            <span class=\"text\">Add attribute</span>\
-        </a>\
         <a style=\"margin-top: 20px\" id=\"add-sub-concept\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
-            <span class=\"icon text-gray-600\">\
-            <i class=\"fas fa-arrow-right\"></i>\
+            <span class=\"text\">\
+            <i class=\"fas fa-plus\"></i>\
             </span>\
             <span class=\"text\">Add sub-concept</span>\
         </a>\
@@ -107,24 +107,11 @@ document.getElementById("add-concept").addEventListener("click", function(){
 })
 
 
-// Adding an attribute or sub-concept
+// Adding an attribute
 $(".new-concept").on('click', 'a', function(event){
 
-    // When a sub-concept is added, the parentcounter attribute should be filled in
-    subcounter++;
-    parentcounter = $(this).attr('btn-counter');
-    addConceptFunction(subcounter, parentcounter);
+    if($(this).attr('id') == 'add-attribute'){
 
-    // Adding a sub-concept
-    if($(this).attr('id') == 'add-sub-concept'){
-        let btncounter = $(this).attr('btn-counter');
-        
-        // The parent concept of the newly added sub-concept
-        let parentConcept = $('.new-concept').find('.attribute-add').filter('[counter='+`${btncounter}`+']');
-
-        $(addConceptHTML).insertAfter(parentConcept);
-    }
-    else{
         let btncounter = $(this).attr('btn-counter');
 
         // HTML blob in which user can add a new attribute
@@ -150,14 +137,28 @@ $(".new-concept").on('click', 'a', function(event){
                 </a\>\
             </div\>\
         </div>"
+
+        $(attributeAddHTML).insertBefore($(this));
+    }
+})
+
+// Adding a sub-concept
+$(".new-concept").on('click', 'a', function(event){
+
+    // When a sub-concept is added, the parentcounter attribute should be filled in
+    subcounter++;
+    parentcounter = $(this).attr('btn-counter');
+    addConceptFunction(subcounter, parentcounter);
+
+    // Adding a sub-concept
+    if($(this).attr('id') == 'add-sub-concept'){
+        let btncounter = $(this).attr('btn-counter');
         
+        // The parent concept of the newly added sub-concept
+        let parentConcept = $('.new-concept').find('.attribute-add').filter('[counter='+`${btncounter}`+']');
 
-        // The counter of the "Add attribute" button that was pressed
-        let attrCounter = $(this).attr("btn-counter");
-        // The div to which the new row should be appended
-        let attributeAdd = $(this).closest("div").find(`[counter='${attrCounter}']`).filter('.attribute-add');
-
-        $(attributeAdd).append(attributeAddHTML);
+        $(addConceptHTML).insertBefore($(this));
+        //$(addConceptHTML).insertAfter(parentConcept);
     }
 })
 
@@ -166,7 +167,7 @@ $(".new-concept").on('click', 'a', function(event){
 $(".new-concept").on('click', '.attrDelete', function(event){
     // The row in which the clicked delete button is located
     let attrRow = $(this).parent().parent()[0];
-    attrRow.remove(attrRow);
+    $(attrRow).remove();
 });
 
 
@@ -325,9 +326,12 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         // The last counter element in the array
         let finalcounter = counterArray[counterArray.length - 1];
 
+        // Storing the counters that have been checked already
+        let checkedCounters = [];
+
         // Calling the function for every concept on level 1
         // This function will handle the addition of sub-concepts for THAT concept
-        addConcepts(counterArray[c], counterArray.length, 0, finalcounter);
+        addConcepts(counterArray[c], 0, finalcounter, 0, checkedCounters);
 
         // If no more non-nested concepts need to be added, add closing brackets and log the model
         if(c == counterArray.length - 1){
@@ -354,7 +358,7 @@ document.getElementById("dsl-create").addEventListener("click", async function()
 })
 
 
-function addConcepts(c, clength, subConceptCount, finalcounter) {
+function addConcepts(c, subConceptCount, finalcounter, previousCount, checked) {
 
     // ###########
     // ADDING THE INFO TO THE JSON MODEL FOR THE CURRENT COUNTER
@@ -452,29 +456,52 @@ function addConcepts(c, clength, subConceptCount, finalcounter) {
                 }
             }
         }
-
-        // // Adding a comma after each added concept except the final one
-        // if(c < clength - 1){
-        //     JSONmodel += ",";
-        // }
-
     })
+
+    console.log("checking for subconcepts for " + c)
 
     // CHECKING IF THERE ARE SUB-CONCEPTS
     // Subconcepts found
     if($(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').length != 0){
+        
+        console.log("subconcepts found for " + c)
+        
         JSONmodel += ",";
+
+        // Storing the counters that have been checked already
+        checked.push(c);
 
         // Reiterating the addConcepts function for this subconcept
         let subconcept = $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div');
         subConceptCount ++;
-        addConcepts($(subconcept).attr('counter'), 0, subConceptCount, finalcounter);
+
+        addConcepts($(subconcept).attr('counter'), subConceptCount, finalcounter, c, checked);
     }
-    // No further subconcepts found
+    // No further children subconcepts found for this subconcept
     else{
-        // For each added subconcept, two closing brackets should be added to close the concept
-        for(let scc = 0; scc < subConceptCount + 1; scc++){
-            JSONmodel += "}}";
+
+        console.log("NO subconcepts found for " + c)
+
+        console.log("checking subconcepts for the previous subconcept " + previousCount)
+
+        // Check if there are children subconcepts for the previous subconcept
+        // These concepts should not have been added already!
+        if($(`[counter='${previousCount}']`).find(`[parent-counter='${previousCount}']`).filter('div').length != 0 && !(checked.includes(previousCount))){
+
+            console.log("children found for previous subconcept " + previousCount)
+
+            // If the previous counter concept includes children and has not been checked before, call addConcepts
+            addConcepts(previousCount, 0, finalcounter, c, checked);
+        }
+        else{
+            console.log("no subconcepts found for previous subconcept " + previousCount)
+
+            console.log("Im adding two brackets to close this off")
+
+            // For each added subconcept, two closing brackets should be added to close the concept
+            for(let scc = 0; scc < subConceptCount + 1; scc++){
+                JSONmodel += "}}";
+            }
         }
     }
 }
@@ -482,7 +509,8 @@ function addConcepts(c, clength, subConceptCount, finalcounter) {
 
 // Removing (sub-)concepts
 $(".new-concept").on('click', '.deleteConcept', function(event){
-    $('.new-concept')[0].remove($(this).parent().parent().parent()[0]);
+    //console.log($(this).parent().parent().parent()[0]);
+    $(this).parent().parent().parent()[0].remove();
 });
 
 
