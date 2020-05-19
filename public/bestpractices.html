@@ -84,14 +84,14 @@
         </li>
 
         <!-- Nav Item - Practices -->
-        <li class="nav-item active">
+        <li id="menu-bp-item" class="nav-item active">
           <a class="nav-link" href="bestpractices.html">
             <i class="far fa-lightbulb"></i>
             <span>Practices</span></a>
         </li>
 
         <!-- Nav Item - ToC -->
-        <li class="nav-item">
+        <li id="menu-toc-item" class="nav-item">
           <a class="nav-link" href="toc.html">
             <i class="fas fa-ruler-combined"></i>
             <span>ToC</span></a>
@@ -205,29 +205,41 @@
         <div class="bp-modal-content">
           <span class="close"><i class="fas fa-times"></i></span>
           <div class="col-sm-10 col-lg-6 col-centered">
-            <div class="bp-modal-body">
+            <div id="bp-modal" class="bp-modal-body">
               <h1 id="bp-title">Best practice</h1>
+
+              <div class="row general-info">
+                <div class="col-sm-2">
+                  <p style="display: inline">Categories: </p>
+                </div>
+                <div class="col-sm-10" style="display: inline" id="bp-categories"></div>
+              </div>
+
+              <div class="row general-info">
+                <div class="col-sm-2">
+                  <p style="display: inline">Authors: </p>
+                </div>
+                <div class="col-sm-10" style="display: inline" id="bp-authors"></div>
+              </div>
+              <div class="row general-info">
+                <div class="col-sm-2">
+                  <p style="display: inline">Date: </p>
+                </div>
+                <div class="col-sm-10" style="display: inline" id="bp-date"></div>
+              </div>
               
-                <div class="card card-margin border-left-success shadow">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Description</div>
-                        <div style="padding-right: 12px" class="p" id="bp-description"><!--Description goes here--></div>
-                      </div>
-                      <div class="col-auto">
-                        <i class="far fa-file-alt fa-2x text-gray-300"></i>
-                      </div>
+              <div class="card card-margin border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Description</div>
+                      <div style="padding-right: 12px" class="p" id="bp-description"><!--Description goes here--></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-file-alt fa-2x text-gray-300"></i>
                     </div>
                   </div>
                 </div>
-
-
-
-
-
-
-
 
                 <!-- <div class="card border-left-success shadow">
                   <div class="card-body" id = "card_body">
@@ -272,6 +284,11 @@
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div id="bp-other-sections">
+                <!-- Other sections of the best practice are loaded here -->
+              </div>
           </div>
           </div>
         <!-- End of modal content -->

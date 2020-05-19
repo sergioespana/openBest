@@ -65,13 +65,26 @@ $(document).ready(function() {
               domainInstantiated = true;
               usercard.style.display = "inline-block";
             }
+            if(dName){
+              let menuItemBP = document.getElementById("menu-bp-item");
+              let menuItemToc = document.getElementById("menu-toc-item");
+              menuItemBP.style.display = "inline";
+              menuItemToc.style.display = "inline";
+            }
           }
 
           // If the user belongs to no domain
           if(!(dName)){
             domainInstantiated = false;
-            admincard.style.display = "inline-block";
-            admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+            if(admincard || admintext){
+              admincard.style.display = "inline-block";
+              admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+            }
+
+            // If the user belongs to no domain, refer to the index page
+            if(window.location.pathname == '/bestpractices.html' || window.location.pathname == '/toc.html'){
+              window.location.replace("/index.html");
+            }
           }
       });
       

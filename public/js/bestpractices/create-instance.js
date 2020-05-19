@@ -37,6 +37,14 @@ var jsontest = {
                     "5categories":
                         ["string"],
                     "6date": "string",
+                    "test": {
+                        "testdocument":{
+                            "01grouptitle": "Test",
+                            "02groupdesc": "Enter basic test information here.",
+                            "1displayfeature": true,
+                            "testfield": "string"
+                        }
+                    },
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -79,18 +87,20 @@ var jsontest = {
                 }
             },
             //collection
-            "solutions": {
-                "solutiondocument": {
-                    "displayfeature": false,
-                    "name": "string",
-                    "description": "string"
-                }
-            },
-            //collection
             "problems": {
                 "problemdocument": {
                     "01grouptitle": "Problem",
                     "02groupdesc": "What problem does this best practice solve?",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3description": "text"
+                }
+            },
+            //collection
+            "solutions": {
+                "solutiondocument": {
+                    "01grouptitle": "Solution",
+                    "02groupdesc": "What is the prescribed solution to the problem?",
                     "1displayfeature": true,
                     "2name": "string",
                     "3description": "text"
@@ -115,7 +125,7 @@ if(document.getElementById("create-instance-btn")){
 };
 
 
-
+// Instantiates the collectionPaths and documentPaths arrays
 function extractJSON(obj, int, prev) {
     // looping over the elements in the json file
     for (const i in obj) {
@@ -150,7 +160,7 @@ function extractJSON(obj, int, prev) {
 
 
 function extractFields() {
-    // For every entry in fieldsArr, we want to get the key-value pairs and corresponding collection path
+    // For every entry in fieldsArr (key-value pair in the JSON model), we want to get the key-value pairs and corresponding collection path
     for(var x = 0; x < fieldsArr.length; x++){
         // All fields related to this collection 
         var fields = Object.entries(fieldsArr[x]);
@@ -200,7 +210,7 @@ function writeDB(coll, doci, docp) {
     let x = docp.split("/");
     let docName = x[x.length - 1];
 
-    // Page refreshed after write to DB
+    // Page refreshed after write to DB if the domain has not been instantiated before
     writeCallback(coll, docName, JSONinfo, function() {
         if(domainInstantiated == false){
             location.reload();
@@ -212,7 +222,12 @@ function delay() {
     return new Promise(resolve => setTimeout(resolve, 800));
 }
 
+
+// Please note that any manually changed data will be overwritten by what's specified in the JSON model
 async function writeCallback(coll, docName, JSONinfo, callback) {
+    // Writing all documents to the database
+    // >> This info is later also used in create-bp to instantiate featured
+    // >> Info provided by user in create-bp will overwrite this info
     db.collection(coll).doc(docName).set(JSONinfo);
 
     let userPath = findPath(collectionPaths, 'user');
