@@ -5,7 +5,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function startup(BPID){
-
    create_meta_info();
    comment_input_location = document.getElementById("searchbar");
    create_comment_input(comment_input_location,"false");
@@ -111,6 +110,7 @@ function LabelOptions(){
     }
     return dropdownListWrapper;
 }
+
 function addbuttons(div,text,elem,commentid){
     draw = text.getAttribute("hasbeendrawn"); 
     
@@ -160,8 +160,6 @@ function masterSubmit(buttonbar,text){
     var message = text.innerText;
     if(lengte(message) >= 1){
     masterCancel(buttonbar,text);
-    console.log(message);
-    
     pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),"main",0,"none"); //write comment to db and afterwards draw it locally
     }
 }
@@ -360,7 +358,6 @@ function getrightformulation(see_answers,amountofchildren){
     else {var answerstring = " answers"}
     see_answers.innerText = "See " + amountofchildren + answerstring;
 }
-
 function editComment(see_more,comment_text,confirm,cancel,edit){  
     comment_text.toggleAttribute("contentEditable");
     if (comment_text.isContentEditable){
