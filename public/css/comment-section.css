@@ -1,4 +1,15 @@
 
+
+
+  /* BUTTON BAR */
+  .buttonbar{
+    margin-bottom: 10px;
+  }
+
+  .button{
+    
+  }
+
   /* INPUT BAR */
   /* ######### */
 
@@ -11,10 +22,9 @@
     border-bottom: 1px solid #ccc;
     font-family: inherit;
     font-size: inherit;
-    margin-bottom: 10px;
-    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     resize: none; 
-
   }
   
   .textarea[contenteditable]:empty::before {
@@ -168,6 +178,7 @@
     cursor: pointer;
   }
 
+
   .edit_button.selected{
     color:darksalmon;
   }
@@ -234,7 +245,6 @@
 	display    : block;
 	position   : absolute;
 	height     : calc(1em * 1.2);
-	background : linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
 }
 
 	.line-clamp:after
@@ -275,5 +285,6 @@
   overflow: hidden;
   background-color: #f1f1f1;
 }
+
 
 

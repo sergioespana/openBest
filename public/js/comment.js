@@ -11,7 +11,6 @@ function startup(BPID){
    BPid = BPID;
    getcomments(BPid);
 }
-
 //function to collapse the rules container
 //code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible
 function collapsible(){
@@ -30,7 +29,6 @@ for (i = 0; i < coll.length; i++) {
   });
 }
 }
-
 function create_meta_info(){
     var root = document.getElementById("searchbar");
     var comment_counter   = document.createElement("p");
@@ -83,7 +81,6 @@ function create_comment_input(elem, isSubComment,commentid){
     }
    }
 }
-
 //function to create dropdown menu for selecting the type of comment
 //not in use at the moment
 function LabelOptions(){
@@ -110,7 +107,6 @@ function LabelOptions(){
     }
     return dropdownListWrapper;
 }
-
 function addbuttons(div,text,elem,commentid){
     draw = text.getAttribute("hasbeendrawn"); 
     
@@ -166,7 +162,7 @@ function masterSubmit(buttonbar,text){
 function checklength(newsubmitbutton,text){
   var label = text.innerText;  
   if (lengte(label) >= 1){
-    newsubmitbutton.style.background = "rgb( 48, 158, 191)";
+    newsubmitbutton.style.background = "green";
   }
   else{
     newsubmitbutton.style.background = "buttonface";
@@ -302,7 +298,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    showtext(see_more,comment_text);
    //initial assesment if the text is larger than the 2 line comment box
    displayMore(comment_text,see_more);
-
 
    var confirm_edit = document.createElement("p");
    confirm_edit.classList.add("confirm_edit","option","bottomoption");
@@ -530,4 +525,9 @@ function displayMore(comment_text,see_more){
         }
         else {see_more.style.display = "none";}
         return false;
+}
+
+function makeinvisible(id1,id2){
+    document.getElementById(id1).style.display = "none";
+    document.getElementById(id2).style.display = "block";
 }
