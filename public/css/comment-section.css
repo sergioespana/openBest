@@ -209,11 +209,11 @@
   }
 
 
-  p.bottomOption:hover{
+  p.option:hover{
     color: black;
     cursor: pointer;
   }
-  p.bottomOption{
+  p.bottomoption{
     margin-right: 10px;
   }
 
@@ -255,5 +255,31 @@
 	height             : calc(1em * 1.2 * 2);
 }
 
+/* collapsible CSS code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible */
+
+.rules.collapsible {
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  padding-left: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: inherit;
+}
+
+.rActive, .rules.collapsible:hover {
+  background-color: darkgreen;
+}
+
+.collapsiblecontent {
+  padding: 0 10px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
 
 

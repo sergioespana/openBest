@@ -1,28 +1,45 @@
 .liking-options{
     color: black;
-    font-size: 1.2rem;
+    /* font-size: 1.2rem; */
     overflow: hidden;
-    padding-right: 20px;
+    height: auto;
+    max-height: 20%;
 
 }
 .pos{
     float:left;
+    position: relative;
 }
-.pos:hover{
+
+
+i.pos {
+    padding-top: 3px ;
+}
+
+i.neg {
+    padding-top: 3px;
+}
+
+p.pos{
+    margin-right: 5px;
+}
+
+i.pos:hover{
     color: green;
 }
 
-.pos.checked{
+i.pos.checked{
     color: green;
   }
 .neg{
     float:left;
+    position: relative;
 }
-.neg:hover{
+i.neg:hover{
     color: red;
 }
 
-.neg.checked{
+i.neg.checked{
     color: red;
   }
 

@@ -1,19 +1,37 @@
 var BPid = null;
 
+window.addEventListener('DOMContentLoaded', (event) => {
+    collapsible();
+});
+
 function startup(BPID){
+
    create_meta_info();
    comment_input_location = document.getElementById("searchbar");
    create_comment_input(comment_input_location,"false");
    BPid = BPID;
    getcomments(BPid);
 }
-function create_encouragement(){
-    var encouragement = document.createElement("p");
-    encouragement.innerText = "There are currently no comments, become the first to comment!";
-    var root = document.getElementById("commentsection");
-    root.appendChild(encouragement);//plak totale comment in de commentsectie
-    encouragementOBJ = encouragement;
+
+//function to collapse the rules container
+//code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible
+function collapsible(){
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("rActive");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
 }
+}
+
 function create_meta_info(){
     var root = document.getElementById("searchbar");
     var comment_counter   = document.createElement("p");
@@ -53,7 +71,7 @@ function create_comment_input(elem, isSubComment,commentid){
 
     newdiv.appendChild(comment_input);
 
-    if (isSubComment == "true"){ //in het geval van een subcomment
+    if (isSubComment == "true"){ //in case that the inputbar is for the subcomments
     
     insertAfter(newdiv,elem);
     comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input,elem,commentid)});
@@ -61,10 +79,37 @@ function create_comment_input(elem, isSubComment,commentid){
     }
 
     else{
-    elem.appendChild(newdiv); // in het geval van hoofdcomment
+    elem.appendChild(newdiv); // in the case that the inputbar is for creating top level comments
     comment_input.addEventListener("focus", function(){addbuttons(newdiv, comment_input)});//hoofdcomment
     }
    }
+}
+
+//function to create dropdown menu for selecting the type of comment
+//not in use at the moment
+function LabelOptions(){
+    //dropdown menu
+    var dropdownListWrapper = document.createElement("select");
+
+    //default option
+    var defaultOption = document.createElement("option");
+    defaultOption.setAttribute("value","");
+    defaultOption.setAttribute("disabled",true);
+    defaultOption.setAttribute("selected",true);
+    defaultOption.innerText = "Please select the comments type";
+    dropdownListWrapper.appendChild(defaultOption);
+
+    //types of comments, can be dependent on the domain in later versions, for simplicity the types below are included everywhere
+    var labelList = ["General comment","Question","Improvement Suggestion","Perceived flaw","Experience"];
+
+    //option creator
+    for (label of labelList){
+        var option = document.createElement("option");
+        option.setAttribute("value",label);
+        option.innerText = label;
+        dropdownListWrapper.appendChild(option);
+    }
+    return dropdownListWrapper;
 }
 function addbuttons(div,text,elem,commentid){
     draw = text.getAttribute("hasbeendrawn"); 
@@ -129,7 +174,7 @@ function checklength(newsubmitbutton,text){
     newsubmitbutton.style.background = "buttonface";
   }
 }               
-function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn){
+function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn,amountofchildren){
 
    // comment wrapper e.g. the wrapper for all the comments contents
    var comment_wrapper = document.createElement("DIV");
@@ -138,6 +183,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    comment_wrapper.style.marginLeft = movement;
    comment_wrapper.style.width = 'calc(100% - '+ movement +')';
    comment_wrapper.style.display = isdrawn;
+   comment_wrapper.setAttribute("amountofchildren",amountofchildren);
    
    comment_wrapper.id = commentid;
    comment_wrapper.classList.add("comment_wrapper");
@@ -217,7 +263,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         remove_comment.addEventListener("click", function(){
         // removeallChildren(level,commentid,BP_id);
         // ask for confirmation that a user indeed wants to delete his comments
-            if (confirm("Are you sure you want to delete this comment? please notE that reactions to this comment will also be lost")== true){
+            if (confirm("Are you sure you want to delete this comment? please note that reactions to this comment will also be lost")== true){
                 removeComment(commentid,BP_id,comment_wrapper);
             }
         }); 
@@ -250,27 +296,25 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    insertAfter(comment_wrapper,root);
    }
 
-   //creation of the "see more" button to view reactions on comments
+   //creation of the "see more" button to view the rest of the comment
    var see_more = document.createElement("p");
-   see_more.classList.add("see_more","bottomOption");
+   see_more.classList.add("see_more","option","bottomoption");
    bottomtoolbar_wrapper.appendChild(see_more);
-
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
-   see_more.addEventListener("mouseover",function(){showcursor(see_more)});
    showtext(see_more,comment_text);
    //initial assesment if the text is larger than the 2 line comment box
    displayMore(comment_text,see_more);
 
 
    var confirm_edit = document.createElement("p");
-   confirm_edit.classList.add("confirm_edit","bottomOption");
+   confirm_edit.classList.add("confirm_edit","option","bottomoption");
    confirm_edit.innerText = "Confirm edit";
    confirm_edit.style.display = "none";
    confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BP_id,commentid,edit_comment);})
    bottomtoolbar_wrapper.appendChild(confirm_edit);
 
    var cancel_edit = document.createElement("p");
-   cancel_edit.classList.add("cancel_edit","bottomOption");
+   cancel_edit.classList.add("cancel_edit","option","bottomoption");
    cancel_edit.innerText = "Cancel edit";
    cancel_edit.style.display = "none";
    cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text,edit_comment);})
@@ -285,36 +329,39 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    
     //paste various rating systems
     //createEbayRating(comment_wrapper);//create eBay
-    createLikeDislikeRating(content_wrapper);//create dislikelike
+    createLikeDislikeRating(content_wrapper,4,3);//create dislikelike
     // createStarRating(comment_wrapper);//create starRating
 
    //react button and functionality
    if (level < 3){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
     var react_button = document.createElement("p");
-    react_button.classList.add("react_button");
+    react_button.classList.add("react_button","option");
     react_button.innerText = "React";
     content_wrapper.appendChild(react_button);
-    react_button.addEventListener("mouseover",function(){showcursor(react_button)});
     react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",commentid)});
     }
    //see answers button and functionality
    var see_answers = document.createElement("p");
-   see_answers.innerText = "see answers";
-   see_answers.classList.add("see_answers");
+   see_answers.classList.add("see_answers","option");
    see_answers.id = "answers" + commentid;
-   see_answers.addEventListener("click",function(){getallChildren(level,commentid)});
+   //getrightformulation(see_answers,amountofchildren);
+   see_answers.innerText = "See reactions"
+   see_answers.addEventListener("click",function(){getallChildren(level,commentid,see_answers,amountofchildren);});
    content_wrapper.appendChild(see_answers);
-
    //only display the "see more" button if a comment has children
   if (haschildren == true){
    see_answers.style.display = "block";
    }
    else{see_answers.style.display = "none";}
-   see_answers.addEventListener("mouseover",function(){showcursor(see_answers)});
 }
+// currently not in use
+function getrightformulation(see_answers,amountofchildren){
+    if (amountofchildren == 1){var answerstring = " answer"}
+    else {var answerstring = " answers"}
+    see_answers.innerText = "See " + amountofchildren + answerstring;
+}
+
 function editComment(see_more,comment_text,confirm,cancel,edit){  
-   
-    
     comment_text.toggleAttribute("contentEditable");
     if (comment_text.isContentEditable){
         //select the comments text box
@@ -388,18 +435,21 @@ function subCancel(text,elem){
         remove_element(text.parentElement);
         elem.setAttribute("SubInputisDrawn","false");
     }
+
 }
-function getallChildren(level,commentid,reason){
+function getallChildren(level,commentid,see_answers,amountofchildren,reason){
    var isdrawn =  document.getElementById(commentid).getAttribute("subCommentDrawn");
    for (item of getLevelList(level+1)){
     if(item[9] == commentid){
         if (isdrawn == "false" && reason != "removechildren"){
-           // text.innerText = "hide answers";
-        document.getElementById(item[4]).style.display = "flex";}
+           see_answers.innerText = "Hide reactions";
+           if (document.getElementById(item[4])){
+        document.getElementById(item[4]).style.display = "flex";}}
         else {
-           // text.innerText = "see answers";
+            see_answers.innerText = "See reactions";
+            if (document.getElementById(item[4])){
             document.getElementById(item[4]).style.display = "none";
-            getallChildren(level+1,item[4],"removechildren");        
+            getallChildren(level+1,item[4],see_answers,amountofchildren,"removechildren");}        
         }
     }
 }
@@ -452,9 +502,6 @@ function getUserName(){
             name = user.displayName;
             return(name);
         }   
-}
-function showcursor(showmore){
-    showmore.style.cursor = "pointer";
 }
 // remove 1 comment
 function remove_element(element){

@@ -64,6 +64,13 @@ function checkChildren(messageID,level){
    var hasChildren = getLevelList(level+1).map(x => x[9]).includes(messageID);
    return hasChildren;  
 }
+
+function amountOfChildren(messageID,level){
+    var amountofchildren = lengte(getLevelList(level+1).map(x => x[9]).filter(x => x == messageID));
+    console.log(amountofchildren);
+    
+    return amountofchildren;
+}
 function getLevelList(level){
     switch(level){
         case 0:
@@ -84,26 +91,26 @@ function getLevelList(level){
 function recursive(){   
     for (doc1 of head){
         id1 = doc1[4];
-        draw_comment_db(doc1,checkChildren(id1,0),"flex");
+        draw_comment_db(doc1,checkChildren(id1,0),amountOfChildren(id1,0),"flex");
         higherCounter();
         for (doc2 of first){
             if (doc2[9] == id1){
                 id2 = doc2[4];
-                draw_comment_db(doc2,checkChildren(id2,1),"none");
+                draw_comment_db(doc2,checkChildren(id2,1),amountOfChildren(id2,1),"none");
                 higherCounter();
                 for (doc3 of second){
                     if (doc3[9] == id2){
                         id3 = doc3[4];
-                        draw_comment_db(doc3,checkChildren(id3,2),"none");
+                        draw_comment_db(doc3,checkChildren(id3,2),amountOfChildren(id3,2),"none");
                         higherCounter();
                         for (doc4 of third){
                             if(doc4[9] == id3){
                                 id4 = doc4[4];
                                 higherCounter();
-                                draw_comment_db(doc4,checkChildren(id4,3),"none");
+                                draw_comment_db(doc4,checkChildren(id4,3),amountOfChildren(id4,3),"none");
                                 for (doc5 of fourth){
                                     if(doc5[9] == id4){
-                                        draw_comment_db(doc5,"none","none");
+                                        draw_comment_db(doc5,"none","none","none");
                                         higherCounter();
                                     }     
                                 }
@@ -116,8 +123,8 @@ function recursive(){
     } 
 }
 // function to translate an entry gotten from the database to a way suitable for draw_comment
-function draw_comment_db(doc,haschildren,isdrawn){
-    draw_comment(doc[0],doc[1],doc[2],doc[3],doc[4],doc[5],doc[6],doc[7],doc[8],doc[9],haschildren,isdrawn);
+function draw_comment_db(doc,haschildren,amountofchildren,isdrawn){
+    draw_comment(doc[0],doc[1],doc[2],doc[3],doc[4],doc[5],doc[6],doc[7],doc[8],doc[9],haschildren,isdrawn,amountofchildren);
 }
 // highers the total comment counter
 function  higherCounter(){

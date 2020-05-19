@@ -1,5 +1,7 @@
 
-function createLikeDislikeRating (root){
+
+
+function createLikeDislikeRating (root,likes,dislikes,userrating){
 
   var DislikeLikeWrapper = document.createElement("DIV");
   DislikeLikeWrapper.classList.add("dislike-like");
@@ -17,33 +19,48 @@ function createLikeDislikeRating (root){
   var likingOptionDown = document.createElement("i");
   likingOptionDown.classList.add("far","fa-thumbs-down","neg");
 
-  DislikeLikeOptions.appendChild(likingOptionDown);
+  var amountLikes = document.createElement("p");
+  amountLikes.innerText = likes;
+  amountLikes.classList.add("pos");
+
+  var amountDislikes = document.createElement("p");
+  amountDislikes.innerText = dislikes;
+  amountDislikes.classList.add("neg");
+
   DislikeLikeOptions.appendChild(likingOptionUp);
+  DislikeLikeOptions.appendChild(amountLikes);
+
+  DislikeLikeOptions.appendChild(likingOptionDown);
+  DislikeLikeOptions.appendChild(amountDislikes);
+  
   DislikeLikeUnit.appendChild(DislikeLikeOptions);
   DislikeLikeWrapper.appendChild(DislikeLikeUnit);
   root.appendChild(DislikeLikeWrapper);
 
-  likingOptionUp.addEventListener("click",   function(){changeColor_like("green",likingOptionUp,likingOptionDown,DislikeLikeOptions)});  
-  likingOptionDown.addEventListener("click", function(){changeColor_like("red",likingOptionUp,likingOptionDown,DislikeLikeOptions)});
+  likingOptionUp.addEventListener("click",   function(){changeColor_like("green",likingOptionUp,likingOptionDown,DislikeLikeOptions,amountDislikes,amountLikes)});  
+  likingOptionDown.addEventListener("click", function(){changeColor_like("red",likingOptionUp,likingOptionDown,DislikeLikeOptions,amountDislikes,amountLikes)});
 }
 
-function changeColor_like(colour,itempos,itemneg,options) {  
-    switch(colour){
-      case "red":
-          console.log("red");
-          removetags_like(itempos);//remove 'rated' tags from the other option
+function changeColor_like(colour,itempos,itemneg,options,amountDislikes,amountLikes) {  
+  var scPos = amountLikes.innerText;
+  var scNeg = amountDislikes.innerText;
+  switch(colour){
+      case "red":  
+          removetags_like(itempos,scPos,amountLikes);//remove 'rated' tags from the other option
           fliptags_like(itemneg,options);// switch tags from checked to not checked and vice versa for this option
           if (itemneg.classList.contains('checked')){
-          options.setAttribute('data-rating', -1);
+            amountDislikes.innerText = parseInt(scNeg) + 1;
           }
+          else {amountDislikes.innerText = parseInt(scNeg) - 1;}
           break;
       case "green":
           console.log("green");
-          removetags_like(itemneg);//remove 'checked' tags from the other option
+          removetags_like(itemneg,scNeg,amountDislikes);//remove 'checked' tags from the other option
           fliptags_like(itempos,options);// switch tags from checked to not checked and vice versa for this option
           if (itempos.classList.contains('checked')){
-          options.setAttribute('data-rating', 1);  
+            amountLikes.innerText = parseInt(scPos) + 1;
           }
+          else {amountLikes.innerText = parseInt(scPos) - 1;}
           break;
     }
 }
@@ -60,6 +77,10 @@ function fliptags_like(item,options){
 }
 
 //method to remove the tags of the other options to ensure mutual exclusion between the options
-function removetags_like(item){
+function removetags_like(item,score,scoredigit){
+  if (item.classList.contains('checked')){
   item.classList.remove('checked');
+  scoredigit.innerText = score - 1;
+  }
+
 }
