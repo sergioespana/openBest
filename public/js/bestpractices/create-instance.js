@@ -32,14 +32,15 @@ var jsontest = {
                     "1displayfeature": true,
                     "2title": "string",
                     "3description": "text",
-                    "4author": 
-                        ["document reference"],
+                    "4author": [{"name" : "writtenby", "self": "document reference", "related": "document reference"}],
+                    //"4author": 
+                    //    ["document reference"],
                     "5categories":
                         ["string"],
                     "6date": "string",
-                    "test": {
+                    "subcollectiontest": {
                         "testdocument":{
-                            "01grouptitle": "Test",
+                            "01grouptitle": "Testing subcollections",
                             "02groupdesc": "Enter basic test information here.",
                             "1displayfeature": true,
                             "testfield": "string"
@@ -93,19 +94,29 @@ var jsontest = {
                     "02groupdesc": "What problem does this best practice solve?",
                     "1displayfeature": true,
                     "2name": "string",
-                    "3description": "text"
-                }
-            },
-            //collection
-            "solutions": {
-                "solutiondocument": {
-                    "01grouptitle": "Solution",
-                    "02groupdesc": "What is the prescribed solution to the problem?",
-                    "1displayfeature": true,
-                    "2name": "string",
-                    "3description": "text"
+                    "3description": "text",
+                    "solutions": {
+                        "solutiondocument": {
+                            "01grouptitle": "TEST Solution",
+                            "02groupdesc": "TEST What is the prescribed solution to the problem?",
+                            "1displayfeature": true,
+                            "2name": "string",
+                            "3description": "text"
+                        }
+                    }
                 }
             }
+            //,
+            //collection
+            // "solutions": {
+            //     "solutiondocument": {
+            //         "01grouptitle": "Solution",
+            //         "02groupdesc": "What is the prescribed solution to the problem?",
+            //         "1displayfeature": true,
+            //         "2name": "string",
+            //         "3description": "text"
+            //     }
+            // }
         }
     }
 };
@@ -179,8 +190,16 @@ function extractFields() {
             }
             // If the key-value pair indicates an array (which is an object type)
             else if(Array.isArray(value)){
-                var arrObject = ("\""+`${key}`+"\""+": "+"[\""+`${value}`+"\"]");
-                remaining.push(arrObject);
+                // If this array stores a map object (docref)
+                if(typeof(value) == "object"){
+                    let arrObject = ("\""+`${key}`+"\""+": "+`${JSON.stringify(value)}`);
+                    remaining.push(arrObject);
+                }
+                // Other arrays
+                else{
+                    let arrObject = ("\""+`${key}`+"\""+": "+"[\""+`${value}`+"\"]");
+                    remaining.push(arrObject);
+                }
             }
         }
 

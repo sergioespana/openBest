@@ -11,14 +11,21 @@ const BPform = document.querySelector('#bp-entry-form');
 // How many docrefs are stored
 var docRefCounter = 0;
 
-
-// ############################################
-
-
+// The modal and button to display it
 var modal = document.getElementById("bp-modal");
 var btn = document.getElementById("create-BP-btn");
-// span elements closes the modal
+// Span elements closes the modal
 var span = document.getElementsByClassName("close")[0];
+
+// Div instantiated for the set of features for each concept
+// var conceptDivInit = document.createElement('div');
+var check = "nothing";
+
+// Stores a counter to give each new concept a unique docname
+var newConceptCounter = 0;
+
+
+// ############################################
 
 // displaying the modal
 if(btn){
@@ -33,6 +40,9 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
     // Assigning a unique id
     let uniqueDocID = ('_' + Math.random().toString(36).substr(2, 9));
     span.setAttribute('id', uniqueDocID);
+
+    // Resetting the counter
+    newConceptCounter = 0;
 
 
     // First alter the JSON string by inserting the unique doc id's
@@ -54,7 +64,6 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
         // (manually changed info in standard docs will therefore be overwritten by the model)
         extractJSON(JSON.parse(aJSON), 0, '');
         extractFields();
-
 
         collectionPaths.forEach(coll => {
             db.collection(coll)
@@ -131,9 +140,19 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
 
 // This function is called for each key-value pair in each document that requires features
 function instantiateFeatures(key, value, coll, doc, docrefArray){
+
+    // Adding a div for each NEW concept by checking the collectionpath
+    if(check != coll){
+        let conceptDiv = document.createElement('div');
+        conceptDiv.setAttribute('coll', coll);
+        check = coll;
+        $(BPform).append(conceptDiv);
+    }
     
     // Don't display the displayfeature field
     if(key != '1displayfeature'){
+
+        let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
                             
         let grouptitle = document.createElement('div');
         let label = document.createElement('label');
@@ -147,14 +166,15 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
         if(key == '01grouptitle'){
             grouptitle.setAttribute('class', 'font-weight-bold text-success text-uppercase');
             grouptitle.textContent = value;
-            BPform.appendChild(grouptitle);
-            BPform.appendChild(br);
+            conceptDiv.appendChild(grouptitle);
+            conceptDiv.appendChild(br);
+
         }
         else if(key == '02groupdesc'){
             let groupdesc = document.createElement('p');
             groupdesc.textContent = value;
-            BPform.appendChild(groupdesc);
-            BPform.appendChild(br);
+            conceptDiv.appendChild(groupdesc);
+            conceptDiv.appendChild(br);
         }
         // Every other key-value pair
         else{
@@ -201,57 +221,64 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
 
             // Assigning attribute types to the input fields
             if(Array.isArray(value)){
-                input.setAttribute('type', 'array');
+                if(typeof(value[0]) == "object"){
+                    input.setAttribute('type', 'docref');
+                }
+                else{
+                    input.setAttribute('type', 'array');
+                }
             }
             else {
                 input.setAttribute('type', 'field');
                 textarea.setAttribute('type', 'field');
             }
 
-            // Adding elements that do not require population with document references
-            if(value != "document reference"){
+            // Adding elements that do not require population with DOCUMENT REFERENCES
+            if(!(typeof(value[0]) == "object")){
                 // Arrays
                 if(Array.isArray(value)){
-                    BPform.appendChild(label);
-                    BPform.appendChild(br);
-                    BPform.appendChild(input);
-                    BPform.appendChild(br);
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(br);
+                    conceptDiv.appendChild(input);
+                    conceptDiv.appendChild(br);
                     // Setting this attribute helps in determining the type of input to be added
                     addOther.setAttribute('add-type', 'regular');
-                    BPform.appendChild(addOther);
-                    BPform.appendChild(br);
+                    conceptDiv.appendChild(addOther);
+                    conceptDiv.appendChild(br);
                 }
                 // Larger text fields
                 else if(value == 'text'){
-                    BPform.appendChild(label);
-                    BPform.appendChild(br);
-                    BPform.appendChild(textarea);
-                    BPform.appendChild(br);
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(br);
+                    conceptDiv.appendChild(textarea);
+                    conceptDiv.appendChild(br);
                 }
                 // Other
                 else{
-                    BPform.appendChild(label);
-                    BPform.appendChild(br);
-                    BPform.appendChild(input);
-                    BPform.appendChild(br);
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(br);
+                    conceptDiv.appendChild(input);
+                    conceptDiv.appendChild(br);
                 }
             }
-            // Document reference dropdowns are created and populated here
+            // DOCUMENT REFERENCE dropdowns are created and populated here
             else{       
                 // No current entries in the docref subcollection
                 // For example, no authors
                 // We add a text field to the doc, rather than a dropdown
                 if(docrefArray.length == 0){
-                    BPform.appendChild(label);
-                    BPform.appendChild(br);
-                    BPform.appendChild(input);
-                    BPform.appendChild(br);
-                    if(Array.isArray(value)){
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(br);
+                    // Adding the current docref as the self attribute
+                    input.setAttribute('self', coll+'/'+doc.id);
+                    conceptDiv.appendChild(input);
+                    conceptDiv.appendChild(br);
+                    //if(Array.isArray(value)){
                         // Setting this attribute helps in determining the type of input to be added
                         addOther.setAttribute('add-type', 'docref');
-                        BPform.appendChild(addOther);
-                        BPform.appendChild(br);
-                    }
+                        conceptDiv.appendChild(addOther);
+                        conceptDiv.appendChild(br);
+                    //}
 
                     // Setting the path to the docref subcollection as attribute
                     let keyText = key.replace(/[0-9]/g, '');
@@ -265,17 +292,18 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     // A selectbox is added if there are document references to be found
                     let referenceSelect = document.createElement('select');
                     referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
-                    BPform.appendChild(label);
-                    BPform.appendChild(br);
-                    BPform.appendChild(referenceSelect);
-                    BPform.appendChild(br);
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(br);
+                    conceptDiv.appendChild(referenceSelect);
+                    conceptDiv.appendChild(br);
                     if(Array.isArray(value)){
                         addEx.setAttribute('add-type', 'docref');
-                        BPform.appendChild(addEx);
+                        // BPform.appendChild(addEx);
+                        conceptDiv.appendChild(addEx);
 
                         addOther.setAttribute('add-type', 'docref');
-                        BPform.appendChild(addOther);
-                        BPform.appendChild(br);
+                        conceptDiv.appendChild(addOther);
+                        conceptDiv.appendChild(br);
                     }
 
                     // Adding the values of the docrefArray to the dropdown
@@ -404,11 +432,31 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     let previousInput = element.previousElementSibling;
                     // Adding the new input field
                     $(referenceRow).insertAfter(previousInput);
-
-                    //docRefCounter++;
-
                 });
             }
+
+        }
+    }
+
+    // ADDING ANOTHER CONCEPT IN A SUBCOLLECTION
+    // Any collectionpath with more than 3 items is a subcollection
+    if(coll.split("/").length > 3){
+        // Array of keys in this document
+        let documentKeys = Object.keys(doc.data());
+
+        if(key == documentKeys[documentKeys.length - 1]){
+
+            let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
+
+            // Button to add a new concept
+            let addConcept = "<a style=\"margin-bottom: 15px\" class=\"addConcept btn btn-light btn-icon-split\">\
+            <span class=\"text\">\
+            <i class=\"fas fa-plus\"></i>\
+            </span>\
+            <span class=\"text\">Add document</span>\
+            </a>"
+
+            $(conceptDiv).append(addConcept);
 
         }
     }
@@ -422,6 +470,49 @@ $("#bp-entry-form").on('click', '.attrDelete', function(event){
     attrRow.remove(attrRow);
 });
 
+
+// Adding a concept
+$("#bp-entry-form").on('click', '.addConcept', function(event){
+    // Upping the newConceptCounter
+    newConceptCounter++;
+    // Creating the new div
+    let newConcept = document.createElement("div");
+    // Adding the delete button, but only adding it to the HTML for the first newly added concept
+    if(!($(this).parent()[0].getAttribute('class'))){
+        newConcept.innerHTML = "\
+        <div class=\"row\"\>\
+            <div class=\"col-md-11\"\></div\>\
+            <div class=\"col-md-1\"\>\
+                <a class=\"conceptDelete btn btn-light btn-icon-split\"\>\
+                    <i class=\"fas fa-times\"></i\>\
+                </a\>\
+            </div\>\
+        </div>"
+    }
+    // Adding the same elements as the previous div
+    newConcept.innerHTML += $(this).parent()[0].innerHTML;
+    // Setting the class for the new concept
+    newConcept.setAttribute('class', 'newConcept');
+    // Styling the div
+    newConcept.style = "border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px; margin-bottom: 15px"
+
+    // Adding the newConceptCounter, so that each input field in this new div has a unique docname
+    $(newConcept).find('input').each(function(){
+        $(this).attr('docname', `${$(this).attr('docname')}`+'-'+`${newConceptCounter}`)
+    });
+
+    // Adding the div
+    $(newConcept).insertAfter($(this).parent()[0]);
+});
+
+
+// Removing an new concept div
+$("#bp-entry-form").on('click', '.conceptDelete', function(event){
+    // The div in which the button is located
+    let conceptDiv = $(this).parent().parent().parent()[0];
+    // Deleting the div
+    conceptDiv.remove(conceptDiv);
+});
 
 
 // Delay function specifies how long to wait on an async function
@@ -473,13 +564,38 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
     var filledBPform = document.querySelector('#bp-entry-form');
 
     // Getting an array of collectionpaths specified for the form elements
-    let colpathArray = []
+    let colpathArray = [];
+    // Storing the docnames as well
+    let docNameArray = [];
+
+    // Store the docname AND colpath for each concept in two arrays
     for (var col = 0; col < filledBPform.length; col++) {
         // If the element has a colpath attribute
         if(filledBPform.elements[col].getAttribute('colpath')){
-            // And that attribute is not already added to the array
-            if(!(colpathArray.includes(filledBPform.elements[col].getAttribute('colpath')))){
-                colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+            // For subcollection colpaths, we store a (non-unique) colpath for each unique docname
+            if(filledBPform.elements[col].getAttribute('colpath').split("/").length > 3){
+                if(!(colpathArray.includes(filledBPform.elements[col].getAttribute('colpath')))){
+                    // Storing the colpath
+                    colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+                    // Storing the docname
+                    docNameArray.push(filledBPform.elements[col].getAttribute('docname'));
+                }
+                else if(!(docNameArray.includes(filledBPform.elements[col].getAttribute('docname')))){
+                    // Storing the colpath
+                    colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+                    // Storing the docname
+                    docNameArray.push(filledBPform.elements[col].getAttribute('docname'));
+                }
+            }
+            // For non-subcollection colpaths, we only store unique colpaths
+            else{
+                // And that attribute is not already added to the array
+                if(!(colpathArray.includes(filledBPform.elements[col].getAttribute('colpath')))){
+                    // Storing the colpath
+                    colpathArray.push(filledBPform.elements[col].getAttribute('colpath'));
+                    // Storing the docname
+                    docNameArray.push(filledBPform.elements[col].getAttribute('docname'));
+                }
             }
         }
     }
@@ -508,7 +624,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
         // Extracting all information from the filled in form and writing that info to arrays
 
         for (var i = 0; i < filledBPform.length; i++) {
-            if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps]){
+            if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps] && filledBPform.elements[i].getAttribute('docname') == docNameArray[cps]){
                 var entryColPath = filledBPform.elements[i].getAttribute('colpath');
                 var entryDocName = filledBPform.elements[i].getAttribute('docname');
                 var entryKey = filledBPform.elements[i].getAttribute('key');
@@ -519,7 +635,6 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                     JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
                 }
                 // Selected fields in selectbox OR regular fields for document references
-                //else if(entryType == 'select' || filledBPform.elements[i].textContent == 'document reference'){
                 else if(entryType == 'select' || filledBPform.elements[i].getAttribute('docref-docname')){
                     if(entryType == 'select'){
                         let selectedOption = filledBPform.elements[i].options[filledBPform.elements[i].selectedIndex];
@@ -537,8 +652,6 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                         docRefColl.push(filledBPform.elements[i].getAttribute('docrefcoll'));
                         docRefDocName.push(filledBPform.elements[i].getAttribute('docref-docname'));
                         keyRef.push(filledBPform.elements[i].getAttribute('key'));
-
-                        console.log(filledBPform.elements[i].getAttribute('key'));
                     }
                 }
                 // Array fields
@@ -557,6 +670,12 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                 }
             }
         }
+
+        console.log(docRef)
+        console.log(keyRef)
+        console.log(docRefDocName)
+        console.log(docRefColl)
+        debugger
 
         // STEP 2
         // Constructing a string with array contents and adding that to the JSON info
@@ -609,11 +728,13 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
             }
         });
 
+
         // STEP 4
         // Writing to the database
 
         db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
+        
         // STEP 5
         // So far only array information and regular field information is written. Docref writes requires extra info.
 
@@ -674,6 +795,9 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                     db.collection(drp).doc(drdn).set({"name": inputValue});
                 }
             }
+
+
+            // THIS SHOULD BE AN ARRAY OF MAPS
 
             // Writing an array of docrefs to the best practice document
             for(let ui = 0; ui < uniqueIndex.length; ui++){
