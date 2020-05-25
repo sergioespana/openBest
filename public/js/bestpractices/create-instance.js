@@ -98,8 +98,8 @@ var jsontest = {
                     "3description": "text",
                     "solutions": {
                         "solutiondocument": {
-                            "01grouptitle": "TEST Solution",
-                            "02groupdesc": "TEST What is the prescribed solution to the problem?",
+                            "01grouptitle": "Solution",
+                            "02groupdesc": "What is the prescribed solution to the problem?",
                             "1displayfeature": true,
                             "2name": "string",
                             "3description": "text"
@@ -107,17 +107,6 @@ var jsontest = {
                     }
                 }
             }
-            //,
-            //collection
-            // "solutions": {
-            //     "solutiondocument": {
-            //         "01grouptitle": "Solution",
-            //         "02groupdesc": "What is the prescribed solution to the problem?",
-            //         "1displayfeature": true,
-            //         "2name": "string",
-            //         "3description": "text"
-            //     }
-            // }
         }
     }
 };

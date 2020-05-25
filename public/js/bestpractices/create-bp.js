@@ -44,7 +44,6 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
     // Resetting the counter
     newConceptCounter = 0;
 
-
     // First alter the JSON string by inserting the unique doc id's
     alterJSON(uniqueDocID, function(aJSON){
 
@@ -132,6 +131,9 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                     }
                 })
             })
+            .catch(function(error) {
+                console.error("Error retrieving document: ", error);
+            });
 
         });
     })
@@ -238,6 +240,7 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     conceptDiv.appendChild(input);
                     // Setting this attribute helps in determining the type of input to be added
                     addOther.setAttribute('add-type', 'regular');
+                    addOther.style.marginBottom = '15px';
                     conceptDiv.appendChild(addOther);
                 }
                 // Larger text fields
@@ -259,21 +262,41 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                 // For example, no authors
                 // We add a text field to the doc, rather than a dropdown
                 if(docrefArray.length == 0){
-                    // Adding the current docref as the self attribute
-                    input.setAttribute('self', coll+'/'+doc.id);
-                    // Adding the relationship name
-                    input.setAttribute('rel-name', value[0].name);
-                    conceptDiv.appendChild(input);
+                    // Iterating over the relationship names, in the case there
+                    for(let relname = 0; relname < value.length; relname++){
 
-                    addOther.setAttribute('add-type', 'docref');
-                    conceptDiv.appendChild(addOther);
+                        let relTitle = document.createElement('p');
+                        relTitle.textContent = value[relname].name;
+                        conceptDiv.appendChild(relTitle);
 
-                    // Setting the path to the docref subcollection as attribute
-                    let keyText = key.replace(/[0-9]/g, '');
-                    let docrefPath = findPath(collectionPaths, keyText);
-                    input.setAttribute('docrefpath', docrefPath+'/'+doc.id);
-                    input.setAttribute('docrefcoll', docrefPath);
-                    input.setAttribute('docref-docname', doc.id);
+                        let relInput = document.createElement('input');
+                        relInput.setAttribute('key', input.getAttribute('key'));
+                        relInput.setAttribute('type', 'docref');
+                        relInput.setAttribute('colpath', input.getAttribute('colpath'));
+                        relInput.setAttribute('docname', input.getAttribute('docname'));
+                        relInput.setAttribute('class', input.getAttribute('class'));
+                        // Adding the current docref as the self attribute
+                        relInput.setAttribute('self', coll+'/'+doc.id);
+                        // Adding the relationship name
+                        relInput.setAttribute('rel-name', value[relname].name);
+                        // Adding the input field
+                        conceptDiv.appendChild(relInput);
+
+                        let addOtherRel = document.createElement('a');
+                        addOtherRel.innerHTML = addOther.innerHTML;
+                        addOtherRel.setAttribute('id', 'addItem-'+(`${value[relname].name}`).replace(' ', ''));
+                        addOtherRel.setAttribute('add-type', 'docref');
+                        addOtherRel.setAttribute('class', 'addOther');
+                        addOtherRel.setAttribute('rel-name', value[relname].name);
+                        conceptDiv.appendChild(addOtherRel);
+
+                        // Setting the path to the docref subcollection as attribute
+                        let keyText = key.replace(/[0-9]/g, '');
+                        let docrefPath = findPath(collectionPaths, keyText);
+                        relInput.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
+                        relInput.setAttribute('docrefcoll', docrefPath);
+                        relInput.setAttribute('docref-docname', doc.id+'-'+relname);
+                    }
                 }
                 // Current entries already exist > we create a dropdown
                 else{
@@ -292,7 +315,6 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
 
                         let addExRel = document.createElement('a');
                         addExRel.innerHTML = addEx.innerHTML;
-                        console.log(addEx.innerHTML)
                         addExRel.setAttribute('add-type', 'docref');
                         addExRel.setAttribute('class', 'addEx');
                         addExRel.setAttribute('rel-name', value[relname].name);
@@ -484,9 +506,6 @@ $("bp-entry-form").on('click', '.addOther', function(event){
     //Element is the parent element of the clicked button
     let element = this.parentElement;
 
-    console.log(element)
-    debugger;
-
     // HTML code for adding an input field
     let inputAddHTML;
 
@@ -541,7 +560,7 @@ $("#bp-entry-form").on('click', '.addConcept', function(event){
     newConcept.style = "border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px; margin-bottom: 15px"
 
     // Adding the newConceptCounter, so that each input field in this new div has a unique docname
-    $(newConcept).find('input').each(function(){
+    $(newConcept).find('input, select, textarea').each(function(){
         $(this).attr('docname', `${$(this).attr('docname')}`+'-'+`${newConceptCounter}`)
     });
 
@@ -592,6 +611,9 @@ async function alterJSON(docid, callback){
                 alteredJSONstring = alteredJSONstring.replace(item.id.toString(), docid.toString());
             }
         })
+        .catch(function(error) {
+            console.error("Error retrieving document: ", error);
+        });
     }
     
     // Await the delay before firing the callback > long enough to write alteredJSONstring
@@ -771,7 +793,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
 
 
         // STEP 4
-        // Writing to the database
+        // Writing the best practice to the database
 
         db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
@@ -784,9 +806,6 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
 
             let uniqueRef = [];
             let uniqueIndex = [];
-
-            // Need to store multiple docrefs in the same field as an array
-            // Construct that array first and then write it > otherwise only one ref is stored
 
             // docRef stores all docrefs for every field
             // Creating an array of indexes > up until which index grouped docrefs are stored
@@ -802,7 +821,11 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                 }
             }
 
-            // Writing the documents that are referenced to in their respective subcollections
+            // STEP 5.1: Handling the documents that docrefs point too
+            // ## If a docref is created with an input field > create a new document in that referenced subcollection
+            // ## If a docref is created with a selectbox > update the relationship info in that referenced document
+
+            // Iterating over all docrefs
             for(var key = 0; key < keyRef.length; key++){
 
                 // Getting the form that is responsible for this input
@@ -811,38 +834,56 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                     return (formfeature.getAttribute('key') == keyName)
                 });
 
+                // drp is the collectionpath in which docrefs are stored
+                let drp = docRefColl[key];
+                // drdn is the name of the document, including the docrefcounter
+                let drdn = docRefDocName[key];
+                
+                // Information on the docrefs to be stored in the array of maps
+                let name = relNames[key];
+                let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
+                let related = db.doc(docRef[key]);
+
                 // Info from selectbox
                 if(inputFeature[key].nodeName == 'SELECT'){
-                    // Write the reference to the best practice doc if only one docref is stored
-                    if(uniqueIndex.length == 0){
-                        db.collection(entryColPath).doc(entryDocName).set({[keyRef[key]]: [db.doc(docRef[key])]}, { merge: true });
-                    }
+                    // For selectboxes, we don't have to create a new document
+                    // We do have to update the relationship array in the referenced document
+
+                    db.collection(drp).doc(drdn).get().then(function(doc) {
+                        // The currently stored docrefs in the referenced document
+                        let currentRefArray;
+
+                        // The current array of maps of docrefs that is stored in the referenced document
+                        currentRefArray = doc.data().relationship;
+
+                        // Adding the relationship data for the newly created document to this array
+                        currentRefArray.push({name: name, self: related, related: self});
+
+                        console.log(drp)
+                        console.log(drdn)
+                        console.log(currentRefArray)
+
+                        // Storing that docref
+                        db.collection(drp).doc(drdn).set({relationship: currentRefArray}, { merge: true });
+                        debugger
+                    });
                 }
                 // Info from a regular field
                 else{
-
-                    // drp is the collectionpath in which docrefs are stored
-                    let drp = docRefColl[key];
-                    // drdn is the name of the document, including the docrefcounter
-                    let drdn = docRefDocName[key];
-
-                    // Write the reference to the best practice doc if ONLY ONE docref is stored
-                    if(uniqueIndex.length == 0){
-                        let name = relNames[key];
-                        let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
-                        let related = db.doc(docRef[key]);
-                        db.collection(entryColPath).doc(entryDocName).set({[keyRef[key]]: [{name: name, self, related: related}]}, { merge: true });
-                    }
-
+                    // The value that the user has filled in
                     let inputValue = inputFeature[key].value;
 
                     // Write a value to a new doc in the subcollection that is referenced
                     db.collection(drp).doc(drdn).set({"name": inputValue});
+                    // Also storing the relationship info
+                    db.collection(drp).doc(drdn).set({relationship: [{name: name, self: related, related: self}]}, { merge: true });
                 }
             }
 
-            // Writing MULTIPLE DOCREFS to the database
-            // We construct an array of maps that are to be written
+
+            // Step 5.2: Storing the arrays of maps of docrefs in the current (best practice) document
+            // ## This info is stored in the best practice document, not the documents that are pointed to
+
             for(let ui = 0; ui < uniqueIndex.length; ui++){
 
                 // Construct an array of maps to write to the database for every docref field
@@ -859,7 +900,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                             let name = relNames[dr];
                             let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
                             let related = db.doc(docRef[dr]);
-                            writeArr.push({name: name, self, related: related})
+                            writeArr.push({name: name, self: self, related: related})
 
                             writeKey = keyRef[ui];
                         }
@@ -873,7 +914,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                                 let name = relNames[dr];
                                 let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
                                 let related = db.doc(docRef[dr]);
-                                writeArr.push({name: name, self, related: related})
+                                writeArr.push({name: name, self: self, related: related})
 
                                 writeKey = keyRef[ui];
                             }
@@ -884,7 +925,7 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                                 let name = relNames[dr];
                                 let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
                                 let related = db.doc(docRef[dr]);
-                                writeArr.push({name: name, self, related: related})
+                                writeArr.push({name: name, self: self, related: related})
                                 
                                 writeKey = keyRef[ui];
                             }
