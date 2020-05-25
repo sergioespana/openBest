@@ -198,3 +198,21 @@ h1 {
 ::placeholder {
   font-style: italic;
 }
+
+label {
+  display: block!important;
+}
+
+input,
+textarea,
+select {
+  margin-bottom: 15px!important;
+}
+
+.group-title {
+  margin-top: 30px!important;
+}
+
+.addEx > .btn, .addOther > .btn {
+  margin-bottom: 20px!important;
+}

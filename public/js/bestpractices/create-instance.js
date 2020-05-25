@@ -32,7 +32,8 @@ var jsontest = {
                     "1displayfeature": true,
                     "2title": "string",
                     "3description": "text",
-                    "4author": [{"name" : "writtenby", "self": "document reference", "related": "document reference"}],
+                    "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
+                                {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
                     //"4author": 
                     //    ["document reference"],
                     "5categories":
