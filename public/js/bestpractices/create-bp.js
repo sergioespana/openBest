@@ -70,12 +70,12 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
             .where(firebase.firestore.FieldPath.documentId(), "==", uniqueDocID.toString())
             .get().then(snapshot => {
 
-                snapshot.docs.forEach(doc => {
+                snapshot.docs.forEach(async doc => {
     
                     // Getting the fields of the document
                     var docdata = Object.entries(doc.data());
 
-                    // Populate an array of document references
+                    // // Populate an array of document references
                     let docrefArray = [];
 
                     //Iterating over the key-value pairs of the documents in which features should be displayed
@@ -90,36 +90,9 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                             // E.g. if 4author is a document reference, the document should be stored in a subcollection named author or authors
                             let docrefPath = findPath(collectionPaths, keyText);
 
-                            db.collection(`${docrefPath}`)
-                            .get().then((snapshot) => {
-                                snapshot.docs.forEach(doc => {
-
-                                    let keyIndexArr = [];
-                                    for (let [key, value] of Object.entries(doc.data())){
-                                        let keyname = JSON.stringify(key).replace(/[ˆ0-9]+|"/g, '');
-                                        keyIndexArr.push(keyname)
-                                    };
-
-                                    // Specifies at which point in the array the "name" field is specified
-                                    let entryPoint;
-
-                                    for(var keyIndex = 0; keyIndex < keyIndexArr.length; keyIndex++){
-                                        if(keyIndexArr[keyIndex] == 'name'){
-                                            entryPoint = keyIndex;
-                                        }
-                                    }
-
-                                    // authorArray will store an array for each author, with the name, documentid and path
-                                    let docData = [];
-                                    // Don't include "string" > that's part of the initial model only
-                                    if(!(doc.data()[Object.keys(doc.data())[entryPoint]] == 'string')){
-                                        docData.push(doc.data()[Object.keys(doc.data())[entryPoint]]);
-                                        docData.push(doc.id);
-                                        docData.push(docrefPath);
-                                        docrefArray.push(docData);
-                                    }
-                                })
-                            })
+                            // Getting the docrefArray based on the path to the referenced subcollection
+                            // Await the result of the async getDocRef function; otherwise there might be no data in docrefPath
+                            docrefArray = await getDocRef(docrefPath);
                         }
 
                         // Setting a timeout so that instantiateFeatures is called only after the query above has had a chance to complete
@@ -138,6 +111,45 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
         });
     })
 })
+
+
+async function getDocRef(drp){
+
+    let docrefArray = [];
+
+    let collection = db.collection(`${drp}`)
+    let snapshot = await collection.get()//.then((snapshot) => {
+
+    for(let doc of snapshot.docs){
+
+        let keyIndexArr = [];
+        for (let [key, value] of Object.entries(doc.data())){
+            let keyname = JSON.stringify(key).replace(/[ˆ0-9]+|"/g, '');
+            keyIndexArr.push(keyname)
+        };
+
+        // Specifies at which point in the array the "name" field is specified
+        let entryPoint;
+
+        for(var keyIndex = 0; keyIndex < keyIndexArr.length; keyIndex++){
+            if(keyIndexArr[keyIndex] == 'name'){
+                entryPoint = keyIndex;
+            }
+        }
+
+        // authorArray will store an array for each author, with the name, documentid and path
+        let docData = [];
+        // Don't include "string" > that's part of the initial model only
+        if(!(doc.data()[Object.keys(doc.data())[entryPoint]] == 'string')){
+            docData.push(doc.data()[Object.keys(doc.data())[entryPoint]]);
+            docData.push(doc.id);
+            docData.push(drp);
+            docrefArray.push(docData);
+        }
+    }
+
+    return docrefArray;
+}
 
 
 // This function is called for each key-value pair in each document that requires features
@@ -240,6 +252,7 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     conceptDiv.appendChild(input);
                     // Setting this attribute helps in determining the type of input to be added
                     addOther.setAttribute('add-type', 'regular');
+                    addOther.setAttribute('class', 'addOther')
                     addOther.style.marginBottom = '15px';
                     conceptDiv.appendChild(addOther);
                 }
@@ -265,16 +278,24 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                     // Iterating over the relationship names, in the case there
                     for(let relname = 0; relname < value.length; relname++){
 
+                        // Setting the title with the relationship name
                         let relTitle = document.createElement('p');
                         relTitle.textContent = value[relname].name;
                         conceptDiv.appendChild(relTitle);
 
+                        // Creating the input field for the docref
                         let relInput = document.createElement('input');
                         relInput.setAttribute('key', input.getAttribute('key'));
                         relInput.setAttribute('type', 'docref');
                         relInput.setAttribute('colpath', input.getAttribute('colpath'));
                         relInput.setAttribute('docname', input.getAttribute('docname'));
                         relInput.setAttribute('class', input.getAttribute('class'));
+                        // Setting the path to the docref subcollection as attribute
+                        let keyText = key.replace(/[0-9]/g, '');
+                        let docrefPath = findPath(collectionPaths, keyText);
+                        relInput.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
+                        relInput.setAttribute('docrefcoll', docrefPath);
+                        relInput.setAttribute('docref-docname', doc.id+'-'+relname);
                         // Adding the current docref as the self attribute
                         relInput.setAttribute('self', coll+'/'+doc.id);
                         // Adding the relationship name
@@ -282,26 +303,34 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                         // Adding the input field
                         conceptDiv.appendChild(relInput);
 
+                        // Adding a button to add another (NEW) document reference
+                        // Setting all the same attributes as for the input field
                         let addOtherRel = document.createElement('a');
                         addOtherRel.innerHTML = addOther.innerHTML;
                         addOtherRel.setAttribute('id', 'addItem-'+(`${value[relname].name}`).replace(' ', ''));
                         addOtherRel.setAttribute('add-type', 'docref');
                         addOtherRel.setAttribute('class', 'addOther');
                         addOtherRel.setAttribute('rel-name', value[relname].name);
-                        conceptDiv.appendChild(addOtherRel);
+                        // Adding attributes that are required when adding a new docref input field
+                        // These attributes can be used to set attributes for the new input field
+                        addOtherRel.setAttribute('colpath', input.getAttribute('colpath'));
+                        addOtherRel.setAttribute('key', input.getAttribute('key'));
+                        addOtherRel.setAttribute('docname', input.getAttribute('docname'));
+                        addOtherRel.setAttribute('self', coll+'/'+doc.id);
+                        addOtherRel.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
+                        addOtherRel.setAttribute('docrefcoll', docrefPath);
+                        addOtherRel.setAttribute('docref-docname', doc.id+'-'+relname);
 
-                        // Setting the path to the docref subcollection as attribute
-                        let keyText = key.replace(/[0-9]/g, '');
-                        let docrefPath = findPath(collectionPaths, keyText);
-                        relInput.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
-                        relInput.setAttribute('docrefcoll', docrefPath);
-                        relInput.setAttribute('docref-docname', doc.id+'-'+relname);
+                        conceptDiv.appendChild(addOtherRel);
                     }
                 }
                 // Current entries already exist > we create a dropdown
                 else{
-                    // Iterating over the relationship names, in the case there
+                    // Iterating over the relationship names, in the case there are multiple relationships for which elements need to be created
                     for(let relname = 0; relname < value.length; relname++){
+
+                        let keyText = key.replace(/[0-9]/g, '');
+                        let docrefPath = findPath(collectionPaths, keyText);
 
                         // A selectbox is added if there are document references to be found
                         let referenceSelect = document.createElement('select');
@@ -309,25 +338,9 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                         
                         let relTitle = document.createElement('p');
                         relTitle.textContent = value[relname].name;
+
                         conceptDiv.appendChild(relTitle);
-
                         conceptDiv.appendChild(referenceSelect);
-
-                        let addExRel = document.createElement('a');
-                        addExRel.innerHTML = addEx.innerHTML;
-                        addExRel.setAttribute('add-type', 'docref');
-                        addExRel.setAttribute('class', 'addEx');
-                        addExRel.setAttribute('rel-name', value[relname].name);
-                        conceptDiv.appendChild(addExRel);
-
-                        let addOtherRel = document.createElement('a');
-                        addOtherRel.innerHTML = addOther.innerHTML;
-                        addOtherRel.setAttribute('id', 'addItem-'+(`${value[relname].name}`).replace(' ', ''));
-                        addOtherRel.setAttribute('add-type', 'docref');
-                        addOtherRel.setAttribute('class', 'addOther');
-                        addOtherRel.setAttribute('rel-name', value[relname].name);
-                        conceptDiv.appendChild(addOtherRel);
-
 
                         // Adding the values of the docrefArray to the dropdown
                         docrefArray.forEach(docref => {
@@ -348,131 +361,40 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
                         referenceSelect.setAttribute('docname', doc.id);
                         referenceSelect.setAttribute('key', key);
                         referenceSelect.setAttribute('type', 'select');
+
+
+                        // Adding a button to add an existing docref (dropdown)
+                        let addExRel = document.createElement('a');
+                        addExRel.innerHTML = addEx.innerHTML;
+                        addExRel.setAttribute('colpath', coll);
+                        addExRel.setAttribute('docname', doc.id);
+                        addExRel.setAttribute('key', key);
+                        addExRel.setAttribute('add-type', 'docref');
+                        addExRel.setAttribute('class', 'addEx');
+                        addExRel.setAttribute('self', coll+'/'+doc.id);
+                        addExRel.setAttribute('rel-name', value[relname].name);
+                        conceptDiv.appendChild(addExRel);
+
+                        // Adding a button to add a new docref (input field)
+                        let addOtherRel = document.createElement('a');
+                        addOtherRel.innerHTML = addOther.innerHTML;
+                        addOtherRel.setAttribute('id', 'addItem-'+(`${value[relname].name}`).replace(' ', ''));
+                        addOtherRel.setAttribute('add-type', 'docref');
+                        addOtherRel.setAttribute('class', 'addOther');
+                        addOtherRel.setAttribute('rel-name', value[relname].name);
+                        // Adding attributes that are required when adding a new docref input field
+                        // These attributes can be used to set attributes for the new input field
+                        addOtherRel.setAttribute('colpath', input.getAttribute('colpath'));
+                        addOtherRel.setAttribute('key', input.getAttribute('key'));
+                        addOtherRel.setAttribute('docname', input.getAttribute('docname'));
+                        addOtherRel.setAttribute('self', coll+'/'+doc.id);
+                        addOtherRel.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
+                        addOtherRel.setAttribute('docrefcoll', docrefPath);
+                        addOtherRel.setAttribute('docref-docname', doc.id+'-'+relname);
+                        conceptDiv.appendChild(addOtherRel);
                     }
                 }
             }
-
-
-            // // ADDING ANOTHER ELEMENT TO THE FORM
-            // // >> Two element types that can be added: dropdowns or regular fields
-
-            // // ADDING A REGULAR FIELD
-            // // addItem is the add button for the current key value
-            // if(typeof(value[0]) == "object"){
-            //     for(let relname = 0; relname < value.length; relname++){
-            //         var addItem = document.getElementById('addItem-'+(`${value[relname].name}`).replace(' ', ''));
-            //     }
-            // }
-            // else{
-            //     var addItem = document.getElementById('addItem-'+`${key}`);
-            // }
-
-            // // Checking if the button exists yet
-            // if(addItem){
-            //     addItem.addEventListener('click', function() {
-                    
-            //         // Element is the parent element of the clicked button
-            //         let element = this.parentElement;
-
-            //         let docrefPath = findPath(collectionPaths, keyText);
-
-            //         // HTML code for adding an input field
-            //         let inputAddHTML;
-
-            //         // Setting the correct attributes in the case of a docref
-            //         if(element.getAttribute('add-type') == 'docref'){
-            //             inputAddHTML = "\
-            //             <div style=\"margin-top: 10px\" class=\"row\"\>\
-            //                 <div class=\"col-md-11\"\>\
-            //                     <input class=\"form-control bg-light border-0 small\" colpath=\""+coll+"\" docname=\""+doc.id+"\" key=\""+key+"\" docref-docname=\""+doc.id+'-'+docRefCounter+"\" docrefpath=\""+docrefPath+'/'+doc.id+'-'+docRefCounter+"\" docrefcoll=\""+docrefPath+"\" self=\""+coll+"/"+doc.id+"\" rel-name=\""+element.getAttribute('rel-name')+"\" type=\"docref\"></input\>\
-            //                 </div\>\
-            //                 <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
-            //                     <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
-            //                         <span class=\"icon text-gray-600\"\>\
-            //                             <i class=\"fas fa-times\"></i\>\
-            //                         </span\>\
-            //                     </a\>\
-            //                 </div\>\
-            //             </div>"
-            //         }
-            //         else{
-            //             inputAddHTML = "\
-            //             <div style=\"margin-top: 10px\" class=\"row\"\>\
-            //                 <div class=\"col-md-11\"\>\
-            //                     <input class=\"form-control bg-light border-0 small\" colpath=\""+coll+"\" docname=\""+doc.id+"\" key=\""+key+"\" type=\"array\"></input\>\
-            //                 </div\>\
-            //                 <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
-            //                     <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
-            //                         <span class=\"icon text-gray-600\"\>\
-            //                             <i class=\"fas fa-times\"></i\>\
-            //                         </span\>\
-            //                     </a\>\
-            //                 </div\>\
-            //             </div>"
-            //         }
-
-            //         // The previous input field
-            //         let previousInput = element.previousElementSibling;
-            //         // Adding the new input field
-            //         $(inputAddHTML).insertAfter(previousInput);
-
-            //         docRefCounter++;
-
-            //     });
-            // }
-
-            // // ADDING ANOTHER DROPDOWN FOR DOCREFS
-
-            // let addExisting = document.getElementById("addExisting-"+`${key}`);
-            // // Checking if the button exists yet
-            // if(addExisting){
-            //     addExisting.addEventListener('click', function() {
-                    
-            //         // Element is the parent element of the clicked button
-            //         let element = this.parentElement;
-
-            //         let referenceSelect = document.createElement('select');
-            //         referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
-            //         // Adding the values of the docrefArray to the dropdown
-            //         docrefArray.forEach(docref => {
-            //             let option = document.createElement('option');
-            //             option.setAttribute('value', docref[0]);
-            //             option.setAttribute('docname', docref[1]);
-            //             option.setAttribute('colpath', docref[2]);
-            //             option.setAttribute('key', key);
-            //             // Adding the current docref as the self attribute
-            //             option.setAttribute('self', coll+'/'+doc.id);
-            //             // Adding the relationship name
-            //             option.setAttribute('rel-name', element.getAttribute('rel-name'));
-            //             option.textContent = docref[0];
-            //             referenceSelect.add(option);
-            //         });
-            //         referenceSelect.setAttribute('colpath', coll);
-            //         referenceSelect.setAttribute('docname', doc.id);
-            //         referenceSelect.setAttribute('key', key);
-            //         referenceSelect.setAttribute('type', 'select');
-
-            //         let referenceRow = "\
-            //         <div style=\"margin-top: 10px\" class=\"row\"\>\
-            //             <div class=\"col-md-11\"\>"
-            //                 +referenceSelect.outerHTML+
-            //             "</div\>\
-            //             <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
-            //                 <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
-            //                     <span class=\"icon text-gray-600\"\>\
-            //                         <i class=\"fas fa-times\"></i\>\
-            //                     </span\>\
-            //                 </a\>\
-            //             </div\>\
-            //         </div>"
-
-            //         // The previous input field
-            //         let previousInput = element.previousElementSibling;
-            //         // Adding the new input field
-            //         $(referenceRow).insertAfter(previousInput);
-            //     });
-            // }
-
         }
     }
 
@@ -500,29 +422,100 @@ function instantiateFeatures(key, value, coll, doc, docrefArray){
     }
 }
 
-
 // Adding attribute rows: dropdowns or regular fields
-$("bp-entry-form").on('click', '.addOther', function(event){
-    //Element is the parent element of the clicked button
-    let element = this.parentElement;
+$("#bp-entry-form").on('click', '.addOther', function(event){
 
     // HTML code for adding an input field
     let inputAddHTML;
 
     // Setting the correct attributes in the case of a docref
-    if(element.getAttribute('add-type') == 'docref'){
-        
+    if($(this).attr('add-type') == 'docref'){
+        inputAddHTML = "\
+        <div style=\"margin-top: 10px\" class=\"row\"\>\
+        <div class=\"col-md-11\"\>\
+            <input class=\"form-control bg-light border-0 small\" colpath=\""+$(this).attr('colpath')+"\" docname=\""+$(this).attr('docname')+"\" key=\""+$(this).attr('key')+"\" docref-docname=\""+$(this).attr('docref-docname')+'-'+docRefCounter+"\" docrefpath=\""+$(this).attr('docrefpath')+'-'+docRefCounter+"\" docrefcoll=\""+$(this).attr('docrefcoll')+"\" self=\""+$(this).attr('self')+"\" rel-name=\""+$(this).attr('rel-name')+"\" type=\"docref\"></input\>\
+        </div\>\
+        <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+            <span class=\"icon text-gray-600\"\>\
+                <i class=\"fas fa-times\"></i\>\
+            </span\>\
+            </a\>\
+        </div\>\
+        </div>"
     }
     else{
-        
+        inputAddHTML = "\
+        <div style=\"margin-top: 10px\" class=\"row\"\>\
+            <div class=\"col-md-11\"\>\
+                <input class=\"form-control bg-light border-0 small\" colpath=\""+$(this).prev().attr('colpath')+"\" docname=\""+$(this).prev().attr('docname')+"\" key=\""+$(this).prev().attr('key')+"\" type=\"array\"></input\>\
+            </div\>\
+            <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+                <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                    <span class=\"icon text-gray-600\"\>\
+                        <i class=\"fas fa-times\"></i\>\
+                    </span\>\
+                </a\>\
+            </div\>\
+        </div>"
     }
 
     // The previous input field
-    let previousInput = element.previousElementSibling;
+    let previousInput = $(this).prev();
     // Adding the new input field
     $(inputAddHTML).insertAfter(previousInput);
 
     docRefCounter++;
+});
+
+
+$("#bp-entry-form").on('click', '.addEx', async function(event){
+
+    // The path to the subcollection to which the added dropdown points
+    let docrefPath = findPath(collectionPaths, this.getAttribute('key').replace(/[0-9]/g, ''));
+    // Getting the docrefArray
+    // Await the result of the async getDocRef function; otherwise there might be no data in dra
+    let dra = await getDocRef(docrefPath);
+
+    let referenceSelect = document.createElement('select');
+    referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
+    // Adding the values of the docrefArray to the dropdown
+    dra.forEach(docref => {
+        let option = document.createElement('option');
+        option.setAttribute('value', docref[0]);
+        option.setAttribute('docname', docref[1]);
+        option.setAttribute('colpath', docref[2]);
+        option.setAttribute('key', this.getAttribute('key'));
+        // Adding the current docref as the self attribute
+        option.setAttribute('self', this.getAttribute('self'));
+        // Adding the relationship name
+        option.setAttribute('rel-name', this.getAttribute('rel-name'));
+        option.textContent = docref[0];
+        referenceSelect.add(option);
+    });
+    referenceSelect.setAttribute('colpath', this.getAttribute('colpath'));
+    referenceSelect.setAttribute('docname', this.getAttribute('docname'));
+    referenceSelect.setAttribute('key', this.getAttribute('key'));
+    referenceSelect.setAttribute('type', 'select');
+
+    let referenceRow = "\
+    <div style=\"margin-top: 10px\" class=\"row\"\>\
+        <div class=\"col-md-11\"\>"
+            +referenceSelect.outerHTML+
+        "</div\>\
+        <div style=\"padding: 0px!important\" class=\"col-md-1\"\>\
+            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                <span class=\"icon text-gray-600\"\>\
+                    <i class=\"fas fa-times\"></i\>\
+                </span\>\
+            </a\>\
+        </div\>\
+    </div>"
+
+    // The previous input field
+    let previousInput = this.previousElementSibling;
+    // Adding the new input field
+    $(referenceRow).insertAfter(previousInput);
 });
 
 
@@ -625,7 +618,7 @@ async function alterJSON(docid, callback){
 
 // This function stores the best practice
 // A string in JSON format is created to write to Firestore
-document.getElementById("store-BP-btn").addEventListener("click", function(){
+document.getElementById("store-BP-btn").addEventListener("click", async function(){
 
     var filledBPform = document.querySelector('#bp-entry-form');
 
@@ -849,24 +842,22 @@ document.getElementById("store-BP-btn").addEventListener("click", function(){
                     // For selectboxes, we don't have to create a new document
                     // We do have to update the relationship array in the referenced document
 
-                    db.collection(drp).doc(drdn).get().then(function(doc) {
-                        // The currently stored docrefs in the referenced document
-                        let currentRefArray;
+                    // Use await here so that we can wait on the result of this asynchronous query before adding to the currentRefArray
+                    let currentDoc = await db.collection(drp).doc(drdn).get();
+                    for(let [key, value] of Object.entries(currentDoc.data())){
+                        if(key == 'relationship'){
+                            
+                            // The currently stored docrefs in the referenced document
+                            let currentRefArray = value;
 
-                        // The current array of maps of docrefs that is stored in the referenced document
-                        currentRefArray = doc.data().relationship;
+                            // Adding the relationship data for the newly created document to this array
+                            currentRefArray.push({name: name, self: related, related: self});
 
-                        // Adding the relationship data for the newly created document to this array
-                        currentRefArray.push({name: name, self: related, related: self});
+                            // Storing that docref
+                            db.collection(drp).doc(drdn).set({relationship: currentRefArray}, { merge: true });
 
-                        console.log(drp)
-                        console.log(drdn)
-                        console.log(currentRefArray)
-
-                        // Storing that docref
-                        db.collection(drp).doc(drdn).set({relationship: currentRefArray}, { merge: true });
-                        debugger
-                    });
+                        }
+                    }
                 }
                 // Info from a regular field
                 else{
