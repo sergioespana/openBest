@@ -7,7 +7,7 @@
   }
 
   .button{
-    
+
   }
 
   /* INPUT BAR */
@@ -261,8 +261,7 @@
 
 /* collapsible CSS code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible */
 
-.rules.collapsible {
-  background-color: green;
+.rules.collapsible, .tips.collapsible,.top.collapsible{
   color: white;
   cursor: pointer;
   padding-left: 10px;
@@ -275,15 +274,31 @@
   font-size: inherit;
 }
 
-.rActive, .rules.collapsible:hover {
+.rules.collapsible, .tips.collapsible{
+  background-color: forestgreen;
+}
+.top.collapsible{
+  background-color: green;
+}
+
+
+
+.rActive, .rules.collapsible:hover, .tips.collapsible:hover,.top.collapsible:hover {
   background-color: darkgreen;
 }
 
-.collapsiblecontent {
+.sub.collapsiblecontent {
   padding: 0 10px;
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
+}
+
+.collapsiblecontent{
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+
 }
 
 

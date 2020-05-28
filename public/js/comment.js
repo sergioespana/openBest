@@ -3,7 +3,6 @@ var BPid = null;
 window.addEventListener('DOMContentLoaded', (event) => {
     collapsible();
 });
-
 function startup(BPID){
    create_meta_info();
    comment_input_location = document.getElementById("searchbar");
@@ -162,7 +161,7 @@ function masterSubmit(buttonbar,text){
 function checklength(newsubmitbutton,text){
   var label = text.innerText;  
   if (lengte(label) >= 1){
-    newsubmitbutton.style.background = "green";
+    newsubmitbutton.style.background = "rgb(81, 146, 75)";
   }
   else{
     newsubmitbutton.style.background = "buttonface";
@@ -526,8 +525,16 @@ function displayMore(comment_text,see_more){
         else {see_more.style.display = "none";}
         return false;
 }
-
 function makeinvisible(id1,id2){
     document.getElementById(id1).style.display = "none";
     document.getElementById(id2).style.display = "block";
 }
+// function for calculating the length of a list, the prebuild length method did not work in some cases..
+
+function lengte (l1){
+    var lengte = 0;
+    for (_ in l1){
+        lengte += 1;
+    }
+    return lengte;
+  }

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function(){
   
   function addListenerbin(star,set_star){
     var stars = document.querySelectorAll(star);
-    var prufungslist = [-5,-4,-3,-2,-1];
+    var negslist = [-5,-4,-3,-2,-1];
     [].forEach.call(stars, function(star_, index){
       star_.addEventListener('click', (function(idx){
         if (star === '.pstar'.valueOf()){ // add listener for positive stars
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function(){
         updatetext ("text_rating" ,getTotal());
       }
         else if (star === '.nstar'.valueOf()){ // add listerner for negative stars
-        document.querySelector(set_star).setAttribute('data-rating', prufungslist [idx] );  
+        document.querySelector(set_star).setAttribute('data-rating', neglist [idx] );  
         setRatingbin(star,set_star,'<=',[-5,-4,-3,-2,-1]);
         resetscore('.pstar','.pos-stars');
         updatetext ("text_rating" ,getTotal());

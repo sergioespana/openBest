@@ -15,7 +15,7 @@
 .star{
     color: goldenrod;
     font-size: 2.0rem;
-    padding: 0 1rem; /* space out the stars */
+    padding: 0 0.5rem; /* space out the stars */
     float: left;
   }
   .star::before{

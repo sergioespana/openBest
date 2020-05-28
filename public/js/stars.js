@@ -1,22 +1,13 @@
 
 
+//start();
 
+// function start(){
+// loc  = document.getElementById("ratingsection");
+// createStarRating(loc,10)
+// }
 
-/* <div class="star-ratings">
-  <div class="star-unit">
-    <div class="stars " data-rating="3" data-hover= "0" >
-      <span class="star"></span>
-      <span class="star"></span>
-      <span class="star"></span>
-      <span class="star"></span>
-      <span class="star"></span>
-    </div>
-  </div>
-</div> */
-
-
-
-function createStarRating(root){
+function createStarRating(root,amount){
   var starRatings = document.createElement("DIV");
   starRatings.classList.add("star-ratings");
 
@@ -28,17 +19,17 @@ function createStarRating(root){
   stars.setAttribute("data-rating",3);
   stars.setAttribute("data-hover",0);
 
-  for(var i=0; i < 5; i++){
+  for(var i=1; i == amount; i++){
   var star = document.createElement("SPAN");
   star.classList.add("star");
   stars.appendChild(star);
   } 
+  
   starUnit.appendChild(stars);
   starRatings.appendChild(starUnit);
   root.appendChild(starRatings);
   addListeners(stars);
   setRating(stars);
-
 }
 
 
