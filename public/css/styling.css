@@ -4,6 +4,8 @@ h1 {
 
 .row{
   width: 100%!important;
+  margin-left: 0px!important;
+  margin-right: 0px!important;
 }
 
 #domain-name {
@@ -59,6 +61,10 @@ h1 {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.userCards{
+  margin-top: 50px!important;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -148,7 +154,8 @@ h1 {
 }
 
 /* The Close Button */
-.close {
+.close
+.deleteConcept {
   color: white;
   float: right;
   font-size: 28px;
@@ -159,7 +166,9 @@ h1 {
 }
 
 .close:hover,
-.close:focus {
+.close:focus
+.deleteConcept:hover,
+.deleteConcept:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;
@@ -194,4 +203,22 @@ h1 {
 
 ::placeholder {
   font-style: italic;
+}
+
+label {
+  display: block!important;
+}
+
+input,
+textarea,
+select {
+  margin-bottom: 15px!important;
+}
+
+.group-title {
+  margin-top: 30px!important;
+}
+
+.addEx > .btn, .addOther > .btn {
+  margin-bottom: 20px!important;
 }
