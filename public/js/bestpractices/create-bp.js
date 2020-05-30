@@ -117,8 +117,8 @@ async function getDocRef(drp){
 
     let docrefArray = [];
 
-    let collection = db.collection(`${drp}`)
-    let snapshot = await collection.get()//.then((snapshot) => {
+    let collection = db.collection(`${drp}`);
+    let snapshot = await collection.get();
 
     for(let doc of snapshot.docs){
 
@@ -931,7 +931,24 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
 
             
         }
+
+        // STEP 6: Writing docrefs to all other stored concepts in the best practices document
+        if(entryColPath.split('/').length == 3){
+            //console.log(findPath(collectionPaths, 'bestpractices'))
+            //console.log(entryColPath)
+            if(entryColPath.split('/')[2] != 'bestpractices'){
+                let refKey = entryColPath.split('/')[2];
+                let bpPath = findPath(collectionPaths, 'bestpractices');
+                let refPath = db.doc(entryColPath+'/'+entryDocName);
+
+                db.collection(bpPath).doc(entryDocName).set({[refKey]: refPath}, { merge: true });
+            }
+            
+
+            //db.collection(entryColPath).doc(entryDocName).set({})
+        }
     }
+
 
     // Closing the modal
     modal.style.display = "none";
