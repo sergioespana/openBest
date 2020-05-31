@@ -3,7 +3,8 @@
 
   /* BUTTON BAR */
   .buttonbar{
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
   }
 
   .button{
@@ -259,8 +260,6 @@
 	height             : calc(1em * 1.2 * 2);
 }
 
-/* collapsible CSS code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible */
-
 .rules.collapsible, .tips.collapsible,.top.collapsible{
   color: white;
   cursor: pointer;
@@ -281,14 +280,11 @@
   background-color: green;
 }
 
-
-
 .rActive, .rules.collapsible:hover, .tips.collapsible:hover,.top.collapsible:hover {
   background-color: darkgreen;
 }
 
 .sub.collapsiblecontent {
-  padding: 0 10px;
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
@@ -298,8 +294,37 @@
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
-
 }
 
+.questionicon{
+  float: left;
+  height: 1em;
+  width: auto;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+/* CSS for the rating structure */
+
+.couponcode:hover .coupontooltip {
+display: block;
+}
+
+.coupontooltip {
+font: inherit;
+display: none;
+background: #C8C8C8;
+position: absolute;
+z-index: 1000000;
+width:auto;
+height:auto;
+padding:5px;
+}
+
+.label{
+  float: left;
+  margin-bottom: 0px;
+  width: 31%;
+}
 
 

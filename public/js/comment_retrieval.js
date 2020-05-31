@@ -47,7 +47,7 @@ function splitlist(){
         if (document1[8] == 3){third.push(doc[0]);}
         if (document1[8] == 4){fourth.push(doc[0]);}
     }
-    console.log(head);
+    //console.log(head);
     
     draw_all();
 }
@@ -67,7 +67,7 @@ function checkChildren(messageID,level){
 
 function amountOfChildren(messageID,level){
     var amountofchildren = lengte(getLevelList(level+1).map(x => x[9]).filter(x => x == messageID));
-    console.log(amountofchildren);
+    //console.log(amountofchildren);
     
     return amountofchildren;
 }

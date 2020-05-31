@@ -1,6 +1,6 @@
 
 
-
+//function to create the likedislikerating
 function createLikeDislikeRating (root,likes,dislikes,userrating){
 
   var DislikeLikeWrapper = document.createElement("DIV");
@@ -19,6 +19,8 @@ function createLikeDislikeRating (root,likes,dislikes,userrating){
   var likingOptionDown = document.createElement("i");
   likingOptionDown.classList.add("far","fa-thumbs-down","neg");
 
+  if (likes == null  || dislikes == null){
+
   var amountLikes = document.createElement("p");
   amountLikes.innerText = likes;
   amountLikes.classList.add("pos");
@@ -26,12 +28,18 @@ function createLikeDislikeRating (root,likes,dislikes,userrating){
   var amountDislikes = document.createElement("p");
   amountDislikes.innerText = dislikes;
   amountDislikes.classList.add("neg");
+  }
 
   DislikeLikeOptions.appendChild(likingOptionUp);
-  DislikeLikeOptions.appendChild(amountLikes);
+
+  if (likes == null  || dislikes == null){
+    DislikeLikeOptions.appendChild(amountLikes);
+    }
 
   DislikeLikeOptions.appendChild(likingOptionDown);
-  DislikeLikeOptions.appendChild(amountDislikes);
+  if (likes == null  || dislikes == null){
+    DislikeLikeOptions.appendChild(amountDislikes);
+    }
   
   DislikeLikeUnit.appendChild(DislikeLikeOptions);
   DislikeLikeWrapper.appendChild(DislikeLikeUnit);

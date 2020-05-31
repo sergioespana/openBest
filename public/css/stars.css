@@ -1,32 +1,28 @@
 
-
-
 .stars{
-
   overflow: hidden;
 }
 
+.star{
+  color: goldenrod;
+  font-size: 1.0rem;
+  vertical-align: middle;
+  padding: 0 0.25rem;
+  float: left;
+  }
 
-#text_rating123{
-
+.star::before{
+  content: '\2606';
+  cursor: pointer;
   float: left;
 }
 
-.star{
-    color: goldenrod;
-    font-size: 2.0rem;
-    padding: 0 0.5rem; /* space out the stars */
-    float: left;
-  }
-  .star::before{
-    content: '\2606';
-    cursor: pointer;
-    float: left;
-  }
-  .star.rated::before{
-    content: '\2605';
-  }
-  
-  .star.hover::before{
-    content: '\2605';
-  }
+.star.rated::before{
+  content: '\2605';
+}
+
+.star.hover::before{
+  content: '\2605';
+}
+
+

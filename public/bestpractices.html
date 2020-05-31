@@ -25,7 +25,8 @@
       <!-- stars -->
       <link href="css/stars.css" rel="stylesheet">
 
-
+      <!-- binstars -->
+      <link href="css/bin-stars.css" rel="stylesheet">
 
 
     <!-- template stylesheet -->
@@ -242,22 +243,7 @@
                 </div>
                 </div>
 
-                <!-- <div class="card border-left-success shadow">
-                  <div class="card-body" id = "card_body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="slidecontainer">
-                          <div class = "sliding-unit"> -->
-                            <!-- <label for="floating">Ease of use:</label> -->
-                            <!-- <input type="range" min="1" max="10" value="1" class="slider" id="floating">
-                            <output class="floating" id = "testtext">1</output> -->
-                          <!-- </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-
-
+ 
                 <div class="card border-left-success shadow">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -272,6 +258,12 @@
                             <p>Rating section</p>
                             </div>
                             <div id = "ratingsection">
+                              <button type="button" class="rules collapsible">Give your own rating!</button>
+                                <div class="sub collapsiblecontent" id = "ratinginput"></div>
+                                <div class="buttonbar">
+                                  <button class="leftbutton button" selected>Individual ratings</button>
+                                  <button class="rightbutton button">Aggregated ratings</button>
+                                </div>
 
                             </div>
                         </div>
@@ -279,7 +271,6 @@
                         <div id = "comment">
                           <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
                             <p>Comment section</p>
-                          
                          </div>
 
                         <button type="button" class="top collapsible">Rules and tips</button>
@@ -296,7 +287,6 @@
                           <p>5. Do not dominate the conversation as this blocks knowledge construction.</p>
                         </div>
                         
-
             
                         <button type="button" class="tips collapsible">Tips</button>
                         <div class="sub collapsiblecontent">
@@ -352,14 +342,16 @@
     <script src="js/bestpractices/create-instance.js"></script>
     <script src="js/bestpractices/bp-retrieval.js"></script>
     <script src="js/bestpractices/bp-viewing.js"></script>
-    <script src="js/slider.js"></script> 
+   
     <!-- ////////////////////////////////// -->
     <script src="js/comment_retrieval.js"></script>
     <script src="js/comment.js"></script>
     <script src= "js/eBay.js"></script>
     <script src="js/liking.js"></script>
     <script src="js/stars.js"></script>
-    <script src="js/slider.js"></script>
+    <script src="js/slider.js"></script> 
+    <script src="js/bin-stars.js"></script>
+    <script src="js/createRating.js"></script>
     
   </body>
 </html>

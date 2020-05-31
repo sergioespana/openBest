@@ -78,7 +78,6 @@ function retrieveBPinfo(BPid) {
                 BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
                 //dit is het opstart deel van mij
-                fillbars(BPid);
                 startup(BPid);
                 //////////////////////////////////
 

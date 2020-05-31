@@ -1,11 +1,16 @@
 .eBay-options{
     color: black;
-    font-size: 2.0rem;
-    padding: 0 1rem; 
+    font-size: 1.6rem;
+    display: flex;
   }
 .eBay-options::before{
     cursor: pointer;
 }
+
+.eBay-option{
+  padding-right: 0.1rem;
+}
+
 .neg:hover::before{
 color: red;
 }
