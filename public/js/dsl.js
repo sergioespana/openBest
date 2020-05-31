@@ -16,6 +16,8 @@ var dslspan = document.getElementsByClassName("close")[1];
 // Counts the amount of concept instances
 var counter = 0;
 var subcounter = 100;
+// The JSON model
+var JSONmodel;
 
 var addConceptHTML;
 
@@ -24,7 +26,12 @@ function addConceptFunction(c, pc) {
     // HTML blob for adding a new concept
     addConceptHTML = "\
     <div counter=\""+c+"\" parent-counter=\""+pc+"\" class=\"conceptdiv\" style=\"border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px\">\
-        <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
+        <div class=\"row\">\
+            <div class=\"col-lg-11\">\
+                <div style=\"margin-top: 40px\" class=\"font-weight-bold text-success text-uppercase\">New concept</div>\
+            </div>\
+            <div class=\"col-lg-1\"><span class=\"deleteConcept\"><i style=\"margin-top: 40px; float: right\" class=\"fas fa-times\"></i></span></div>\
+        </div>\
         <br>\
         <label>Group title</label>\
         <input class=\"new-group-title-"+c+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Example\"></input>\
@@ -58,16 +65,16 @@ function addConceptFunction(c, pc) {
                 <label for=\"array\">Multiple</label>\
             </div>\
             </div>\
+            <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+                <span class=\"text\">\
+                <i class=\"fas fa-plus\"></i>\
+                </span>\
+                <span class=\"text\">Add attribute</span>\
+            </a>\
         </div>\
-        <a style=\"margin-top: 20px\" id=\"add-attribute\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
-            <span class=\"icon text-gray-600\">\
-            <i class=\"fas fa-arrow-right\"></i>\
-            </span>\
-            <span class=\"text\">Add attribute</span>\
-        </a>\
         <a style=\"margin-top: 20px\" id=\"add-sub-concept\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
-            <span class=\"icon text-gray-600\">\
-            <i class=\"fas fa-arrow-right\"></i>\
+            <span class=\"text\">\
+            <i class=\"fas fa-plus\"></i>\
             </span>\
             <span class=\"text\">Add sub-concept</span>\
         </a>\
@@ -90,7 +97,7 @@ document.getElementById("add-concept").addEventListener("click", function(){
 
     // Making sure addConceptHTML is available
     // parentcounter is set at 0 for every new concept
-    addConceptFunction(counter, 0);
+    addConceptFunction(counter, counter);
 
     // Adding the HTML to the new-concept div
     $('.new-concept').append(addConceptHTML);
@@ -100,24 +107,11 @@ document.getElementById("add-concept").addEventListener("click", function(){
 })
 
 
-// Adding an attribute or sub-concept
+// Adding an attribute
 $(".new-concept").on('click', 'a', function(event){
 
-    // When a sub-concept is added, the parentcounter attribute should be filled in
-    subcounter++;
-    parentcounter = $(this).attr('btn-counter');
-    addConceptFunction(subcounter, parentcounter);
+    if($(this).attr('id') == 'add-attribute'){
 
-    // Adding a sub-concept
-    if($(this).attr('id') == 'add-sub-concept'){
-        let btncounter = $(this).attr('btn-counter');
-        
-        // The parent concept of the newly added sub-concept
-        let parentConcept = $('.new-concept').find('.attribute-add').filter('[counter='+`${btncounter}`+']');
-
-        $(addConceptHTML).insertAfter(parentConcept);
-    }
-    else{
         let btncounter = $(this).attr('btn-counter');
 
         // HTML blob in which user can add a new attribute
@@ -143,14 +137,27 @@ $(".new-concept").on('click', 'a', function(event){
                 </a\>\
             </div\>\
         </div>"
+
+        $(attributeAddHTML).insertBefore($(this));
+    }
+})
+
+// Adding a sub-concept
+$(".new-concept").on('click', 'a', function(event){
+
+    // When a sub-concept is added, the parentcounter attribute should be filled in
+    subcounter++;
+    parentcounter = $(this).attr('btn-counter');
+    addConceptFunction(subcounter, parentcounter);
+
+    // Adding a sub-concept
+    if($(this).attr('id') == 'add-sub-concept'){
+        let btncounter = $(this).attr('btn-counter');
         
+        // The parent concept of the newly added sub-concept
+        let parentConcept = $('.new-concept').find('.attribute-add').filter('[counter='+`${btncounter}`+']');
 
-        // The counter of the "Add attribute" button that was pressed
-        let attrCounter = $(this).attr("btn-counter");
-        // The div to which the new row should be appended
-        let attributeAdd = $(this).closest("div").find(`[counter='${attrCounter}']`).filter('.attribute-add');
-
-        $(attributeAdd).append(attributeAddHTML);
+        $(addConceptHTML).insertBefore($(this));
     }
 })
 
@@ -159,12 +166,15 @@ $(".new-concept").on('click', 'a', function(event){
 $(".new-concept").on('click', '.attrDelete', function(event){
     // The row in which the clicked delete button is located
     let attrRow = $(this).parent().parent()[0];
-    attrRow.remove(attrRow);
+    $(attrRow).remove();
 });
 
 
 // Creating the JSON model
-document.getElementById("dsl-create").addEventListener("click", function(){
+document.getElementById("dsl-create").addEventListener("click", async function(){
+
+    // Emptying the JSON model
+    JSONmodel = "";
 
     // Information filled in by user
     let domainName = document.getElementById('input-domain-name').value;
@@ -176,7 +186,7 @@ document.getElementById("dsl-create").addEventListener("click", function(){
     let solGroupDesc = document.getElementById('sol-group-description').value;
 
     // The initial JSON model (as string). After this, variable data can be appended.
-    let JSONmodel = "\
+    JSONmodel += "\
     \{\""+domainName.replace(' ', '')+"\": \{\
         \"domainstate\": \{\
             \"displayfeature\": false\,\
@@ -303,205 +313,269 @@ document.getElementById("dsl-create").addEventListener("click", function(){
     });
 
 
-    // Iterating over the counterarray to find the info for each attribute-add row
-    // For each new concept, we add info to the JSONmodel
-    for(let c = 0; c < counterArray.length; c++){
+    // Calling the function on the first element
+    for(let c = 0; c < 1; c++){
+        // The last counter element in the array
+        let finalcounter = counterArray[counterArray.length - 1];
 
-        // Before the first concept is added, we should append a comma to the JSONmodel
-        if(c == 0){
-            JSONmodel += ","
-        }
+        // Storing the counters that have been checked already
+        let checkedCounters = [];
 
-        let newGroupTitle = document.getElementsByClassName('new-group-title-'+counterArray[c])[0].value;
-        let newGroupDesc = document.getElementsByClassName('new-group-description-'+counterArray[c])[0].value;
-
-        let newConceptString = "\
-        \""+newGroupTitle.replace(' ', '')+"\": \{\
-            \"newdocument\": \{\
-                \"01grouptitle\": \""+newGroupTitle+"\",\
-                \"02groupdesc\": \""+newGroupDesc+"\",\
-        "
-    
-        JSONmodel += newConceptString
-
-        // Storing the attribute contents of the additional concepts
-        let attrNames = [];
-        let attrTypes = [];
-        let checkedArrays = [];
-
-        // Adding the attribute type to an array
-        $(`[counter='${counterArray[c]}']`).find('select').each(function(){
-            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
-            if($(this).attr('counter') < 100){
-                attrTypes.push($(this).children("option:selected").val());
-            }
-        });
-        // Addding the attribute name to an array
-        // Search for all input fields within the attribute-add div that has the counter attribute with the current counter value
-        $(`[counter='${counterArray[c]}']`).find('input').each(function(){
-            // Only adding the values of input types with counter < 100. Everything >100 is SUBCOLLECTION
-            if($(this).attr('counter') < 100){
-                if($(this).attr("id") != "array-checkbox"){
-                    attrNames.push($(this).val());
-                }
-                // Adding the checkbox information to an array
-                if($(this).attr("id") == "array-checkbox"){
-                    if($(this)[0].checked){
-                        checkedArrays.push("checked");
-                    }
-                    else{
-                        checkedArrays.push("unchecked");
-                    }
-                }
-            }
-        });
-
-        addConcepts(counterArray[c]);
-
-
-        for(let attr = 0; attr < attrNames.length; attr++){
-            // Adding 2 because the first two attributes are the group title and description
-            let number = (attr+2).toString();
-
-            // The last attribute to be added needs to have extra curly brackets to correctly close this model section
-            if(attr == attrNames.length - 1){
-                // If this attribute is an ARRAY, add the square brackets
-                if(checkedArrays[attr] == "checked"){
-                    // The attributes for the final concept should be closed off with more curly brackets
-                    if(c == counterArray.length - 1){
-                        // But if comments and/or rating are added, less brackets are needed
-                        if((commentsCheckbox.checked || ratingsCheckbox.checked) || (!commentsCheckbox.checked || !ratingsCheckbox.checked)){
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-
-                            JSONmodel += addAttrString;
-                        }
-                        else{
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-
-                            JSONmodel += addAttrString;
-                        }
-                    }
-                    else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
-                        \}\
-                        \}\
-                        "
-
-                        JSONmodel += addAttrString;
-                    }
-                }
-                // Don't add square brackets for REGULAR ATTRIBUTES
-                else{
-                    // The attributes for the final concept should be closed off with more curly brackets
-                    if(c == counterArray.length - 1){
-                        // But if comments and/or rating are added, less brackets are needed
-                        if((commentsCheckbox.checked || ratingsCheckbox.checked) || (!commentsCheckbox.checked || !ratingsCheckbox.checked)){
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-                    
-                            JSONmodel += addAttrString;
-                        }
-                        else{
-                            let addAttrString = "\
-                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            \}\
-                            "
-                    
-                            JSONmodel += addAttrString;
-                        }
-                    }
-                    else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                        \}\
-                        \}\
-                        "
-                
-                        JSONmodel += addAttrString;
-                    }
-                }
-            }
-            else{
-                // Add square brackets for arrays
-                if(checkedArrays[attr] == "checked"){
-                    let addAttrString = "\
-                    \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"],\
-                    "
-            
-                    JSONmodel += addAttrString;
-                }
-                else{
-                    let addAttrString = "\
-                    \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\",\
-                    "
-            
-                    JSONmodel += addAttrString;
-                }
-            }
-        }
-        if(c < counterArray.length - 1){
-            JSONmodel += ",";
-        }
+        JSONmodel += ",";
+        addNonNested(finalcounter, checkedCounters, counterArray[c], counterArray);
     }
 
-    // If no other concepts are added
+    // If no other concepts are added by the user
     if(counterArray.length == 0){
         JSONmodel += "\
         \}\
         \}\
         \}\
         "
+    
+        console.log(JSONmodel);
     }
-
-    //console.log(JSON.parse(JSONmodel))
-
-    //console.log(JSONmodel);
 
 })
 
 
-function addConcepts(c) {
+// Adds the level 1 (non-nested concepts)
+function addNonNested(fc, cc, c, ca){
+    // If the checkedcounter array DOES NOT includes the current counter
+    if(!(cc.includes(c))){
+        console.log("adding concept " + c)
 
-    $(`[counter='${c}']`).find('div').filter('.conceptdiv').each(function(){
-        console.log($(this))
-      //console.log("Im adding " + $(this));  
-    })
+        // This function will handle the addition of sub-concepts for THAT concept
+        addConcepts(c, 0, fc, 0, cc, ca);
+    }
+    else{
+        // Check which elements of ca (non-nested level 1 elements) has not been checked yet
+        let notChecked = [];
+        for(let x = 0; x < ca.length; x++){
+            if(!(cc.includes(ca[x]))){
+                notChecked.push(ca[x]);
+            }
+        }
 
-    $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').each(function(){
-        addConcepts($(this).attr('counter'));
-    })
+        // If all elements have been checked, log the model
+        if(notChecked.length == 0){
+            console.log("all elements have been checked, three brackets are added and model is logged")
+
+            JSONmodel += "}}}";
+            console.log(JSONmodel)
+        }
+        // If not, call addConcepts with the first element of the notChecked array
+        else{
+            console.log("not all elements have been added")
+            console.log("comma is added")
+            console.log("adding concepts for " + notChecked[0])
+
+            JSONmodel += ",";
+            addConcepts(notChecked[0], 0, fc, "0", cc, ca);
+        }
+    }
 }
+
+
+function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, cArray) {
+
+    // ###########
+    // ADDING THE INFO TO THE JSON MODEL FOR THE CURRENT COUNTER
+    // ###########
+
+    // If the counter has not been checked yet
+    if(!(checked.includes(c))){
+        // Adding this counter to the checked array
+        checked.push(c);
+
+        $(`[counter='${c}']`).filter('.conceptdiv').each(function(index){
+
+            console.log("data is added for " + c)
+            
+            let newGroupTitle = document.getElementsByClassName('new-group-title-'+c)[0].value;
+            let newGroupDesc = document.getElementsByClassName('new-group-description-'+c)[0].value;
+
+            let newConceptString = "\
+            \""+newGroupTitle.replace(' ', '')+"\": \{\
+                \"newdocument\": \{\
+                    \"01grouptitle\": \""+newGroupTitle+"\",\
+                    \"02groupdesc\": \""+newGroupDesc+"\",\
+            "
+        
+            JSONmodel += newConceptString
+
+            //Storing the attribute contents of the additional concepts
+            let attrNames = [];
+            let attrTypes = [];
+            let checkedArrays = [];
+
+            // Adding the attribute type to an array
+            $(`[counter='${c}']`).find('select').filter(`[counter='${c}']`).each(function(){
+            if($(this).attr('counter')){
+                attrTypes.push($(this).children("option:selected").val());
+            }
+            });
+            // Addding the attribute name to an array
+            // Search for all input fields within the attribute-add div that has the counter attribute with the current counter value
+            $(`[counter='${c}']`).find('input').filter(`[counter='${c}']`).each(function(){
+                if($(this).attr('counter')){
+                    if($(this).attr("id") != "array-checkbox"){
+                        attrNames.push($(this).val());
+                    }
+                    // Adding the checkbox information to an array
+                    if($(this).attr("id") == "array-checkbox"){
+                        if($(this)[0].checked){
+                            checkedArrays.push("checked");
+                        }
+                        else{
+                            checkedArrays.push("unchecked");
+                        }
+                    }
+                }
+            });
+
+            // Iterating over the filled in attributes
+            for(let attr = 0; attr < attrNames.length; attr++){
+                
+                // Adding 2 because the first two attributes are the group title and description
+                let number = (attr+2).toString();
+
+                // The last attribute to be added needs to have extra curly brackets to correctly close this model section
+                if(attr == attrNames.length - 1){
+                    // If this attribute is an ARRAY, add the square brackets
+                    if(checkedArrays[attr] == "checked"){
+                        // But if there are subconcepts to be found
+                        // Subconcepts are closed off later
+
+                        let addAttrString = "\
+                        \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
+                        "
+
+                        JSONmodel += addAttrString;
+                    }
+
+                    // Don't add square brackets for REGULAR ATTRIBUTES
+                    else{
+                        let addAttrString = "\
+                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
+                        "
+                
+                        JSONmodel += addAttrString;
+                    }
+                }
+                // If other attributes still need to be added
+                else{
+                    // Add square brackets for arrays
+                    if(checkedArrays[attr] == "checked"){
+                        let addAttrString = "\
+                        \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"],\
+                        "
+                
+                        JSONmodel += addAttrString;
+                    }
+                    else{
+                        let addAttrString = "\
+                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\",\
+                        "
+                
+                        JSONmodel += addAttrString;
+                    }
+                }
+            }
+        })
+    }
+
+    // CHECKING IF THERE ARE SUB-CONCEPTS
+    // Subconcepts found
+    if($(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').length != 0){
+
+        // Three options
+        // ## 1) This element has subconcepts that have not been checked > add these subconcepts
+        // ## 2) This element has subconcepts, these are all added, but the current concept has no parent-counter (is a level 0 concept) > call addNonNested
+        // ## 3) This element has subconcepts, these are added > call addConcepts for the previous concept
+
+        // Finding the child elements
+        let results = $(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div');
+        
+        // Getting the first element that has not been checked/added yet
+        let childCounters = [];
+        results.each(function() {
+            if(!(checked.includes($(this).attr('counter')))){
+                childCounters.push($(this).attr('counter'));
+            }
+        });
+
+        let newChildCounter = childCounters[0];
+
+        // Option 1: The found child has not been checked/added already > call addConcepts for this child element
+        if(newChildCounter && !(checked.includes(newChildCounter))){
+            console.log("found child " + newChildCounter +  " has not been added yet")
+
+            console.log("adding a comma")
+            JSONmodel += ",";
+
+            subConceptCount ++;
+    
+            // Storing the counters that have been checked already
+            checked.push(c);
+
+            // Calling addConcepts for the new child, with the current counter (c) as previousCount
+            addConcepts(newChildCounter, subConceptCount, finalcounter, c, checked, cArray)
+        }
+        // Option 2: All found children have been added, and the current element is a level 0 concept
+        else if(!(newChildCounter) && c < 100){
+            console.log("all found children have been added and we are at level 0")
+            console.log(c)
+            // If this non-nested element had children, two extra brackets should be added
+            if($(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div').length != 0){
+                console.log($(`[counter='${c}']`).find(`[parent-counter='${c}']`).filter('div'))
+
+                console.log("adding two brackets")
+                // Adding two brackets to close off this level 0 concept
+                JSONmodel += "}}";
+            }
+            addNonNested(finalcounter, checked, "0", cArray);
+        }
+        // Option 3: All found children have been added, but the current element is a nested element
+        else{
+            console.log("all found children have been added and this is a nested element")
+            console.log("adding two brackets")
+            JSONmodel +=  "}}";
+            // The previousCount for the previous element
+            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter');
+            // Calling addConcepts for the previous element
+            addConcepts(previousCount, subConceptCount, finalcounter, previousPreviousCount, checked, cArray)
+        }
+    }
+    // No subconcepts found
+    else{
+        console.log("no subconcepts found")
+        console.log("adding two brackets")
+
+        checked.push(c);
+
+        JSONmodel += "}}";
+
+        // If the current element is a level 0 concept, we can call the addNonNested function
+        if(c < 100){
+            addNonNested(finalcounter, checked, "0", cArray);
+        }
+        // Otherwise, check if the previous element still has children to be added
+        else{
+            // Getting the previousCount for the previous element
+            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter').toString();
+
+            // Calling addConcepts for the previous element
+            addConcepts(previousCount.toString(), subConceptCount, finalcounter, previousPreviousCount, checked, cArray)
+        }
+    }
+}
+
+
+// Removing (sub-)concepts
+$(".new-concept").on('click', '.deleteConcept', function(event){
+    $(this).parent().parent().parent()[0].remove();
+});
 
 
 // Closing the modal
