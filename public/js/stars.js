@@ -1,5 +1,5 @@
 //function to create the star rating
-function createStarRating(root,amount){
+function createStarRating(root,amount,selected,type){
   
   var starRatings = document.createElement("DIV");
   starRatings.classList.add("star-ratings");
@@ -9,8 +9,10 @@ function createStarRating(root,amount){
 
   var stars = document.createElement("DIV");
   stars.classList.add("stars");
-  stars.setAttribute("data-rating",3);
+  stars.setAttribute("data-rating",selected);
   stars.setAttribute("data-hover",0);
+  stars.setAttribute("name","stars");
+  
  
   for(var i=0; i < amount; i++){
     var star = document.createElement("SPAN");
@@ -21,8 +23,11 @@ function createStarRating(root,amount){
   starUnit.appendChild(stars);
   starRatings.appendChild(starUnit);
   root.appendChild(starRatings);
-  addListeners(stars);
+  if (type != "readOnly"){
+    addListeners(stars);
+  }
   setRating(stars);
+  return stars;
 }
 
 //function to add listeners to all stars.
@@ -39,7 +44,7 @@ function addListeners(stars){
 //function to add the rated class to the star which is selected and all 'lower' stars
 function setRating(stars){
   var stars_ = stars.childNodes;
-  var rating = parseInt( stars.getAttribute('data-rating') );
+  var rating = parseInt(stars.getAttribute('data-rating') );
   [].forEach.call(stars_, function(star, index){
     if(rating > index){
       star.classList.add('rated');

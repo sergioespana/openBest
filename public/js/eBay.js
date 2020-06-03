@@ -4,6 +4,7 @@
 function createEbayRating(root){
   var eBayWrapper    = document.createElement("DIV");
   eBayWrapper.classList.add("eBay-rating");
+  eBayWrapper.setAttribute("data-rating",0);
 
   var eBayUnit       = document.createElement("DIV");
   eBayUnit.classList.add("eBay-unit");
@@ -26,40 +27,45 @@ function createEbayRating(root){
   eBayUnit.appendChild(eBayOptions);
   eBayWrapper.appendChild(eBayUnit);
   root.appendChild(eBayWrapper);
-  optionNegative.addEventListener("click", function(){changeColor("red",optionNegative,optionPositive,optionNeutral)});  
-  optionPositive.addEventListener("click", function(){changeColor("green",optionNegative,optionPositive,optionNeutral)});
-  optionNeutral.addEventListener("click",  function(){changeColor("orange",optionNegative,optionPositive,optionNeutral)}); 
+  optionNegative.addEventListener("click", function(){changeColor("red",optionNegative,optionPositive,optionNeutral,eBayWrapper)});  
+  optionPositive.addEventListener("click", function(){changeColor("green",optionNegative,optionPositive,optionNeutral,eBayWrapper)});
+  optionNeutral.addEventListener("click",  function(){changeColor("orange",optionNegative,optionPositive,optionNeutral,eBayWrapper)}); 
+  return eBayWrapper;
 }
 
 
 //this function ensures mutual exclusion and colours the selected option
-function changeColor(colour,itemneg,itempos,itemneut) {
+function changeColor(colour,itemneg,itempos,itemneut,eBayWrapper) {
     switch(colour){
       case "red":
           removetags(itempos);
           removetags(itemneut);
-          fliptags(itemneg);
+          fliptags(itemneg,eBayWrapper);
           break;
       case "green":
           removetags(itemneg);
           removetags(itemneut);
-          fliptags(itempos);
+          fliptags(itempos,eBayWrapper);
           break;
       case "orange":
           removetags(itemneg);
           removetags(itempos);
-          fliptags(itemneut);
+          fliptags(itemneut,eBayWrapper);
           break;
     }
 }
 
 //this helper function ensures that an option can be deselected without selecting an alternative option
-function fliptags(item){
+function fliptags(item,eBayWrapper){
   if (item.classList.contains('checked')){
     item.classList.remove('checked');
+    eBayWrapper.setAttribute('data-rating', null);
   }
   else{  
-  item.classList.add('checked');
+    item.classList.add('checked');
+    if (item.classList.contains("pos"))      {eBayWrapper.setAttribute('data-rating', 1);}
+    else if (item.classList.contains("neut")){eBayWrapper.setAttribute('data-rating', 0);}
+    else if (item.classList.contains("neg")) {eBayWrapper.setAttribute('data-rating', -1);}    
   }
 }
 

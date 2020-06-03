@@ -1,8 +1,7 @@
-uberlijst = [];
+commentlist = [];
 var db = firebase.firestore();
 var amountOfComments = 0;
 function getcomments(BPid) {
-   
     startstring = "/domain/domainstate/bestpractices/"
     endstring   = "/comments"
     doelstring = startstring.concat(BPid,endstring);    
@@ -30,7 +29,7 @@ function getcomments(BPid) {
 function addtolist(sublist){
      var tussenlijst = [];
      tussenlijst.push(sublist);
-     uberlijst.push(tussenlijst);
+     commentlist.push(tussenlijst);
 }
 // splits the list gotten from the database into levels so that not the complete list schould be gone over on each ordering.
 function splitlist(){
@@ -39,7 +38,7 @@ function splitlist(){
     second = [];
     third  = [];
     fourth = [];
-    for (doc of uberlijst){
+    for (doc of commentlist){
         document1 = doc[0];
         if (document1[8] == 0){head.push(doc[0]);}
         if (document1[8] == 1){first.push(doc[0]);}
@@ -47,8 +46,6 @@ function splitlist(){
         if (document1[8] == 3){third.push(doc[0]);}
         if (document1[8] == 4){fourth.push(doc[0]);}
     }
-    //console.log(head);
-    
     draw_all();
 }
 // this function calls a function to draw all comments and offers a text if there is no comment to be shown.

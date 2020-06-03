@@ -3,6 +3,7 @@
 function createBinaryStarRating(root,amtPos,amtNeg){
   binStarsRatings = document.createElement("div");
   binStarsRatings.classList.add("bin-star-ratings");
+  binStarsRatings.setAttribute("data-rating",0);
 
   binStarsUnit    = document.createElement("div");
   binStarsUnit.classList.add("bin-star-unit");
@@ -47,19 +48,20 @@ function createBinaryStarRating(root,amtPos,amtNeg){
   } 
   
   //listeners for all stars
-  addListenerbin(negstars,negStars,posstars,posStars,text,amtPos,amtNeg);
-  addListenerbin(posstars,posStars,negstars,negStars,text,amtPos,amtNeg);
+  addListenerbin(negstars,negStars,posstars,posStars,text,amtPos,amtNeg,binStarsRatings);
+  addListenerbin(posstars,posStars,negstars,negStars,text,amtPos,amtNeg,binStarsRatings);
   binStarsUnit.appendChild(negStars);
   binStarsUnit.appendChild(textDiv);
   binStarsUnit.appendChild(posStars);
 
   binStarsRatings.appendChild(binStarsUnit);
   root.appendChild(binStarsRatings);
+  return binStarsRatings;
 }
 
 
   //function to assign scores based on the selecter star option.
-  function addListenerbin(star,set_star,other_star,other_set_star,text,amtPos,amtNeg){
+  function addListenerbin(star,set_star,other_star,other_set_star,text,amtPos,amtNeg,binStarsRatings){
     var negslist = Array.from(new Array(amtNeg),(val,index)=>index+1).map(value => -value).reverse();//make array [-n, -n+1, -n+2.....]
     [].forEach.call(star, function(star_, index){
       star_.addEventListener('click', (function(idx){     
@@ -72,7 +74,7 @@ function createBinaryStarRating(root,amtPos,amtNeg){
         setRatingbin(star,set_star,'<=', negslist); // add rating attribute to individual stars
         }      
       resetscore(other_star,other_set_star); // reset score of the other stars (mutual exclusion between negative and positive star ratings)
-      updatetext (text ,getTotal(set_star,other_set_star));// update the text indicating the assigned score
+      updatetext (text ,getTotal(set_star,other_set_star,binStarsRatings));// update the text indicating the assigned score
       
       }).bind(window,index));
     }); 
@@ -92,11 +94,13 @@ function createBinaryStarRating(root,amtPos,amtNeg){
   }
 
   //function to calculate the resulting rating
-  function getTotal(wrapperNeg,wrapperPos){
+  function getTotal(wrapperNeg,wrapperPos,binStarsRatings){
     rating1 = parseInt( wrapperPos.getAttribute('data-rating')); 
     rating2 = parseInt( wrapperNeg.getAttribute('data-rating'));
-    totaal  = rating1 + rating2;
-    return (totaal);
+    total  = rating1 + rating2;
+    binStarsRatings.setAttribute("data-rating",total);
+
+    return (total);
   }
 
   //supporting function for mutual exclusion between the positive and negative stars

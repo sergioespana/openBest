@@ -1,5 +1,6 @@
+
 // function to create the range slider
-function createbarrating(root,minimum,maximum,step,value,type,dimension,dimensiondesc) {
+function createbarrating(root,minimum,maximum,step,value,type) {
  
   var newDiv = document.createElement("div"); 
   newDiv.classList.add("sliding-unit");
@@ -9,8 +10,12 @@ function createbarrating(root,minimum,maximum,step,value,type,dimension,dimensio
   bar.min = minimum; 
   bar.max = maximum;
   bar.step = step;
-  bar.value = value
+  bar.value = value;
   bar.classList.add("range");
+  if (type == "readOnly"){
+    bar.disabled = true;
+    bar.classList.add("disabled");
+  }
  
   bar.oninput = function(){
     selected.innerText = this.value;
@@ -36,7 +41,7 @@ function createbarrating(root,minimum,maximum,step,value,type,dimension,dimensio
   var newp = document.createElement("p");
   div.appendChild(newp);
   newp.innerText = 0;
-  
+  if (type != "readOnly"){
   //conditions for drawing the ticks, its linked tot the amount of steps to prevent to many ticks.
   if (amountOfSteps <= 10){
     makeTicks(amountOfSteps,1,maximum,div);
@@ -47,22 +52,25 @@ function createbarrating(root,minimum,maximum,step,value,type,dimension,dimensio
   else if(amountOfSteps <=40){
     makeTicks(amountOfSteps,4,maximum,div);
   }
-
   else if(amountOfSteps == 50){
     makeTicks(amountOfSteps,10,maximum,div);
   }
-
   else if(amountOfSteps == 100) {
     makeTicks(amountOfSteps,20,maximum,div);
   }
+  else {
+    makeTicks(amountOfSteps,30,maximum,div);
+  }
+}
+
   newDiv.appendChild(bar);
   newDiv.appendChild(selected);
-  
   
   if (bar.readOnly == false){
     newDiv.appendChild(div);
   }
   root.appendChild(newDiv);
+  return bar;
 }
 
 function getAvg(l1) {

@@ -4,7 +4,7 @@
 }
 
 .star{
-  color: goldenrod;
+
   font-size: 1.0rem;
   vertical-align: middle;
   padding: 0 0.25rem;
@@ -12,13 +12,15 @@
   }
 
 .star::before{
-  content: '\2606';
+  content: '\2605';
   cursor: pointer;
   float: left;
+  color: gray;
 }
 
 .star.rated::before{
   content: '\2605';
+  color: goldenrod;
 }
 
 .star.hover::before{

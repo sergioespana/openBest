@@ -19,7 +19,7 @@ function createLikeDislikeRating (root,likes,dislikes,userrating){
   var likingOptionDown = document.createElement("i");
   likingOptionDown.classList.add("far","fa-thumbs-down","neg");
 
-  if (likes == null  || dislikes == null){
+  if (likes != null  || dislikes != null){
 
   var amountLikes = document.createElement("p");
   amountLikes.innerText = likes;
@@ -32,12 +32,12 @@ function createLikeDislikeRating (root,likes,dislikes,userrating){
 
   DislikeLikeOptions.appendChild(likingOptionUp);
 
-  if (likes == null  || dislikes == null){
+  if (likes != null  || dislikes != null){
     DislikeLikeOptions.appendChild(amountLikes);
     }
 
   DislikeLikeOptions.appendChild(likingOptionDown);
-  if (likes == null  || dislikes == null){
+  if (likes != null  || dislikes != null){
     DislikeLikeOptions.appendChild(amountDislikes);
     }
   
@@ -47,6 +47,8 @@ function createLikeDislikeRating (root,likes,dislikes,userrating){
 
   likingOptionUp.addEventListener("click",   function(){changeColor_like("green",likingOptionUp,likingOptionDown,DislikeLikeOptions,amountDislikes,amountLikes)});  
   likingOptionDown.addEventListener("click", function(){changeColor_like("red",likingOptionUp,likingOptionDown,DislikeLikeOptions,amountDislikes,amountLikes)});
+  return DislikeLikeWrapper;
+   
 }
 
 function changeColor_like(colour,itempos,itemneg,options,amountDislikes,amountLikes) {  

@@ -252,8 +252,8 @@
                     <div class="row no-gutters align-items-center">
                       <div class="col mr-2">
                         <div class="buttonbar">
-                          <button class="leftbutton button" onclick="makeinvisible('rating','comment')" selected>Comments</button>
-                          <button class="rightbutton button" onclick="makeinvisible('comment','rating')">Ratings</button>
+                          <button class= "btn btn-light" style="margin-right: 10px;" onclick="makeinvisible('rating','comment')" selected>Comments</button>
+                          <button class= "btn btn-light" onclick="makeinvisible('comment','rating')">Ratings</button>
                         </div>
                        
                         <div id = "rating" style="display: none;">
@@ -264,9 +264,11 @@
                               <button type="button" class="rules collapsible">Give your own rating!</button>
                                 <div class="sub collapsiblecontent" id = "ratinginput"></div>
                                 <div class="buttonbar">
-                                  <button class="leftbutton button" selected>Individual ratings</button>
-                                  <button class="rightbutton button">Aggregated ratings</button>
+                                  <button class= "btn btn-light" style="margin-right: 10px;" onclick="makeinvisible('Aggregated-ratings','Individual-ratings')"  selected>Individual ratings</button>
+                                  <button class= "btn btn-light" onclick="makeinvisible('Individual-ratings','Aggregated-ratings')">Aggregated ratings</button>
                                 </div>
+                                <div id = "Individual-ratings" ></div>
+                                <div id = "Aggregated-ratings"  style="display: none;"></div>
 
                             </div>
                         </div>
@@ -301,8 +303,9 @@
                         </div>
                      
                         <div id = "searchbar"> </div>
+                        <!-- the inputbar for the comments is put here with the use of JavaScript -->
                         <fieldset id = "commentsection">
-           
+                        <!-- the commentsection is put here with the use of JavaScript -->
                         </fieldset>
                       </div>
                     </div>

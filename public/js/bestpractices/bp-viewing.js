@@ -17,6 +17,12 @@ function tableClick(e) {
     let BPid = clickedRow.getAttribute('doc-id');
     modal.style.display = "block";
     retrieveBPinfo(BPid);
+    startup(BPid);
+    //testlist = [["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"]];
+    //loc1  = document.getElementById("ratinginput");
+    getratings(BPid);
+    //console.log(dimensioninfo);
+    //createRatingInput(loc1,BPid,dimensioninfo);
 }
 
 
@@ -210,10 +216,13 @@ async function retrieveSub(refDocId, refDocPath){
 
 span.onclick = function() {
     modal.style.display = "none";
-    //dit is mijn deel van het afsluiten
+    //remove comment and rating elements
     remove_comment_elements();
     remove_top_searchbar();
-    uberlijst = [];
+    //reset lists and counters
+    commentlist = [];
+    ratinglist  = [];
+    ratinginfo  = [];
     amountOfComments = 0;
     ///////////////////////////////////
 
