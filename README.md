@@ -7,13 +7,13 @@ The following is definitely required for running the project.
 
 Install [Node and npm](https://www.npmjs.com/get-npm) on your machine so that you can use the required packages for the project
 
-Install the Firebase command line tools so you can 
+Install the Firebase command line tools
 ```bash
 npm install firebase-tools -g
 ```
 
 ## Troubleshooting
-We haven't tested if the following installs are required when this project is pulled, but in any case there no danger in updating these packages frequently. These packages are installed previously and may or may not be required to be installed again for every new project pull:
+We haven't tested if the following installs are required when this project is pulled, but in any case there's no danger in updating these packages frequently. These packages are installed previously and may or may not be required to be installed again for every new project pull:
 
 Install Firebase functions
 ```bash

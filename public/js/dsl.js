@@ -271,34 +271,43 @@ document.getElementById("dsl-create").addEventListener("click", async function()
 
 
     // Adding problems > this is a FIXED subcollection
-    let problemString = "\
+    let problemSolutionString = "\
     \"problems\": \{\
         \"problemdocument\": \{\
             \"01grouptitle\": \""+probGroupTitle+"\",\
             \"02groupdesc\": \""+probGroupDesc+"\",\
             \"1displayfeature\": true,\
             \"2name\": \"string\",\
-            \"3description\": \"text\"\
-        \}\
-    \},\
-    "
-
-    JSONmodel += problemString
-
-    // Adding solutions > this is a FIXED subcollection
-    let solutionString = "\
-    \"solutions\": \{\
-        \"solutiondocument\": \{\
-            \"01grouptitle\": \""+solGroupTitle+"\",\
-            \"02groupdesc\": \""+solGroupDesc+"\",\
-            \"1displayfeature\": true,\
-            \"2name\": \"string\",\
-            \"3description\": \"text\"\
+            \"3description\": \"text\",\
+            \"solutions\": \{\
+                \"solutiondocument\": \{\
+                    \"01grouptitle\": \""+solGroupTitle+"\",\
+                    \"02groupdesc\": \""+solGroupDesc+"\",\
+                    \"1displayfeature\": true,\
+                    \"2name\": \"string\",\
+                    \"3description\": \"text\"\
+                \}\
+            \}\
         \}\
     \}\
     "
 
-    JSONmodel += solutionString
+    JSONmodel += problemSolutionString
+
+    // // Adding solutions > this is a FIXED subcollection
+    // let solutionString = "\
+    // \"solutions\": \{\
+    //     \"solutiondocument\": \{\
+    //         \"01grouptitle\": \""+solGroupTitle+"\",\
+    //         \"02groupdesc\": \""+solGroupDesc+"\",\
+    //         \"1displayfeature\": true,\
+    //         \"2name\": \"string\",\
+    //         \"3description\": \"text\"\
+    //     \}\
+    // \}\
+    // "
+
+    //JSONmodel += solutionString
 
 
     // Adding a new concept as a subcollection
@@ -412,7 +421,15 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
             // Adding the attribute type to an array
             $(`[counter='${c}']`).find('select').filter(`[counter='${c}']`).each(function(){
             if($(this).attr('counter')){
-                attrTypes.push($(this).children("option:selected").val());
+                if($(this).children("option:selected").val() == "Document reference"){
+                    let test = [{name: "test", self: "document reference", related: "document reference"}]
+                    
+                    //console.log()
+                    attrTypes.push(test);
+                }
+                else{
+                    attrTypes.push($(this).children("option:selected").val());
+                }
             }
             });
             // Addding the attribute name to an array
