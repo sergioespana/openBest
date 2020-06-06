@@ -5,13 +5,14 @@ function createbarrating(root,minimum,maximum,step,value,type) {
   var newDiv = document.createElement("div"); 
   newDiv.classList.add("sliding-unit");
   var bar = document.createElement("input");
+  bar.setAttribute("name","slider");
   bar.type = "range";
   bar.class = "slider";
   bar.min = minimum; 
   bar.max = maximum;
   bar.step = step;
   bar.value = value;
-  bar.classList.add("range");
+  bar.classList.add("range","rangeslider");
   if (type == "readOnly"){
     bar.disabled = true;
     bar.classList.add("disabled");
@@ -29,9 +30,12 @@ function createbarrating(root,minimum,maximum,step,value,type) {
     div.style.display = "none";
   }
 
+  if (type != "readOnly"){
+
   var selected = document.createElement("p");
   selected.innerText = value;
   selected.classList.add("selectedval");
+  }
 
   var amountOfSteps = maximum/step;
   var div = document.createElement("DIV");
@@ -63,14 +67,23 @@ function createbarrating(root,minimum,maximum,step,value,type) {
   }
 }
 
+ 
+  
+  if (type != "readOnly") {
   newDiv.appendChild(bar);
   newDiv.appendChild(selected);
-  
-  if (bar.readOnly == false){
-    newDiv.appendChild(div);
-  }
+  newDiv.appendChild(div);
   root.appendChild(newDiv);
+  }
+  else {
+
+    bar.style = "margin-bottom: auto !important";
+    bar.style.marginTop = 'auto';
+    root.appendChild(bar);
+  }
   return bar;
+
+  
 }
 
 function getAvg(l1) {

@@ -11,7 +11,6 @@ function startup(BPID){
    getcomments(BPid);
 }
 //function to collapse the rules container
-//code from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible
 function collapsible(){
     var coll = document.getElementsByClassName("collapsible");
     var i;
@@ -114,6 +113,7 @@ function addbuttons(div,text,elem,commentid){
 
     var newbuttonbar = document.createElement("DIV");
     newbuttonbar.classList.add("button_bar");
+    newbuttonbar.style.display = ("inline-block")
     
     var newcancelbutton = document.createElement("INPUT"); 
     newcancelbutton.type = "button";
@@ -147,7 +147,7 @@ function getcurrentDateTime(){
 }
 function masterCancel(buttonbar,text){
     text.innerText = "";
-    remove_element(buttonbar);
+   removeElement(buttonbar);
     text.setAttribute("hasbeendrawn","false");
     
 }
@@ -295,6 +295,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    bottomtoolbar_wrapper.appendChild(see_more);
    see_more.addEventListener("click", function(){showtext(see_more,comment_text)});
    showtext(see_more,comment_text);
+   
    //initial assesment if the text is larger than the 2 line comment box
    displayMore(comment_text,see_more);
 
@@ -318,11 +319,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
     window.onresize = function(event) {
         displayMore(comment_text,see_more);
     };
-   
-    //paste various rating systems
-    //createEbayRating(comment_wrapper);//create eBay
-    createLikeDislikeRating(content_wrapper,4,3);//create dislikelike
-    // createStarRating(comment_wrapper);//create starRating
 
    //react button and functionality
    if (level < 3){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
@@ -336,7 +332,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    var see_answers = document.createElement("p");
    see_answers.classList.add("see_answers","option");
    see_answers.id = "answers" + commentid;
-   //getrightformulation(see_answers,amountofchildren);
    see_answers.innerText = "See reactions"
    see_answers.addEventListener("click",function(){getallChildren(level,commentid,see_answers,amountofchildren);});
    content_wrapper.appendChild(see_answers);
@@ -346,12 +341,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    }
    else{see_answers.style.display = "none";}
 }
-// currently not in use
-function getrightformulation(see_answers,amountofchildren){
-    if (amountofchildren == 1){var answerstring = " answer"}
-    else {var answerstring = " answers"}
-    see_answers.innerText = "See " + amountofchildren + answerstring;
-}
+
 function editComment(see_more,comment_text,confirm,cancel,edit){  
     comment_text.toggleAttribute("contentEditable");
     if (comment_text.isContentEditable){
@@ -423,7 +413,7 @@ function showReadMoreButton(element){
 function subCancel(text,elem){
     text.innerText = "";
     if (text.getAttribute("isSubComment") == "true"){
-        remove_element(text.parentElement);
+       removeElement(text.parentElement);
         elem.setAttribute("SubInputisDrawn","false");
     }
 
@@ -447,6 +437,7 @@ function getallChildren(level,commentid,see_answers,amountofchildren,reason){
 if (isdrawn == "false" && reason != "removechildren"){document.getElementById(commentid).setAttribute("SubCommentDrawn","true");}
 else{document.getElementById(commentid).setAttribute("SubCommentDrawn","false");}
 }
+//////////////////////////////////////////check deze stefan!!!!!!!!!!!!!!!!
 function removeallChildren(level,commentid,BP_id){
     for (item of getLevelList(level+1)){
      if(item[9] == commentid){
@@ -494,8 +485,8 @@ function getUserName(){
             return(name);
         }   
 }
-// remove 1 comment
-function remove_element(element){
+// remove 1 element and its children
+function removeElement(element){
     myNode = element;
     while(myNode.hasChildNodes()){
         myNode.removeChild(myNode.firstChild);
@@ -525,12 +516,12 @@ function displayMore(comment_text,see_more){
         else {see_more.style.display = "none";}
         return false;
 }
+//function for toggling visibility
 function makeinvisible(id1,id2){
     document.getElementById(id1).style.display = "none";
     document.getElementById(id2).style.display = "block";
 }
 // function for calculating the length of a list, the prebuild length method did not work in some cases..
-
 function lengte (l1){
     var lengte = 0;
     for (_ in l1){

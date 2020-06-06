@@ -3,6 +3,8 @@ function createStarRating(root,amount,selected,type){
   
   var starRatings = document.createElement("DIV");
   starRatings.classList.add("star-ratings");
+  starRatings.style.marginTop = 'auto';
+  starRatings.style.marginBottom = 'auto';
 
   var starUnit = document.createElement("DIV");
   starUnit.classList.add("star-unit");
@@ -54,7 +56,48 @@ function setRating(stars){
   });
 }
 
-
+//function to create starrating result (non responsive)
+function starRatingResult(root,percentage,max){
+    var score       =  document.createElement('span');
+    score.classList.add("score");
+    score.style.marginBottom = 'auto';
+    score.style.marginTop    = 'auto';
+    var scoreWrap   =  document.createElement('div');
+    scoreWrap.style.textAlign = 'left';      
+    scoreWrap.classList.add("score-wrap");
+  
+    var starsActive =  document.createElement('span');
+    starsActive.classList.add("stars-active");
+    starsActive.style.width = percentage + '%';
+  
+    for (i= 0; i < max; i++){
+      var star = document.createElement('span');
+      star.innerHTML = '★'
+      star.classList.add("star_");
+      star.setAttribute('aria-hidden', 'true');
+      starsActive.appendChild(star);
+    }
+  
+    var starsInactive = document.createElement('span');
+    starsInactive.classList.add("stars-inactive");
+  
+    for (i= 0; i < max; i++){
+      var star = document.createElement('span');
+      star.innerHTML = '★'
+      star.classList.add("star_");
+      star.setAttribute('aria-hidden', 'true');
+      starsInactive.appendChild(star);
+    }
+  
+    scoreWrap.appendChild(starsActive);
+    scoreWrap.appendChild(starsInactive);
+    score.appendChild(scoreWrap);
+    root.appendChild(score);
+  }
+  
+  
+  
+  
 
 
 

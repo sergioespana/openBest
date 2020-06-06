@@ -1,7 +1,7 @@
 
 .sliding-unit {
-    overflow: hidden;
     display: inline-block;
+    margin-top: 5px;
 }
 
 
@@ -11,6 +11,7 @@
   float: right;
   margin-left: 5px;
   margin-right: 5px;
+  margin-bottom : 5px;
 }
 
 .ratingwrapper{
@@ -57,7 +58,6 @@
   }
 
   input[type="range"] { 
-    margin: auto;
     -webkit-appearance: none;
     position: relative;
     overflow: hidden;
@@ -100,5 +100,8 @@ input[type="range"]:focus{
   line-height: 40px;
   margin: 0 0 20px 0;
 }
+/* input.rangeslider{
+  margin-bottom: 0px !important;
+} */
 
 

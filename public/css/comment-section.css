@@ -7,9 +7,6 @@
     margin-top: 5px;
   }
 
-  .button{
-
-  }
 
   /* INPUT BAR */
   /* ######### */
@@ -118,43 +115,40 @@
   }
   
   .topbar{
+    display: flex;
+    width: 100%;
     margin-top: 5px;
-    height: auto;
-    width: auto;
-    overflow: hidden;
+    margin-bottom: 5px;
+    height: auto !important;
   }
 
   .meta_info{
-    float: left;
-    overflow: hidden;
-    width: auto;
-    max-width: 80%;
+    display: flex;
+     width: 80%;
   }
   p.name{
-    float: left;
     margin-right: 10px;
     height: 1em;
-    width: auto;
+    width: 50%;
     font-weight: bold;
     margin-bottom: 0px;
   }
 
-  p.date_posted{
-    float: right;
+  p.date_poster{
     color: gray;
     height: 1em;
-    width: auto;
+    width: 30%;
     margin-right: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 0px !important;
   }
 
   /* button bar css */
   .toolbar_wrapper{
-    float: right;
+    text-align: end;
+    width: 20%;
   }
 
   .remove_button{
-    float: left;
     height: 1em;
     width: auto;
     margin-right: 10px;
@@ -167,7 +161,6 @@
   }
 
   .edit_button{
-    float: left;
     height: 1em;
     width: auto;
     margin-right: 10px;
@@ -185,7 +178,6 @@
   }
 
   .flag_button{
-    float: left;
     height: 1em;
     width: auto;
     margin-right: 10px;

@@ -140,7 +140,7 @@ function removeComment(id,BPid,comment_element){
         doelstring  = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
         if (comment_element){
-        remove_element(comment_element);
+       removeElement(comment_element);
         }
         lowerCounter();  
 }

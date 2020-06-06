@@ -18,11 +18,7 @@ function tableClick(e) {
     modal.style.display = "block";
     retrieveBPinfo(BPid);
     startup(BPid);
-    //testlist = [["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"],["stars","Ease of use",5,"input",1,1,"this dimension describes blablabla a high score indicates blablabla"]];
-    //loc1  = document.getElementById("ratinginput");
-    getratings(BPid);
-    //console.log(dimensioninfo);
-    //createRatingInput(loc1,BPid,dimensioninfo);
+    startupRatings(BPid);
 }
 
 
@@ -214,11 +210,13 @@ async function retrieveSub(refDocId, refDocPath){
         });
 }
 
+
 span.onclick = function() {
     modal.style.display = "none";
     //remove comment and rating elements
     remove_comment_elements();
     remove_top_searchbar();
+    remove_rating_elements();
     //reset lists and counters
     commentlist = [];
     ratinglist  = [];
