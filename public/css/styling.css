@@ -183,6 +183,7 @@ h1 {
 
 .card-margin {
   margin-top: 30px!important;
+  margin-bottom: 30px!important;
 }
 
 .form-divider {
@@ -206,7 +207,7 @@ h1 {
 }
 
 label {
-  display: block!important;
+  display: inline-block!important;
 }
 
 input,

@@ -408,10 +408,18 @@
                 <input id="bp-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Enter best practice info here"></input>
                 <br>
                   <label style="display: block">Want to add these recommended subcollections?</label>
+                  <br>
                   <input id="comments-checkbox" class="bg-light border-0 small" type="checkbox" name="comments" value="Comments"></input>
                   <label for="comments">Comments</label>
                   <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings" value="Ratings"></input>
                   <label id="comments-checkbox" for="ratings">Ratings</label>
+                  <br>
+                  <a style="margin-top: 20px" id="add-sub-concept" class="btn btn-light btn-icon-split" btn-counter="c" parent-counter="pc">
+                    <span class="text">
+                    <i class="fas fa-plus"></i>
+                    </span>
+                    <span class="text">Add sub-concept</span>
+                  </a>
               </div>
 
               <!-- Problem info -->
@@ -423,18 +431,20 @@
                 <br>
                 <label>Group description</label>
                 <input id="prob-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe problem info here"></input>
+
+                <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                  <!-- Solution info -->
+                  <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Solutions</div>
+                  <br>
+                  <label>Group title</label>
+                  <input id="sol-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Solution"></input>
+                  <br>
+                  <label>Group description</label>
+                  <input id="sol-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe solution info here"></input>
+                </div>
+
               </div>
 
-              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
-                <!-- Solution info -->
-                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Solutions</div>
-                <br>
-                <label>Group title</label>
-                <input id="sol-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Solution"></input>
-                <br>
-                <label>Group description</label>
-                <input id="sol-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe solution info here"></input>
-              </div>
 
               <div class="new-concept">
                 <!-- HTML for adding new concepts is added here -->
