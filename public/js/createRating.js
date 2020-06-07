@@ -1,13 +1,16 @@
 var db = firebase.firestore();
 //function which calls all essential functions in this file
 //it gets the ratings and their ratinginfo from the database and draws the aggregates and a ratinginput
-async function startupRatings(Bpid){    
+async function startupRatings(Bpid){ 
+let topOfratingSegment  = document.getElementById("ratingaggregation");   
 let ratinginputlocation = document.getElementById("ratinginput");
 [ratinglist,ratinginfo] = await getratings(BPid);
 //transpose the ratings so that every item in the array contains scores belonging to one dimension
 let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
 //transpose the ratinginfo so that every item in the array contains all info on one rating dimension
 let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
+//create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
+createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
 //create rating input based on ratingdocument
 createRatingInput(ratinginputlocation,Bpid,transposedInfo);
 //create rating aggregations based on scores and ratingdocument
@@ -300,12 +303,12 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
 
     //if current user is the same as the rater he can remove or edit the rating
     if (issame == "true"){
-        //editing component
-        var edit_comment = document.createElement("i");
-        edit_comment.classList.add("far","fa-edit","edit_button");
-        //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
-        edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
-        toolbar_wrapper.appendChild(edit_comment);
+        // //editing component
+        // var edit_comment = document.createElement("i");
+        // edit_comment.classList.add("far","fa-edit","edit_button");
+        // //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
+        // edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
+        // toolbar_wrapper.appendChild(edit_comment);
 
         //remove comment component
         var remove_comment = document.createElement("i");
@@ -377,12 +380,12 @@ function organizelist(arr,max,stepsize,type) {
         }
         else{
             for (n of numbersBetweenAandBwithFactorC(-max,max,1)){ // add the individual tuples with no occurences withing the arrays range (include a (2,0) tuple if 2 never occurs in the array)
-                if (! a.includes(n)){
+                if (! a.includes(n) && n != 0){
                     incompleteList.push([n,0]);
                 }
             }
     }
-    const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length
+    const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
     if (type != 'binstar'){
         return  [incompleteList.sort(Comparator),max,Math.round(arrAvg(arr)*10)/10];
     }
@@ -454,12 +457,13 @@ function createUserRatingDisplay(root,scores,dimension){
             break;
         case 'binstars':
             let score = (arrAvg(list));
+            console.log(list, arrAvg(list));
             if (arrAvg(list) > 0){
-                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score);
+                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score*5);
                 binstar.style.marginRight = 'auto';
             }
             else {
-                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score,0);
+                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score*5,0);
                 binstar.style.marginRight = 'auto';
             }
             break;
@@ -491,7 +495,8 @@ function createUserRatingDisplay(root,scores,dimension){
             createbarrating(div,0,maxval,step,score,"readOnly");
             var ratingavg = document.createElement('p');
             ratingavg.innerText = score + ' / ' + maxval ;
-            ratingavg.style.width        = '20%';
+            ratingavg.style.width        = '25%';
+            ratingavg.style.textAlign    = 'center';
             ratingavg.style.marginBottom = 'auto';
             ratingavg.style.marginTop    = 'auto';
             div.appendChild(ratingavg);
@@ -544,26 +549,21 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         var iconinstantiation = document.createElement('i');
         iconinstantiation.classList.add('fa','fa-plus');
     
-        icon.appendChild(iconinstantiation);
-        ratingCollapsible.appendChild(icon);
-    
         var dimname = document.createElement('p');
         dimname.innerText = dimension;
         dimname.style.width = '25%';
         dimname.style.marginBottom = 'auto';
         dimname.style.marginTop    = 'auto';
         ratingCollapsible.appendChild(dimname);
-        
         if (type == 'slider'){
             createbarrating(ratingCollapsible,0,max,step,Math.round(avg),"readOnly");
         }
         else if(type == 'stars'){
-            
             starRatingResult(ratingCollapsible,((avg/max)*100),max);
-            //createStarRating(ratingCollapsible,max,Math.round(avg),"readOnly");
         }
         else if(type == 'binstars'){
-            createBinaryStarRating(ratingCollapsible,max,max,"readOnlyAgg", nAvg, pAVG);
+           let binstar = createBinaryStarRating(ratingCollapsible,max,max,"readOnlyAgg", nAvg, pAVG);
+           binstar.style.marginRight = 'auto';
         }
 
         var ratingavg = document.createElement('p');
@@ -571,10 +571,13 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         ratingavg.style.width  = '20%';
         ratingavg.style.marginBottom = 'auto';
         ratingavg.style.marginTop    = 'auto';
+        ratingavg.style.marginRight  = 'auto';
         if (type != 'binstars'){
         ratingCollapsible.appendChild(ratingavg);
         }
-    
+
+        icon.appendChild(iconinstantiation);
+        ratingCollapsible.appendChild(icon);
         var detailwrapper = document.createElement('div');
         detailwrapper.style.display = "none";
     
@@ -655,27 +658,8 @@ function displayBinstarAggregation(){}
 function displayLikeDislikeReview(){}
 function displayeBayReview(){}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // supporting function for getting an array from all numbers between lowEnd and highEnd
- function numbersBetweenAandB(lowEnd,highEnd){
+function numbersBetweenAandB(lowEnd,highEnd){
     var list = [];
     for (var i = lowEnd; i <= highEnd; i++) {
         list.push(i);
@@ -735,7 +719,7 @@ function transpose(matrix) {
 }
 // function for removing all rating related items
 function remove_rating_elements(){
-    myNodes = [document.getElementById("Individual-ratings"),document.getElementById("Aggregated-ratings"),document.getElementById("ratinginput")];
+    myNodes = [document.getElementById("Individual-ratings"),document.getElementById("Aggregated-ratings"),document.getElementById("ratinginput"),document.getElementById("ratingaggregation")];
     for (myNode of myNodes){
         while(myNode.hasChildNodes()){
             myNode.removeChild(myNode.firstChild);
@@ -772,4 +756,97 @@ function createTextArea(){
    textarea.style.width        = '80%';
    textarea.style.margin       = 'auto';
    return textarea;
+}
+
+
+//function for creating the total aggregation of a BP's rating to allow for quick insight into the ratings without looking into individual ratings or aggregations within the dimensions
+function createTotalAggregation(root,transposedScores,transposedInfo){
+    const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
+    
+    var dimensionScores = [];
+    var type            = null;
+    var lengte_          =  0;
+    //parse all scores and extract the average score per dimension
+    dimensionAvglist = []
+    for (dimension of transposedScores){
+        dimensionScorelist = [];
+        for (score of dimension){
+            score = parseInt(score);
+            dimensionScorelist.push(score);
+        }
+        lengte_ = dimensionScorelist.length;
+        dimensionAvglist.push(arrAvg(dimensionScorelist));
+    }
+    //extract the dimension info per dimension
+    //calculate % with the use of dimensionmax and avgdimension
+    for (i in transposedInfo){
+        dimension         = transposedInfo[i];
+        type              = dimension[0];
+        let dimensionname = dimension[1];
+        let dimensionmax  = dimension[2];
+        let dimensionavg  = dimensionAvglist[i];
+        if (type == 'slider' || type == 'stars'){
+        score    = (dimensionavg/dimensionmax)*100;
+        }
+        if (type == 'binstars'){
+        score    = dimensionavg;
+        }
+
+        dimensionScores.push([score,dimensionavg,dimensionname]);
+    }
+    var scores = dimensionScores.map(function(x) {
+        return x[0];
+    });
+
+    var wrapper       = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.border  = '1px solid black';
+    wrapper.style.marginTop = '10px';
+    wrapper.style.marginBottom = '10px';
+
+    var label         = document.createElement('p');
+    label.innerText   = "Overall rating";
+    label.style.marginBottom = 'auto';
+    label.style.width = '30%';
+    label.style.marginTop    = 'auto';
+    label.style.textAlign = 'center';
+
+    var avglabel      = document.createElement('p');
+    avglabel.style.marginBottom = 'auto';
+    avglabel.style.marginTop    = 'auto';
+    avglabel.style.width = '20%';
+    avglabel.style.textAlign = 'center';
+    wrapper.appendChild(label);
+
+    var amtlabel = document.createElement('p');
+    amtlabel.innerText = lengte_ + ' ratings';
+    amtlabel.style.marginBottom = 'auto';
+    amtlabel.style.marginTop    = 'auto';
+    amtlabel.style.width = '20%';
+    amtlabel.style.textAlign = 'center';
+
+    if (type == 'slider'){
+        createbarrating(wrapper,0,100,1,arrAvg(scores),"readOnly");
+        avglabel.innerText = Math.round(arrAvg(scores)) + ' / ' + 100;
+        wrapper.appendChild(avglabel);
+    }
+    else if(type == 'stars'){
+        starRatingResult(wrapper,arrAvg(scores),5);
+        avglabel.innerText = (Math.round(arrAvg(scores))/100*5) + ' / ' + 5;
+        wrapper.appendChild(avglabel);
+    }
+    else if(type == 'binstars'){
+        if (arrAvg(scores)> 0){
+        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg", 0, Math.round(arrAvg(scores)));
+        }
+        else{
+        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg",Math.round(arrAvg(scores)), 0);
+        }
+        mech.style.marginRight = 'auto';
+    }
+    wrapper.appendChild(amtlabel);
+    
+ 
+    root.appendChild(wrapper);
+
 }

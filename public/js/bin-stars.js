@@ -1,8 +1,8 @@
 
 //function to draw the binary rating mechanism
 function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
-  var negdefault = parseInt(negdefault);
-  var plusdefault = parseInt(plusdefault);
+  var negdefault = parseFloat(negdefault);
+  var plusdefault = parseFloat(plusdefault);
 
 
   var binStarsRatings = document.createElement("div");
@@ -11,23 +11,24 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
   binStarsRatings.setAttribute("name","binstars");
   binStarsRatings.style.marginTop   = 'auto';
   binStarsRatings.style.marginBottom = 'auto';
-
+  if (type !='readOnly'){
+    binStarsRatings.style.width = '100%';
+  }
+  else {binStarsRatings.style.width = '45%';}
   var binStarsUnit    = document.createElement("div");
   binStarsUnit.classList.add("bin-star-unit");
 
   var postext = document.createElement('p');
   postext.innerText = plusdefault;
   postext.style.marginBottom = '0px';
-  postext.style.width = '20%';
 
   var negtext = document.createElement('p');
   negtext.innerText =  negdefault;
   negtext.style.marginBottom = '0px';
-  negtext.style.width = '20%';
 
   //negstars wrapper
   var negStars        = document.createElement("div");
-  negStars.setAttribute("data-rating", negdefault);
+  negStars.setAttribute("data-rating", Math.floor(negdefault));
 
   //individual negstars
   var negstars = [];
@@ -42,12 +43,18 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
   var text            = document.createElement("p");
   text.classList.add("text_rating");
   text.style.fontWeight = "900";
-  text.style.width = '20%';
+  if (type =='readOnly' && type != 'readOnlyAgg'){
+    text.style.width = '20%';
+}
+  else {
+    text.style.width = '10%';
+  }
+
   text.innerText = Math.round((negdefault + plusdefault)*10)/10;
 
   //posstars wrapper
   var posStars        = document.createElement("div");
-  posStars.setAttribute("data-rating", plusdefault);
+  posStars.setAttribute("data-rating", Math.round(plusdefault));
 
   //individual postars
   var posstars = [];

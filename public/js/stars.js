@@ -12,13 +12,16 @@ function createStarRating(root,amount,selected,type){
   var stars = document.createElement("DIV");
   stars.classList.add("stars");
   stars.setAttribute("data-rating",selected);
-  stars.setAttribute("data-hover",0);
   stars.setAttribute("name","stars");
   
  
   for(var i=0; i < amount; i++){
     var star = document.createElement("SPAN");
+   
     star.classList.add("star");
+    if (type == "readOnly"){
+      star.classList.add("readOnly");
+    }
     stars.appendChild(star);
   } 
 

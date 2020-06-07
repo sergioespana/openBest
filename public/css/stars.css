@@ -18,16 +18,17 @@
   color: gray;
 }
 
+.star.readOnly::before{
+  cursor: default;
+}
+
+
+
+
 .star.rated::before{
   content: '\2605';
   color: goldenrod;
 }
-
-.star.hover::before{
-  content: '\2605';
-}
-
-
 
 
 /* CSS for static star mechanism (used for star aggregation representation) */
