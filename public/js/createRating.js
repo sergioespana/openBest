@@ -47,13 +47,14 @@ function createRatingInput(root,BPid,list){
     submitbutton.style.float = "right";
     submitbutton.style.margin = '10px';
     submitbutton.classList.add("btn","btn-light");
-    submitbutton.addEventListener("click",async function(){submitrating(BPid,collectrating(ratingdimensions),textinput.value)});
+    submitbutton.addEventListener("click",function () {
+        submitrating(BPid,collectrating(ratingdimensions),textinput.value);
+        alert("Your review has been posted! refresh this page to see its impact on the ratings average score");
+    })
     ratingcontainer.appendChild(textinput);
     ratingcontainer.appendChild(submitbutton);
     root.appendChild(ratingcontainer);
 }
-
-
 function removeRating(BPid,RatingID,RatingContainer){
     startstring = "/domain/domainstate/bestpractices/"
     endstring   = "/ratings"
@@ -63,8 +64,6 @@ function removeRating(BPid,RatingID,RatingContainer){
     removeElement(RatingContainer);
     }
 }
-
-
 //function for submitting a rating to the database
 function submitrating(BPid,scores,text){
     startstring = "/domain/domainstate/bestpractices/";
@@ -407,12 +406,10 @@ function createUserRatingDisplay(root,scores,dimension){
     var iconinstantiation = document.createElement('i');
     iconinstantiation.classList.add('fa','fa-plus');
 
-    icon.appendChild(iconinstantiation);
-    ratingCollapsible.appendChild(icon);
-
     var dimname = document.createElement('p');
     dimname.innerText = "Average score";
     dimname.style.width = '25%';
+    dimname.style.textAlign = 'initial'
     dimname.style.marginBottom = 'auto';
     dimname.style.marginTop = 'auto';
 
@@ -436,21 +433,40 @@ function createUserRatingDisplay(root,scores,dimension){
         
         case 'slider':
             createbarrating(ratingCollapsible,0,100,1,arrAvg(list)*100,"readOnly");
+            var ratingavg = document.createElement('p');
+            ratingavg.innerText = Math.round(arrAvg(list)*100*10)/10 + ' / ' + 100 ;
+            ratingavg.style.width  = '25%';
+            ratingavg.style.marginRight  = 'auto';
+            ratingavg.style.marginBottom = 'auto';
+            ratingavg.style.marginTop    = 'auto';
+            ratingCollapsible.appendChild(ratingavg);
             break;
         case 'stars':
             starRatingResult(ratingCollapsible,arrAvg(list)*100,5);
+            var ratingavg = document.createElement('p');
+            // below the amount of stars on 1 decimal is calculated
+            ratingavg.innerText = Math.round((arrAvg(list)*5)*10)/10 + ' / ' + 5 ;
+            ratingavg.style.width  = '25%';
+            ratingavg.style.marginRight = 'auto';
+            ratingavg.style.marginBottom = 'auto';
+            ratingavg.style.marginTop    = 'auto';
+            ratingCollapsible.appendChild(ratingavg);
             break;
         case 'binstars':
+            let score = (arrAvg(list));
             if (arrAvg(list) > 0){
-                let score = (arrAvg(list));
-                createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score);
+                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score);
+                binstar.style.marginRight = 'auto';
             }
             else {
-                let score = (arrAvg(list));
-                createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score,0);
+                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score,0);
+                binstar.style.marginRight = 'auto';
             }
             break;
     }
+    icon.appendChild(iconinstantiation);
+    ratingCollapsible.appendChild(icon);
+
     
    for (i in scores){
     let score         = scores[i];
@@ -467,12 +483,18 @@ function createUserRatingDisplay(root,scores,dimension){
     dimensionlabel.innerText = dimensionname;
     dimensionlabel.style.marginBottom = 'auto';
     dimensionlabel.style.marginTop    = 'auto';
-    dimensionlabel.style.width        = '20%';
+    dimensionlabel.style.width        = '25%';
     div.appendChild(dimensionlabel);
 
     switch (ratingtype){
         case 'slider':
             createbarrating(div,0,maxval,step,score,"readOnly");
+            var ratingavg = document.createElement('p');
+            ratingavg.innerText = score + ' / ' + maxval ;
+            ratingavg.style.width        = '20%';
+            ratingavg.style.marginBottom = 'auto';
+            ratingavg.style.marginTop    = 'auto';
+            div.appendChild(ratingavg);
             break;
         case 'stars':
             createStarRating(div,maxval,score,"readOnly");
@@ -492,7 +514,6 @@ function createUserRatingDisplay(root,scores,dimension){
     root.appendChild(ratingCollapsible);
     root.appendChild(detailwrapper); 
 }
-
 function displayAggregation(root,listofscores,dimension,scale,step,type){
     if (lengte(listofscores) > 0){
 
