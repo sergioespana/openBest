@@ -34,8 +34,7 @@ var jsontest = {
                     "3description": "text",
                     "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
                                 {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
-                    //"4author": 
-                    //    ["document reference"],
+                    "problems": [{"name" : "Solves", "self": "document reference", "related": "document reference"}],
                     "5categories":
                         ["string"],
                     "6date": "string",
@@ -44,7 +43,9 @@ var jsontest = {
                             "01grouptitle": "Testing subcollections",
                             "02groupdesc": "Enter basic test information here.",
                             "1displayfeature": true,
-                            "testfield": "string"
+                            "2name": "string",
+                            "3description": "text",
+                            "4testfield": "string"
                         }
                     },
                     //collection
@@ -96,6 +97,7 @@ var jsontest = {
                     "1displayfeature": true,
                     "2name": "string",
                     "3description": "text",
+                    "bestpractices": [{"name" : "Solved by", "self": "document reference", "related": "document reference"}],
                     "solutions": {
                         "solutiondocument": {
                             "01grouptitle": "Solution",

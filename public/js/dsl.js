@@ -5,10 +5,6 @@
 // Create firestore (database) object
 var db = firebase.firestore();
 
-
-// ############################################
-
-
 var dslmodal = document.getElementById("model-modal");
 var dslbtn = document.getElementById("create-model-btn");
 // span elements closes the modal
@@ -20,6 +16,14 @@ var subcounter = 100;
 var JSONmodel;
 
 var addConceptHTML;
+
+// ############################################
+
+// Initializing tooltips
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
+})
+
 
 function addConceptFunction(c, pc) {
 
@@ -53,15 +57,16 @@ function addConceptFunction(c, pc) {
         <div class=\"attribute-add\" counter=\""+c+"\">\
             <div number=\"1\" class=\"row\">\
             <div class=\"col-md-6\">\
-                <input counter=\""+c+"\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Description\"></input>\
+                <span tabindex=\"0\" data-toggle=\"tooltip\" data-container=\"body\" data-placement=\"top\" title=\"This attribute cannot be changed\">\
+                    <input counter=\""+c+"\" class=\"attr-name form-control bg-light border-0 small\" type=\"value\" value=\"Name\" disabled></input>\
+                </span>\
             </div>\
             <div class=\"col-md-6\">\
-                <select counter=\""+c+"\" class=\"form-control bg-light border-0 small\">\
+                <select counter=\""+c+"\" class=\"disabled-form form-control bg-light border-0 small\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"This attribute cannot be changed\" disabled>\
                 <option>String</option>\
                 <option>Text</option>\
-                <option>Document reference</option>\
                 </select>\
-                <input counter=\""+c+"\" id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input>\
+                <input counter=\""+c+"\" id=\"array-checkbox\" class=\"disabled-form attr-name bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"This attribute cannot be changed\" disabled></input>\
                 <label for=\"array\">Multiple</label>\
             </div>\
             </div>\
@@ -70,6 +75,12 @@ function addConceptFunction(c, pc) {
                 <i class=\"fas fa-plus\"></i>\
                 </span>\
                 <span class=\"text\">Add attribute</span>\
+            </a>\
+            <a style=\"margin-top: 20px\" id=\"add-docref\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+                <span class=\"text\">\
+                <i class=\"fas fa-plus\"></i>\
+                </span>\
+                <span class=\"text\">Add reference</span>\
             </a>\
         </div>\
         <a style=\"margin-top: 20px\" id=\"add-sub-concept\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
@@ -118,15 +129,14 @@ $(".new-concept").on('click', 'a', function(event){
         let attributeAddHTML = "\
         <div class=\"row\"\>\
             <div class=\"col-md-6\"\>\
-                <input counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\" type=\"value\"></input\>\
+                <input counter=\""+btncounter+"\" class=\"attr-name form-control bg-light border-0 small\" type=\"value\"></input\>\
             </div\>\
             <div class=\"col-md-5\"\>\
                 <select counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\"\>\
                     <option>String</option\>\
                     <option>Text</option\>\
-                    <option>Document reference</option\>\
                 </select\>\
-                <input counter=\""+btncounter+"\" id=\"array-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input\>\
+                <input counter=\""+btncounter+"\" id=\"array-checkbox\" class=\"attr-name bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input\>\
                 <label for=\"array\">Multiple</label\>\
             </div\>\
             <div class=\"col-md-1\"\>\
@@ -139,6 +149,30 @@ $(".new-concept").on('click', 'a', function(event){
         </div>"
 
         $(attributeAddHTML).insertBefore($(this));
+    }
+    if($(this).attr('id') == 'add-docref'){
+
+        let btncounter = $(this).attr('btn-counter');
+
+        // HTML blob in which user can add a new reference
+        let referenceAddHTML = "\
+        <div style=\"margin-top: 20px\" class=\"row refAdd\"\>\
+            <div class=\"col-md-6\"\>\
+                <input counter=\""+btncounter+"\" rel-element=\"attribute\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"Points to subcollection\"></input\>\
+            </div\>\
+            <div class=\"col-md-5\"\>\
+                <input counter=\""+btncounter+"\" rel-element=\"name\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"Name of relationship\"></input>\
+            </div\>\
+            <div class=\"col-md-1\"\>\
+                <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                    <span class=\"icon text-gray-600\"\>\
+                        <i class=\"fas fa-times\"></i\>\
+                    </span\>\
+                </a\>\
+            </div\>\
+        </div>"
+
+        $(referenceAddHTML).insertBefore($(this));
     }
 })
 
@@ -200,7 +234,8 @@ document.getElementById("dsl-create").addEventListener("click", async function()
                     \"1displayfeature\": true,\
                     \"2title\": \"string\",\
                     \"3description\": \"text\",\
-                    \"4author\": [\"document reference\"\],\
+                    \"4author\": [{\"name\" : \"Written by\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
+                    \"problems\": [{\"name\" : \"Solves\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
                     \"5categories\": [\"string\"\],\
                     \"6date\": \"string\"\
         "
@@ -231,7 +266,7 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         \}\
         \},"
 
-        JSONmodel += commentsRatingsString
+        JSONmodel += commentsRatingsString;
     }
     else if(ratingsCheckbox.checked && !(commentsCheckbox.checked)){
         let ratingsString = "\
@@ -245,7 +280,7 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         \}\
         \},"
 
-        JSONmodel += ratingsString
+        JSONmodel += ratingsString;
     }
     else if(!(ratingsCheckbox.checked) && commentsCheckbox.checked){
         let commentsString = "\
@@ -259,7 +294,7 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         \}\
         \},"
 
-        JSONmodel += commentsString
+        JSONmodel += commentsString;
     }
     // If none of the subcollections are checked, we need to close bestpractices
     else{
@@ -269,37 +304,50 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         ,"
     }
 
+    let usersAuthorsString = "\
+    \"users\": \{\
+        \"userdocument\": \{\
+            \"1displayfeature\": false,\
+            \"2email\": \"string\",\
+            \"3name\": \"string\",\
+            \"4role\": \"string\"\
+        \}\
+    \},\
+    \"authors\": \{\
+        \"authordocument\": \{\
+            \"1displayfeature\": false,\
+            \"2contactinfo\": \"string\",\
+            \"3internal\": \"boolean\",\
+            \"4name\": \"string\"\
+        }\
+    \},"
+
+    JSONmodel += usersAuthorsString;
 
     // Adding problems > this is a FIXED subcollection
-    let problemString = "\
+    let problemSolutionString = "\
     \"problems\": \{\
         \"problemdocument\": \{\
             \"01grouptitle\": \""+probGroupTitle+"\",\
             \"02groupdesc\": \""+probGroupDesc+"\",\
             \"1displayfeature\": true,\
             \"2name\": \"string\",\
-            \"3description\": \"text\"\
-        \}\
-    \},\
-    "
-
-    JSONmodel += problemString
-
-    // Adding solutions > this is a FIXED subcollection
-    let solutionString = "\
-    \"solutions\": \{\
-        \"solutiondocument\": \{\
-            \"01grouptitle\": \""+solGroupTitle+"\",\
-            \"02groupdesc\": \""+solGroupDesc+"\",\
-            \"1displayfeature\": true,\
-            \"2name\": \"string\",\
-            \"3description\": \"text\"\
+            \"3description\": \"text\",\
+            \"bestpractices\": [{\"name\" : \"Solved by\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
+            \"solutions\": \{\
+                \"solutiondocument\": \{\
+                    \"01grouptitle\": \""+solGroupTitle+"\",\
+                    \"02groupdesc\": \""+solGroupDesc+"\",\
+                    \"1displayfeature\": true,\
+                    \"2name\": \"string\",\
+                    \"3description\": \"text\"\
+                \}\
+            \}\
         \}\
     \}\
     "
 
-    JSONmodel += solutionString
-
+    JSONmodel += problemSolutionString;
 
     // Adding a new concept as a subcollection
 
@@ -400,6 +448,7 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
                 \"newdocument\": \{\
                     \"01grouptitle\": \""+newGroupTitle+"\",\
                     \"02groupdesc\": \""+newGroupDesc+"\",\
+                    \"1displayfeature\": true,\
             "
         
             JSONmodel += newConceptString
@@ -409,16 +458,21 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
             let attrTypes = [];
             let checkedArrays = [];
 
+            // ATTRIBUTES
             // Adding the attribute type to an array
             $(`[counter='${c}']`).find('select').filter(`[counter='${c}']`).each(function(){
-            if($(this).attr('counter')){
-                attrTypes.push($(this).children("option:selected").val());
-            }
+                if($(this).attr('counter')){
+                    console.log($(this))
+                    console.log($(this).children("option:selected").val())
+                    attrTypes.push($(this).children("option:selected").val());
+                }
             });
+
             // Addding the attribute name to an array
             // Search for all input fields within the attribute-add div that has the counter attribute with the current counter value
-            $(`[counter='${c}']`).find('input').filter(`[counter='${c}']`).each(function(){
+            $(`[counter='${c}']`).find(`[counter='${c}']`).filter('.attr-name').each(function(){
                 if($(this).attr('counter')){
+                    console.log($(this))
                     if($(this).attr("id") != "array-checkbox"){
                         attrNames.push($(this).val());
                     }
@@ -434,10 +488,50 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
                 }
             });
 
+            // RELATIONSHIPS
+            // Adding the relationship info to an array
+            let relElement = $('.refAdd').find('input').filter(`[counter='${c}']`);
+
+            // Getting an array of unique relationship collection names filled in by the user
+            let uniqueRelNames = [];
+            for(element of relElement){
+                if($(element).attr('rel-element') == 'attribute' && !(uniqueRelNames.includes($(element).val()))){
+                    uniqueRelNames.push($(element).val());
+                }
+            }
+
+            // For each unique relationship collection name, we construct an array of maps
+            for(relName of uniqueRelNames){
+                // The array for this unique name
+                let relArr = [];
+
+                // Getting the relationship names that are filled in
+                for(element of relElement){
+                    if($(element).val() == relName){
+                        relArr.push($(element).parent().next().children().val());
+                    }
+                }
+
+                // The array of maps
+                let writeArr = [];
+
+                // Iterating over the relationship names to construct the array
+                for(let value = 0; value < relArr.length; value++){
+                    writeArr.push({name: relArr[value], self: "document reference", related: "document reference"})
+                }
+
+                //Adding to checkedArrays to keep the checks later on consistent
+                checkedArrays.push("unchecked");
+
+                attrTypes.push(writeArr);
+                attrNames.push(relName);
+            }
+
+
             // Iterating over the filled in attributes
             for(let attr = 0; attr < attrNames.length; attr++){
                 
-                // Adding 2 because the first two attributes are the group title and description
+                // Adding 2 because the first two attributes are the group title, group description 
                 let number = (attr+2).toString();
 
                 // The last attribute to be added needs to have extra curly brackets to correctly close this model section
@@ -446,7 +540,6 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
                     if(checkedArrays[attr] == "checked"){
                         // But if there are subconcepts to be found
                         // Subconcepts are closed off later
-
                         let addAttrString = "\
                         \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"]\
                         "
@@ -456,9 +549,20 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
 
                     // Don't add square brackets for REGULAR ATTRIBUTES
                     else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
-                        "
+                        let addAttrString;
+
+                        if(typeof(attrTypes[attr]) == "object"){
+                            addAttrString = "\
+                            \""+attrNames[attr]+"\": "+JSON.stringify(attrTypes[attr])+"\
+                            "
+                        }
+                        else{
+                            addAttrString = "\
+                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\"\
+                            "
+
+                            console.log(attrTypes[attr])
+                        }
                 
                         JSONmodel += addAttrString;
                     }
@@ -470,14 +574,27 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
                         let addAttrString = "\
                         \""+number+attrNames[attr]+"\": [\""+attrTypes[attr]+"\"],\
                         "
-                
+
+                        console.log(attrTypes[attr])
+            
                         JSONmodel += addAttrString;
                     }
                     else{
-                        let addAttrString = "\
-                        \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\",\
-                        "
-                
+                        let addAttrString;
+
+                        if(typeof(attrTypes[attr]) == "object"){
+                            addAttrString = "\
+                            \""+attrNames[attr]+"\": "+JSON.stringify(attrTypes[attr])+",\
+                            "
+                        }
+                        else{
+                            addAttrString = "\
+                            \""+number+attrNames[attr]+"\": \""+attrTypes[attr]+"\",\
+                            "
+
+                            console.log(attrTypes[attr])
+                        }
+
                         JSONmodel += addAttrString;
                     }
                 }
