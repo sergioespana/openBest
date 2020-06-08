@@ -64,11 +64,11 @@ var jsontest = {
                             "02groupdesc": "Enter rating information here.",
                             "1displayfeature": true,
                             //These categories can be changed by user creating the model
-                            "ratingtype": ["stars"],
-                            "dimension": ["string"],
-                            "dimension description": ["string"],
-                            "scale": [5],
-                            "stepsize": [1]
+                            "2ratingtype": ["eBay"],
+                            "3dimension": ["string"],
+                            "4dimension description": ["string"],
+                            "5scale": [5],
+                            "6stepsize": [1]
                         }
                     }
                 }

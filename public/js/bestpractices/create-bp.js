@@ -26,6 +26,9 @@ var newConceptCounter = 0;
 // Stores the relationships between complex concepts
 var complexDocRefs = [];
 
+// The type of rating used for this best practice
+var ratingType;
+
 
 // ############################################
 
@@ -159,6 +162,10 @@ async function getDocRef(drp){
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray){
 
+    if(key == '2ratingtype'){
+        ratingType = value[0];
+    }
+
     // Adding a div for each NEW concept by checking the collectionpath
     if(check != coll){
         let conceptDiv = document.createElement('div');
@@ -169,7 +176,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
     
     // Don't display the displayfeature field
     // Don't display the values that drive the rating mechanism
-    if(key != '1displayfeature' && key != 'scale' && key != 'stepsize' && key != 'ratingtype'){
+    if(key != '1displayfeature' && key != '5scale' && key != '6stepsize' && key != '2ratingtype'){
 
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
                             
@@ -252,7 +259,8 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
             // Adding elements that do not require population with DOCUMENT REFERENCES
             if(!(typeof(value[0]) == "object")){
                 // Arrays
-                if(Array.isArray(value)){
+                // The following rating mechanisms allow for the user to specify multiple dimensions
+                if(Array.isArray(value) && (ratingType != 'like' && ratingType != 'dislikelike' && ratingType != 'eBay')){
                     conceptDiv.appendChild(label);
                     conceptDiv.appendChild(input);
                     // Setting this attribute helps in determining the type of input to be added
@@ -448,16 +456,17 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
 
             let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
 
-            // Button to add a new concept
-            let addConcept = "<a style=\"margin-bottom: 15px\" class=\"addConcept btn btn-light btn-icon-split\">\
-            <span class=\"text\">\
-            <i class=\"fas fa-plus\"></i>\
-            </span>\
-            <span class=\"text\">Add document</span>\
-            </a>"
+            if(doc.id != 'ratingdocument'){
+                // Button to add a new concept
+                let addConcept = "<a style=\"margin-bottom: 15px\" class=\"addConcept btn btn-light btn-icon-split\">\
+                <span class=\"text\">\
+                <i class=\"fas fa-plus\"></i>\
+                </span>\
+                <span class=\"text\">Add document</span>\
+                </a>"
 
-            $(conceptDiv).append(addConcept);
-
+                $(conceptDiv).append(addConcept);
+            }
         }
     }
 }
@@ -637,8 +646,6 @@ async function alterJSON(docid, callback){
         // Don't replace the document name of the ratings subcollection, this should remain "ratingdocument"
         let collection = coll.split('/');
         if(collection[collection.length - 1] != 'ratings'){
-
-            console.log(coll)
 
             // Getting all collections for which features should be displayed
             // Only for collections in the JSON model
@@ -860,8 +867,6 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                 }
             });
 
-            console.log(JSONstring)
-
 
             // STEP 4
             // Writing the best practice to the database
@@ -959,14 +964,11 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
 
                 for(let ui = 0; ui < uniqueIndex.length; ui++){
 
-                    console.log("uniqueIndex "+uniqueIndex)
-
                     // Construct an array of maps to write to the database for every docref field
                     let writeArr = [];
                     let writeKey;
 
                     for(let dr = 0; dr < docRef.length; dr++){
-                        console.log("docRef "+docRef)
 
                         // First element in docref
                         if(dr == 0 && ui == 0){
@@ -1014,6 +1016,49 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
 
                 }     
             }
+        }
+    }
+
+    let ratingtype = [];
+    let dimension = [];
+    let dimdesc = [];
+    let scale = [];
+    let stepsize = [];
+
+    // WRITING RATING INFORMATION
+    for (let rating = 0; rating < filledBPform.length; rating++) {
+        let collection = filledBPform.elements[rating].getAttribute('colpath').split('/');
+        if(collection[collection.length - 1] == 'ratings'){
+
+            if(filledBPform.elements[rating].getAttribute('key') == '3dimension'){
+                dimension.push(filledBPform.elements[rating].value);
+
+                // Finding the info that is already stored in the database
+                let origRating = findPath(collectionPaths, 'ratings');
+                let ratingInfo = await db.collection(origRating).doc('ratingdocument').get();
+                for([key, value] of Object.entries(ratingInfo.data())){
+                    if(key == '2ratingtype'){
+                        ratingtype.push(value[0]);
+                    }
+                    else if(key == '5scale'){
+                        scale.push(value[0]);
+                    }
+                    else if(key == '6stepsize'){
+                        stepsize.push(value[0]);
+                    }
+                }
+            }
+            else if(filledBPform.elements[rating].getAttribute('key') == '4dimension description'){
+                dimdesc.push(filledBPform.elements[rating].value);
+            }
+        }
+    }
+
+    // Writing the rating arrays to the ratingdocument of this best practice
+    for(colpath of colpathArray){
+        let cpSplit = colpath.split('/');
+        if(cpSplit[cpSplit.length - 1] == 'ratings'){
+            db.doc(colpath+'/ratingdocument').set({ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize});
         }
     }
 
