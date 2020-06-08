@@ -1,6 +1,6 @@
 
 .sliding-unit {
-    display: inline-block;
+    display: inline-flex;
     margin-top: 5px;
 }
 

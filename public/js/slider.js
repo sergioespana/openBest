@@ -67,12 +67,17 @@ function createbarrating(root,minimum,maximum,step,value,type) {
   }
 }
 
- 
+ var barAndTickswrapper = document.createElement('div');
   
   if (type != "readOnly") {
-  newDiv.appendChild(bar);
+  
+  barAndTickswrapper.appendChild(bar);
+  
+  barAndTickswrapper.appendChild(div);
+  newDiv.appendChild(barAndTickswrapper);
   newDiv.appendChild(selected);
-  newDiv.appendChild(div);
+
+
   root.appendChild(newDiv);
   }
   else {
@@ -82,8 +87,6 @@ function createbarrating(root,minimum,maximum,step,value,type) {
     root.appendChild(bar);
   }
   return bar;
-
-  
 }
 
 function getAvg(l1) {

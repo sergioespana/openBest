@@ -2,13 +2,15 @@ var db = firebase.firestore();
 //function which calls all essential functions in this file
 //it gets the ratings and their ratinginfo from the database and draws the aggregates and a ratinginput
 async function startupRatings(Bpid){ 
-let topOfratingSegment  = document.getElementById("ratingaggregation");   
-let ratinginputlocation = document.getElementById("ratinginput");
+
 [ratinglist,ratinginfo] = await getratings(BPid);
 //transpose the ratings so that every item in the array contains scores belonging to one dimension
 let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
 //transpose the ratinginfo so that every item in the array contains all info on one rating dimension
 let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
+
+//set up rating section skeleton
+[topOfratingSegment,ratinginputlocation,individualratinglocation] = setUpRatingSection(transposedInfo,document.getElementById('ratingsection'));
 //create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
 createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
 //create rating input based on ratingdocument
@@ -16,9 +18,96 @@ createRatingInput(ratinginputlocation,Bpid,transposedInfo);
 //create rating aggregations based on scores and ratingdocument
 createRatingAggregation(transposedScores,transposedInfo);
 //draw all individual ratings
-let individualratinglocation = document.getElementById('Individual-ratings');
 createAllRatings(individualratinglocation,ratinglist,transposedInfo,Bpid);
 }
+
+
+
+function setUpRatingSection(transposedInfo,root){
+    var ratingAggregationTop = document.createElement('div');
+    ratingAggregationTop.id  = "ratingaggregation";
+    root.appendChild(ratingAggregationTop);
+    //if there is more than one rating dimension
+    if (lengte(transposedInfo) > 1){
+ 
+    var ratingCollapsible = document.createElement('button');
+    ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
+    ratingCollapsible.style.justifyContent = 'left';
+
+    ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
+    ratingCollapsible.style.width = '100%';
+    ratingCollapsible.style.display = 'flex';
+
+    var icon = document.createElement('span');
+    icon.classList.add('icon','text-gray-600');
+
+    var iconinstantiation = document.createElement('i');
+    iconinstantiation.classList.add('fa','fa-plus');
+    icon.appendChild(iconinstantiation);
+
+    var dimname = document.createElement('p');
+    dimname.innerText          = "Give your rating!";
+    dimname.style.width        = '25%';
+    dimname.style.marginLeft   = '10%';
+    dimname.style.marginRight  = 'auto';
+    dimname.style.textAlign    = 'initial'
+    dimname.style.marginBottom = 'auto';
+    dimname.style.marginTop    = 'auto';
+
+    ratingCollapsible.appendChild(dimname);
+    ratingCollapsible.appendChild(icon);
+    
+    var detailwrapper = document.createElement('div');
+    detailwrapper.id = 'ratinginput';
+    detailwrapper.style.display = "none";
+
+    root.appendChild(ratingCollapsible);
+    root.appendChild(detailwrapper);
+
+    var buttonbar  = document.createElement('div');
+    buttonbar.classList.add('buttonbar');
+
+    var individualRatings = document.createElement('button');
+    individualRatings.classList.add('btn','btn-light');
+    individualRatings.style.marginRight = '10px';
+    individualRatings.innerText         = 'Individual ratings';
+    individualRatings.selected          = true;
+    individualRatings.addEventListener('click', function (){makeinvisible('Aggregated-ratings','Individual-ratings')});
+    buttonbar.appendChild(individualRatings);
+
+    var aggregatedRatings = document.createElement('button');
+    aggregatedRatings.classList.add('btn','btn-light');
+    aggregatedRatings.innerText = "Aggregated ratings";
+    aggregatedRatings.addEventListener('click', function (){makeinvisible('Individual-ratings','Aggregated-ratings')});
+    buttonbar.appendChild(aggregatedRatings);
+    
+    root.appendChild(buttonbar);
+
+    var individualRatingsContainer = document.createElement('div');
+    individualRatingsContainer.id = "Individual-ratings";
+    root.appendChild(individualRatingsContainer);
+
+    var aggregatedRatingsContainer = document.createElement('div');
+    aggregatedRatingsContainer.id = "Aggregated-ratings";
+    aggregatedRatingsContainer.style.display = 'none';
+    root.appendChild(aggregatedRatingsContainer);
+
+    return [ratingAggregationTop,detailwrapper,individualRatingsContainer];
+    }
+    else{
+        return [ratingAggregationTop,ratingAggregationTop,ratingAggregationTop];
+    }
+
+}
+
+
+
+
+
+
+
+
+
 //function to create the rating input to be used by the user.
 function createRatingInput(root,BPid,list){
     var ratingcontainer = document.createElement("div");
@@ -47,8 +136,9 @@ function createRatingInput(root,BPid,list){
     //create submitbutton
     submitbutton = document.createElement("button");
     submitbutton.innerText = "Submit";
-    submitbutton.style.float = "right";
-    submitbutton.style.margin = '10px';
+    submitbutton.style.marginLeft = '75%';
+    submitbutton.style.width = '15%';
+    submitbutton.style.marginRight = 'auto';
     submitbutton.classList.add("btn","btn-light");
     submitbutton.addEventListener("click",function () {
         submitrating(BPid,collectrating(ratingdimensions),textinput.value);
@@ -150,21 +240,21 @@ async function ratingaggregationswitch(scores,ratingdimension_name,ratingdimensi
 //function for extracting the ratings per dimention from the varying rating mechanisms.
 function collectrating(listOfDimensions){
     var scorelist = [];
+    var score = 0
     for (dimension of listOfDimensions){
         //get score
        switch (dimension.getAttribute("name")){
            case "stars":
-              var score = dimension.getAttribute("data-rating");
+              score = dimension.getAttribute("data-rating");
             break;
             case "slider":
-              var score = dimension.value;
+              score = dimension.value;
             case "binstars":
-              var score = dimension.getAttribute("data-rating");
+              score = dimension.getAttribute("data-rating");
             break;
        }
        scorelist.push(score);
     }
-
     return scorelist;
 }
 //function to create any rating mechanism in 1 dimension
@@ -719,7 +809,7 @@ function transpose(matrix) {
 }
 // function for removing all rating related items
 function remove_rating_elements(){
-    myNodes = [document.getElementById("Individual-ratings"),document.getElementById("Aggregated-ratings"),document.getElementById("ratinginput"),document.getElementById("ratingaggregation")];
+    myNodes = [document.getElementById('ratingsection')];
     for (myNode of myNodes){
         while(myNode.hasChildNodes()){
             myNode.removeChild(myNode.firstChild);
@@ -757,8 +847,6 @@ function createTextArea(){
    textarea.style.margin       = 'auto';
    return textarea;
 }
-
-
 //function for creating the total aggregation of a BP's rating to allow for quick insight into the ratings without looking into individual ratings or aggregations within the dimensions
 function createTotalAggregation(root,transposedScores,transposedInfo){
     const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
@@ -790,6 +878,9 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         }
         if (type == 'binstars'){
         score    = dimensionavg;
+        }
+        if (type == 'dislikelike'){
+        score   = dimensionavg;
         }
 
         dimensionScores.push([score,dimensionavg,dimensionname]);
