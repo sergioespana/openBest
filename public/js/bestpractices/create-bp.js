@@ -18,8 +18,7 @@ var btn = document.getElementById("create-BP-btn");
 var span = document.getElementsByClassName("close")[0];
 
 // Div instantiated for the set of features for each concept
-// var conceptDivInit = document.createElement('div');
-var check = "nothing";
+var check;
 
 // Stores a counter to give each new concept a unique docname
 var newConceptCounter = 0;
@@ -48,6 +47,8 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
     newConceptCounter = 0;
     // Emptying the docrefs
     complexDocRefs = [];
+
+    check = "nothing";
 
     // First alter the JSON string by inserting the unique doc id's
     alterJSON(uniqueDocID, function(aJSON){
@@ -100,6 +101,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                             docrefArray = await getDocRef(docrefPath);
                         }
 
+                        
                         // Calling instantiateFeatures with the docrefArray that corresponds to the current key
                         instantiateFeatures(key, value, coll, doc, docrefArray);
 
@@ -169,12 +171,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
     // Don't display the values that drive the rating mechanism
     if(key != '1displayfeature' && key != 'scale' && key != 'stepsize' && key != 'ratingtype'){
 
-        console.log(coll)
-
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
-
-        console.log(conceptDiv)
-        debugger
                             
         let grouptitle = document.createElement('div');
         let label = document.createElement('label');
@@ -640,6 +637,8 @@ async function alterJSON(docid, callback){
         // Don't replace the document name of the ratings subcollection, this should remain "ratingdocument"
         let collection = coll.split('/');
         if(collection[collection.length - 1] != 'ratings'){
+
+            console.log(coll)
 
             // Getting all collections for which features should be displayed
             // Only for collections in the JSON model
