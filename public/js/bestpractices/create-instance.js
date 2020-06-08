@@ -60,11 +60,15 @@ var jsontest = {
                     //collection
                     "ratings":{
                         "ratingdocument": {
-                            "displayfeature": false,
+                            "01grouptitle": "Ratings",
+                            "02groupdesc": "Enter rating information here.",
+                            "1displayfeature": true,
                             //These categories can be changed by user creating the model
-                            "scale": ["integer"],
-                            "score": ["integer"],
-                            "user": "document reference"
+                            "2ratingtype": ["eBay"],
+                            "3dimension": ["string"],
+                            "4dimension description": ["string"],
+                            "5scale": [5],
+                            "6stepsize": [1]
                         }
                     }
                 }

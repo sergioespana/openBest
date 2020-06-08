@@ -18,14 +18,16 @@ var btn = document.getElementById("create-BP-btn");
 var span = document.getElementsByClassName("close")[0];
 
 // Div instantiated for the set of features for each concept
-// var conceptDivInit = document.createElement('div');
-var check = "nothing";
+var check;
 
 // Stores a counter to give each new concept a unique docname
 var newConceptCounter = 0;
 
 // Stores the relationships between complex concepts
 var complexDocRefs = [];
+
+// The type of rating used for this best practice
+var ratingType;
 
 
 // ############################################
@@ -49,6 +51,8 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
     // Emptying the docrefs
     complexDocRefs = [];
 
+    check = "nothing";
+
     // First alter the JSON string by inserting the unique doc id's
     alterJSON(uniqueDocID, function(aJSON){
 
@@ -71,8 +75,8 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
 
         collectionPaths.forEach(coll => {
             db.collection(coll)
-            // Documents that match the current uniqueDocID are the documents for which features need to be displayed
-            .where(firebase.firestore.FieldPath.documentId(), "==", uniqueDocID.toString())
+            // Documents that match the current uniqueDocID OR are rating documents are the documents for which features need to be displayed
+            .where(firebase.firestore.FieldPath.documentId(), "in", [uniqueDocID.toString(), "ratingdocument"])
             .get().then(snapshot => {
 
                 snapshot.docs.forEach(async doc => {
@@ -100,6 +104,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                             docrefArray = await getDocRef(docrefPath);
                         }
 
+                        
                         // Calling instantiateFeatures with the docrefArray that corresponds to the current key
                         instantiateFeatures(key, value, coll, doc, docrefArray);
 
@@ -157,6 +162,10 @@ async function getDocRef(drp){
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray){
 
+    if(key == '2ratingtype'){
+        ratingType = value[0];
+    }
+
     // Adding a div for each NEW concept by checking the collectionpath
     if(check != coll){
         let conceptDiv = document.createElement('div');
@@ -166,7 +175,8 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
     }
     
     // Don't display the displayfeature field
-    if(key != '1displayfeature'){
+    // Don't display the values that drive the rating mechanism
+    if(key != '1displayfeature' && key != '5scale' && key != '6stepsize' && key != '2ratingtype'){
 
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
                             
@@ -249,7 +259,8 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
             // Adding elements that do not require population with DOCUMENT REFERENCES
             if(!(typeof(value[0]) == "object")){
                 // Arrays
-                if(Array.isArray(value)){
+                // The following rating mechanisms allow for the user to specify multiple dimensions
+                if(Array.isArray(value) && (ratingType != 'like' && ratingType != 'dislikelike' && ratingType != 'eBay')){
                     conceptDiv.appendChild(label);
                     conceptDiv.appendChild(input);
                     // Setting this attribute helps in determining the type of input to be added
@@ -445,16 +456,17 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
 
             let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
 
-            // Button to add a new concept
-            let addConcept = "<a style=\"margin-bottom: 15px\" class=\"addConcept btn btn-light btn-icon-split\">\
-            <span class=\"text\">\
-            <i class=\"fas fa-plus\"></i>\
-            </span>\
-            <span class=\"text\">Add document</span>\
-            </a>"
+            if(doc.id != 'ratingdocument'){
+                // Button to add a new concept
+                let addConcept = "<a style=\"margin-bottom: 15px\" class=\"addConcept btn btn-light btn-icon-split\">\
+                <span class=\"text\">\
+                <i class=\"fas fa-plus\"></i>\
+                </span>\
+                <span class=\"text\">Add document</span>\
+                </a>"
 
-            $(conceptDiv).append(addConcept);
-
+                $(conceptDiv).append(addConcept);
+            }
         }
     }
 }
@@ -631,19 +643,24 @@ async function alterJSON(docid, callback){
     }
 
     for(const coll of collectionPaths){
-        // Getting all collections for which features should be displayed
-        // Only for collections in the JSON model
-        db.collection(coll)
-        .where("1displayfeature", "==", "true")
-        .get().then(snapshot => {
-            for(const item of snapshot.docs){
-                // Replace the name of the document (e.g. bestpracticedoc) with the uniqueDocID
-                alteredJSONstring = alteredJSONstring.replace(item.id.toString(), docid.toString());
-            }
-        })
-        .catch(function(error) {
-            console.error("Error retrieving document: ", error);
-        });
+        // Don't replace the document name of the ratings subcollection, this should remain "ratingdocument"
+        let collection = coll.split('/');
+        if(collection[collection.length - 1] != 'ratings'){
+
+            // Getting all collections for which features should be displayed
+            // Only for collections in the JSON model
+            db.collection(coll)
+            .where("1displayfeature", "==", "true")
+            .get().then(snapshot => {
+                for(const item of snapshot.docs){
+                    // Replace the name of the document (e.g. bestpracticedoc) with the uniqueDocID
+                    alteredJSONstring = alteredJSONstring.replace(item.id.toString(), docid.toString());
+                }
+            })
+            .catch(function(error) {
+                console.error("Error retrieving document: ", error);
+            });
+        }
     }
     
     // Await the delay before firing the callback > long enough to write alteredJSONstring
@@ -699,304 +716,349 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
     // For each unique colpath, document content is constructed
     for (var cps = 0; cps < colpathArray.length; cps++){
 
-        var arrayArray = [];
-        var keyArray = [];
-        var arrayString = "";
-    
-        var JSONarray = ["\"created\": \"true\""];
-        var JSONstring = "";
+        let collection = colpathArray[cps].split('/');
+        if(collection[collection.length - 1] != 'ratings'){
+
+            var arrayArray = [];
+            var keyArray = [];
+            var arrayString = "";
+        
+            var JSONarray = ["\"created\": \"true\""];
+            var JSONstring = "";
 
 
-        // Getting the docrefs for this collection that are not visible in the bp entry form (i.e. complex concepts)
+            // Getting the docrefs for this collection that are not visible in the bp entry form (i.e. complex concepts)
 
 
-        // docRef stores the references for any docref that needs to be written to the db
-        let docRef = [];
-        // keyRef stores the corresponding key
-        let keyRef = [];
-        // docRefColl stores the collectionpaths in which the documents created for the references should be stored
-        let docRefColl = [];
-        // docRefDocName stores the unique names for the documents, including the docRefCounter
-        let docRefDocName = [];
-        // relNames stores the names for each relationship to be stored
-        let relNames = [];
+            // docRef stores the references for any docref that needs to be written to the db
+            let docRef = [];
+            // keyRef stores the corresponding key
+            let keyRef = [];
+            // docRefColl stores the collectionpaths in which the documents created for the references should be stored
+            let docRefColl = [];
+            // docRefDocName stores the unique names for the documents, including the docRefCounter
+            let docRefDocName = [];
+            // relNames stores the names for each relationship to be stored
+            let relNames = [];
 
-       
-        // STEP 1.1
-        // Extracting all information from the filled in form and writing that info to arrays
+        
+            // STEP 1.1
+            // Extracting all information from the filled in form and writing that info to arrays
 
-        for (var i = 0; i < filledBPform.length; i++) {
+            for (var i = 0; i < filledBPform.length; i++) {
 
-            if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps] && filledBPform.elements[i].getAttribute('docname') == docNameArray[cps]){
-                var entryColPath = filledBPform.elements[i].getAttribute('colpath');
-                var entryDocName = filledBPform.elements[i].getAttribute('docname');
-                var entryKey = filledBPform.elements[i].getAttribute('key');
-                var entryType = filledBPform.elements[i].getAttribute('type');
+                // // Don't store info on ratings > this info is written to the database differently
+                // let reference = filledBPform.elements[i].getAttribute('colpath').split('/');
+                // if(reference[reference.length - 1] != 'ratings'){
 
-                // Regular fields
-                if(entryType === 'field'){
-                    JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
+                    if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps] && filledBPform.elements[i].getAttribute('docname') == docNameArray[cps]){
+                        var entryColPath = filledBPform.elements[i].getAttribute('colpath');
+                        var entryDocName = filledBPform.elements[i].getAttribute('docname');
+                        var entryKey = filledBPform.elements[i].getAttribute('key');
+                        var entryType = filledBPform.elements[i].getAttribute('type');
+
+                        // Regular fields
+                        if(entryType === 'field'){
+                            JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
+                        }
+                        // Selected fields in selectbox OR regular fields for document references
+                        else if(entryType == 'select' || filledBPform.elements[i].getAttribute('docref-docname')){
+                            if(entryType == 'select'){
+                                let selectedOption = filledBPform.elements[i].options[filledBPform.elements[i].selectedIndex];
+                                docRef.push(selectedOption.getAttribute('colpath') + '/' + selectedOption.getAttribute('docname'));
+                                docRefColl.push(selectedOption.getAttribute('colpath'));
+                                docRefDocName.push(selectedOption.getAttribute('docname'));
+                                keyRef.push(selectedOption.getAttribute('key'));
+                                relNames.push(selectedOption.getAttribute('rel-name'));
+                            }
+                            else{
+                                // For a regular field, we want to store the docrefpath (which is passed as an attribute), rather than the input value
+                                // This docref points to a document which is created with the value the user has put in
+                                docRef.push(filledBPform.elements[i].getAttribute('docrefpath'));
+                                docRefColl.push(filledBPform.elements[i].getAttribute('docrefcoll'));
+                                docRefDocName.push(filledBPform.elements[i].getAttribute('docref-docname'));
+                                keyRef.push(filledBPform.elements[i].getAttribute('key'));
+                                relNames.push(filledBPform.elements[i].getAttribute('rel-name'));
+                            }
+                        }
+                        // Array fields
+                        else{
+                            // keyArray contains all key fields of array groups, e.g. "4categories"
+                            keyArray.push(`${entryKey}`);
+
+                            // arrayArray included the key and the input value of all array-type input fields
+                            if(!(arrayArray.includes(`${entryKey}`))){
+                                arrayArray.push(`${entryKey}`);
+                                arrayArray.push(`${filledBPform.elements[i].value}`);
+                            }
+                            else{
+                                arrayArray.push(`${filledBPform.elements[i].value}`);
+                            }
+                        }
+                    }
+                // }
+            }
+
+
+            // STEP 1.2
+            // Adding the complex docrefs to these arrays as well
+
+            for(let cdr = 0; cdr < complexDocRefs.length; cdr++){
+                let complexDocName = (complexDocRefs[cdr][0]).split('/');
+                let complexColRef = (complexDocRefs[cdr][0]).replace(('/'+complexDocName[complexDocName.length - 1]), '');
+                if(complexColRef == colpathArray[cps]){
+                    // The value that is pointed to
+                    docRef.push(complexDocRefs[cdr][2]);
+                    relNames.push(complexDocRefs[cdr][1]);
+                    let docRefKey = complexDocRefs[cdr][2].split('/');
+                    keyRef.push(docRefKey[docRefKey.length - 2]);
                 }
-                // Selected fields in selectbox OR regular fields for document references
-                else if(entryType == 'select' || filledBPform.elements[i].getAttribute('docref-docname')){
-                    if(entryType == 'select'){
-                        let selectedOption = filledBPform.elements[i].options[filledBPform.elements[i].selectedIndex];
-                        docRef.push(selectedOption.getAttribute('colpath') + '/' + selectedOption.getAttribute('docname'));
-                        docRefColl.push(selectedOption.getAttribute('colpath'));
-                        docRefDocName.push(selectedOption.getAttribute('docname'));
-                        keyRef.push(selectedOption.getAttribute('key'));
-                        relNames.push(selectedOption.getAttribute('rel-name'));
+            }
+
+
+            // STEP 2
+            // Constructing a string with array contents and adding that to the JSON info
+
+            for (var x = 0; x < arrayArray.length; x++){
+                // If the array element is the index key
+                if(keyArray.includes(arrayArray[x])){
+                    if(x == 0){
+                        arrayString += ("\"" + arrayArray[x] + "\": [");
                     }
                     else{
-                        // For a regular field, we want to store the docrefpath (which is passed as an attribute), rather than the input value
-                        // This docref points to a document which is created with the value the user has put in
-                        docRef.push(filledBPform.elements[i].getAttribute('docrefpath'));
-                        docRefColl.push(filledBPform.elements[i].getAttribute('docrefcoll'));
-                        docRefDocName.push(filledBPform.elements[i].getAttribute('docref-docname'));
-                        keyRef.push(filledBPform.elements[i].getAttribute('key'));
-                        relNames.push(filledBPform.elements[i].getAttribute('rel-name'));
+                        arrayString = arrayString.slice(0, arrayString.length - 2);
+                        // Double commas to be able to split the string later on
+                        arrayString += ("],, \"" + arrayArray[x] + "\": [");
                     }
-                }
-                // Array fields
-                else{
-                    // keyArray contains all key fields of array groups, e.g. "4categories"
-                    keyArray.push(`${entryKey}`);
-
-                    // arrayArray included the key and the input value of all array-type input fields
-                    if(!(arrayArray.includes(`${entryKey}`))){
-                        arrayArray.push(`${entryKey}`);
-                        arrayArray.push(`${filledBPform.elements[i].value}`);
-                    }
-                    else{
-                        arrayArray.push(`${filledBPform.elements[i].value}`);
-                    }
-                }
-            }
-        }
-
-
-        // STEP 1.2
-        // Adding the complex docrefs to these arrays as well
-
-        console.log(complexDocRefs)
-
-        for(let cdr = 0; cdr < complexDocRefs.length; cdr++){
-            let complexDocName = (complexDocRefs[cdr][0]).split('/');
-            let complexColRef = (complexDocRefs[cdr][0]).replace(('/'+complexDocName[complexDocName.length - 1]), '');
-            if(complexColRef == colpathArray[cps]){
-                // The value that is pointed to
-                docRef.push(complexDocRefs[cdr][2]);
-                relNames.push(complexDocRefs[cdr][1]);
-                let docRefKey = complexDocRefs[cdr][2].split('/');
-                keyRef.push(docRefKey[docRefKey.length - 2]);
-            }
-        }
-
-
-        // STEP 2
-        // Constructing a string with array contents and adding that to the JSON info
-
-        for (var x = 0; x < arrayArray.length; x++){
-            // If the array element is the index key
-            if(keyArray.includes(arrayArray[x])){
-                if(x == 0){
-                    arrayString += ("\"" + arrayArray[x] + "\": [");
                 }
                 else{
-                    arrayString = arrayString.slice(0, arrayString.length - 2);
-                    // Double commas to be able to split the string later on
-                    arrayString += ("],, \"" + arrayArray[x] + "\": [");
+                    if(x == arrayArray.length - 1){
+                        arrayString += ("\"" + arrayArray[x] + "\"]");
+                    }
+                    else {
+                        arrayString += ("\"" + arrayArray[x] + "\", ");
+                    }
                 }
             }
-            else{
-                if(x == arrayArray.length - 1){
-                    arrayString += ("\"" + arrayArray[x] + "\"]");
+
+            // Splitting the string of array information to get an array with all contents
+            // We need a string first since we need to write the square brackets to the database
+            // arrayElement therefore now contains contents like "4categories": ["Environment", "Health"]
+            let arrayElement = arrayString.split(",, ");
+            for(var y = 0; y < arrayElement.length; y++){
+                // Only do this if this section contains arrays
+                if(arrayString != 0){
+                    JSONarray.push(arrayElement[y]);
+                }
+            } 
+
+            // STEP 3
+            // Constructing the JSONstring to be written to the database
+
+            JSONarray.forEach(element => {
+                if(JSONarray[0] === element){
+                    JSONstring += ("{"+element+",");
+                }
+                else if (JSONarray[JSONarray.length - 1] === element){
+                    JSONstring += (element+"}")
                 }
                 else {
-                    arrayString += ("\"" + arrayArray[x] + "\", ");
+                    JSONstring += (element+",");
                 }
-            }
-        }
-
-        // Splitting the string of array information to get an array with all contents
-        // We need a string first since we need to write the square brackets to the database
-        // arrayElement therefore now contains contents like "4categories": ["Environment", "Health"]
-        let arrayElement = arrayString.split(",, ");
-        for(var y = 0; y < arrayElement.length; y++){
-            // Only do this if this section contains arrays
-            if(arrayString != 0){
-                JSONarray.push(arrayElement[y]);
-            }
-        } 
-
-        // STEP 3
-        // Constructing the JSONstring to be written to the database
-
-        JSONarray.forEach(element => {
-            if(JSONarray[0] === element){
-                JSONstring += ("{"+element+",");
-            }
-            else if (JSONarray[JSONarray.length - 1] === element){
-                JSONstring += (element+"}")
-            }
-            else {
-                JSONstring += (element+",");
-            }
-        });
+            });
 
 
-        // STEP 4
-        // Writing the best practice to the database
+            // STEP 4
+            // Writing the best practice to the database
 
-        db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
-
-
-        // STEP 5
-        // So far only array information and regular field information is written. Docref writes requires extra info.
-
-        // Checking if there are document references in the docref array
-        if(docRef.length){
-
-            let uniqueRef = [];
-            let uniqueIndex = [];
-
-            // docRef stores all docrefs for every field
-            // Creating an array of indexes > up until which index grouped docrefs are stored
-            for(let ref = 0; ref < keyRef.length; ref++){
-                if(!(uniqueRef.includes(keyRef[ref]))){
-                    uniqueRef.push(keyRef[ref]);
-                    uniqueIndex.push(ref);
-                }
-                else{
-                    // Remove the last element
-                    uniqueIndex.pop();
-                    // Push the new element
-                    uniqueIndex.push(ref);
-                }
-            }
-
-            // STEP 5.1: Handling the documents that docrefs point too
-            // ## If a docref is created with an input field > create a new document in that referenced subcollection
-            // ## If a docref is created with a selectbox > update the relationship info in that referenced document
-
-            // Iterating over all docrefs
-            for(var key = 0; key < keyRef.length; key++){
-
-                // Getting the form that is responsible for this input
-                let keyName = keyRef[key];
-                let inputFeature = Array.from(filledBPform.elements).filter(function(formfeature) {
-                    return (formfeature.getAttribute('key') == keyName)
-                });
-
-                // drp is the collectionpath in which docrefs are stored
-                let drp = docRefColl[key];
-                // drdn is the name of the document, including the docrefcounter
-                let drdn = docRefDocName[key];
-                
-                // Information on the docrefs to be stored in the array of maps
-                let name = relNames[key];
-                let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
-                let related = db.doc(docRef[key]);
-
-                // If there is an input feature (i.e. not a complex concept)
-                if(inputFeature[key]){
-                    // Info from selectbox
-                    if(inputFeature[key].nodeName == 'SELECT'){
-                        // For selectboxes, we don't have to create a new document
-                        // We do have to update the relationship array in the referenced document
-
-                        // Use await here so that we can wait on the result of this asynchronous query before adding to the currentRefArray
-                        let currentDoc = await db.collection(drp).doc(drdn).get();
-                        for(let [key, value] of Object.entries(currentDoc.data())){
-                            if(key == 'relationship'){
-                                
-                                // The currently stored docrefs in the referenced document
-                                let currentRefArray = value;
-
-                                // Adding the relationship data for the newly created document to this array
-                                currentRefArray.push({name: name, self: related, related: self});
-
-                                // Storing that docref
-                                db.collection(drp).doc(drdn).set({relationship: currentRefArray}, { merge: true });
-
-                            }
-                        }
-                    }
-                    // Info from a regular field
-                    else{
-                        // The value that the user has filled in
-                        let inputValue = inputFeature[key].value;
-
-                        // Write a value to a new doc in the subcollection that is referenced
-                        db.collection(drp).doc(drdn).set({"name": inputValue});
-                        // Also storing the relationship info
-                        db.collection(drp).doc(drdn).set({relationship: [{name: name, self: related, related: self}]}, { merge: true });
-                    }
-                }
-            }
+            db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
 
-            // Step 5.2: Storing the arrays of maps of docrefs in the current (best practice) document
-            // ## This info is stored in the best practice document, not the documents that are pointed to
+            // STEP 5
+            // So far only array information and regular field information is written. Docref writes requires extra info.
 
-            for(let ui = 0; ui < uniqueIndex.length; ui++){
+            // Checking if there are document references in the docref array
+            if(docRef.length){
 
-                console.log("uniqueIndex "+uniqueIndex)
+                let uniqueRef = [];
+                let uniqueIndex = [];
 
-                // Construct an array of maps to write to the database for every docref field
-                let writeArr = [];
-                let writeKey;
-
-                for(let dr = 0; dr < docRef.length; dr++){
-                    console.log("docRef "+docRef)
-
-                    // First element in docref
-                    if(dr == 0 && ui == 0){
-                        // Should be lower than or equal to the uniqueness index
-                        if(dr <= uniqueIndex[ui]){
-                            // Constructing the map to be pushed to writeArr
-                            let name = relNames[dr];
-                            let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
-                            let related = db.doc(docRef[dr]);
-                            writeArr.push({name: name, self: self, related: related})
-
-                            writeKey = keyRef[ui];
-                        }
+                // docRef stores all docrefs for every field
+                // Creating an array of indexes > up until which index grouped docrefs are stored
+                for(let ref = 0; ref < keyRef.length; ref++){
+                    if(!(uniqueRef.includes(keyRef[ref]))){
+                        uniqueRef.push(keyRef[ref]);
+                        uniqueIndex.push(ref);
                     }
                     else{
-                        // If there is a previous uniqueness index
-                        if(uniqueIndex[ui-1]){
-                            // Should be lower or equal to uniqueness index, but higher than the previous index
-                            if(dr <= uniqueIndex[ui] && dr > uniqueIndex[ui-1]){
-                                // Constructing the map to be pushed to writeArr
-                                let name = relNames[dr];
-                                let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
-                                let related = db.doc(docRef[dr]);
-                                writeArr.push({name: name, self: self, related: related})
+                        // Remove the last element
+                        uniqueIndex.pop();
+                        // Push the new element
+                        uniqueIndex.push(ref);
+                    }
+                }
 
-                                writeKey = keyRef[dr];
+                // STEP 5.1: Handling the documents that docrefs point too
+                // ## If a docref is created with an input field > create a new document in that referenced subcollection
+                // ## If a docref is created with a selectbox > update the relationship info in that referenced document
+
+                // Iterating over all docrefs
+                for(var key = 0; key < keyRef.length; key++){
+
+                    // Getting the form that is responsible for this input
+                    let keyName = keyRef[key];
+                    let inputFeature = Array.from(filledBPform.elements).filter(function(formfeature) {
+                        return (formfeature.getAttribute('key') == keyName)
+                    });
+
+                    // drp is the collectionpath in which docrefs are stored
+                    let drp = docRefColl[key];
+                    // drdn is the name of the document, including the docrefcounter
+                    let drdn = docRefDocName[key];
+                    
+                    // Information on the docrefs to be stored in the array of maps
+                    let name = relNames[key];
+                    let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
+                    let related = db.doc(docRef[key]);
+
+                    // If there is an input feature (i.e. not a complex concept)
+                    if(inputFeature[key]){
+                        // Info from selectbox
+                        if(inputFeature[key].nodeName == 'SELECT'){
+                            // For selectboxes, we don't have to create a new document
+                            // We do have to update the relationship array in the referenced document
+
+                            // Use await here so that we can wait on the result of this asynchronous query before adding to the currentRefArray
+                            let currentDoc = await db.collection(drp).doc(drdn).get();
+                            for(let [key, value] of Object.entries(currentDoc.data())){
+                                if(key == 'relationship'){
+                                    
+                                    // The currently stored docrefs in the referenced document
+                                    let currentRefArray = value;
+
+                                    // Adding the relationship data for the newly created document to this array
+                                    currentRefArray.push({name: name, self: related, related: self});
+
+                                    // Storing that docref
+                                    db.collection(drp).doc(drdn).set({relationship: currentRefArray}, { merge: true });
+
+                                }
                             }
                         }
+                        // Info from a regular field
                         else{
+                            // The value that the user has filled in
+                            let inputValue = inputFeature[key].value;
+
+                            // Write a value to a new doc in the subcollection that is referenced
+                            db.collection(drp).doc(drdn).set({"name": inputValue});
+                            // Also storing the relationship info
+                            db.collection(drp).doc(drdn).set({relationship: [{name: name, self: related, related: self}]}, { merge: true });
+                        }
+                    }
+                }
+
+
+                // Step 5.2: Storing the arrays of maps of docrefs in the current (best practice) document
+                // ## This info is stored in the best practice document, not the documents that are pointed to
+
+                for(let ui = 0; ui < uniqueIndex.length; ui++){
+
+                    // Construct an array of maps to write to the database for every docref field
+                    let writeArr = [];
+                    let writeKey;
+
+                    for(let dr = 0; dr < docRef.length; dr++){
+
+                        // First element in docref
+                        if(dr == 0 && ui == 0){
+                            // Should be lower than or equal to the uniqueness index
                             if(dr <= uniqueIndex[ui]){
                                 // Constructing the map to be pushed to writeArr
                                 let name = relNames[dr];
                                 let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
                                 let related = db.doc(docRef[dr]);
                                 writeArr.push({name: name, self: self, related: related})
-                                
+
                                 writeKey = keyRef[ui];
                             }
                         }
+                        else{
+                            // If there is a previous uniqueness index
+                            if(uniqueIndex[ui-1]){
+                                // Should be lower or equal to uniqueness index, but higher than the previous index
+                                if(dr <= uniqueIndex[ui] && dr > uniqueIndex[ui-1]){
+                                    // Constructing the map to be pushed to writeArr
+                                    let name = relNames[dr];
+                                    let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
+                                    let related = db.doc(docRef[dr]);
+                                    writeArr.push({name: name, self: self, related: related})
+
+                                    writeKey = keyRef[dr];
+                                }
+                            }
+                            else{
+                                if(dr <= uniqueIndex[ui]){
+                                    // Constructing the map to be pushed to writeArr
+                                    let name = relNames[dr];
+                                    let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
+                                    let related = db.doc(docRef[dr]);
+                                    writeArr.push({name: name, self: self, related: related})
+                                    
+                                    writeKey = keyRef[ui];
+                                }
+                            }
+                        }
+                    }
+
+                    // writing the writeArr to the best practice doc
+                    db.collection(entryColPath).doc(entryDocName).set({[writeKey]: writeArr}, { merge: true });
+
+                }     
+            }
+        }
+    }
+
+    let ratingtype = [];
+    let dimension = [];
+    let dimdesc = [];
+    let scale = [];
+    let stepsize = [];
+
+    // WRITING RATING INFORMATION
+    for (let rating = 0; rating < filledBPform.length; rating++) {
+        let collection = filledBPform.elements[rating].getAttribute('colpath').split('/');
+        if(collection[collection.length - 1] == 'ratings'){
+
+            if(filledBPform.elements[rating].getAttribute('key') == '3dimension'){
+                dimension.push(filledBPform.elements[rating].value);
+
+                // Finding the info that is already stored in the database
+                let origRating = findPath(collectionPaths, 'ratings');
+                let ratingInfo = await db.collection(origRating).doc('ratingdocument').get();
+                for([key, value] of Object.entries(ratingInfo.data())){
+                    if(key == '2ratingtype'){
+                        ratingtype.push(value[0]);
+                    }
+                    else if(key == '5scale'){
+                        scale.push(value[0]);
+                    }
+                    else if(key == '6stepsize'){
+                        stepsize.push(value[0]);
                     }
                 }
-
-                // writing the writeArr to the best practice doc
-                db.collection(entryColPath).doc(entryDocName).set({[writeKey]: writeArr}, { merge: true });
-
             }
+            else if(filledBPform.elements[rating].getAttribute('key') == '4dimension description'){
+                dimdesc.push(filledBPform.elements[rating].value);
+            }
+        }
+    }
 
-            
+    // Writing the rating arrays to the ratingdocument of this best practice
+    for(colpath of colpathArray){
+        let cpSplit = colpath.split('/');
+        if(cpSplit[cpSplit.length - 1] == 'ratings'){
+            db.doc(colpath+'/ratingdocument').set({ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize});
         }
     }
 
