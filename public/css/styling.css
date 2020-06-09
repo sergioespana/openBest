@@ -223,3 +223,7 @@ select {
 .addEx > .btn, .addOther > .btn {
   margin-bottom: 20px!important;
 }
+
+#rating-choice, #rating-scale, #rating-stepsize{
+  display: none;
+}
