@@ -7,7 +7,7 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
 
   var binStarsRatings = document.createElement("div");
   binStarsRatings.classList.add("bin-star-ratings");
-  binStarsRatings.setAttribute("data-rating",0);
+  binStarsRatings.setAttribute("data-rating",(negdefault+plusdefault));
   binStarsRatings.setAttribute("name","binstars");
   binStarsRatings.style.marginTop   = 'auto';
   binStarsRatings.style.marginBottom = 'auto';
@@ -15,6 +15,11 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
     binStarsRatings.style.width = '100%';
   }
   else {binStarsRatings.style.width = '45%';}
+  if (type == 'readOnlyAgg'){
+    binStarsRatings.style.width = '65%';
+    binStarsRatings.style.marginLeft = 'auto';
+
+  }
   var binStarsUnit    = document.createElement("div");
   binStarsUnit.classList.add("bin-star-unit");
 

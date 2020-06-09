@@ -1,10 +1,37 @@
 
+function createPositiveOption(root){
+  var optionPositive = document.createElement("SPAN");
+  optionPositive.classList.add("far", "fa-smile","eBay-option","pos","checked");
+  optionPositive.style.fontSize = '160%';
+  optionPositive.style.marginBottom = 'auto';
+  optionPositive.style.marginTop = 'auto';
+  root.appendChild(optionPositive);
+}
+function createNegativeOption(root){
+  var optionNegative = document.createElement("SPAN");
+  optionNegative.classList.add("far","fa-frown","eBay-option","neg","checked");
+  optionNegative.style.fontSize = '160%';  
+  optionNegative.style.marginBottom = 'auto';
+  optionNegative.style.marginTop = 'auto';
+  root.appendChild(optionNegative);
+
+}
+function createNeutralOption(root){
+  var optionNeutral  = document.createElement("SPAN");
+  optionNeutral.classList.add("far","fa-meh","eBay-option","neut","checked");
+  optionNeutral.style.fontSize = '160%';
+  optionNeutral.style.marginBottom = 'auto';
+  optionNeutral.style.marginTop = 'auto';
+  root.appendChild(optionNeutral);
+
+}
 
 //this function creates the input for the eBay rating system.
-function createEbayRating(root){
+function createEbayRating(root,type){
   var eBayWrapper    = document.createElement("DIV");
   eBayWrapper.classList.add("eBay-rating");
   eBayWrapper.setAttribute("data-rating",0);
+  eBayWrapper.setAttribute("name","eBay");
 
   var eBayUnit       = document.createElement("DIV");
   eBayUnit.classList.add("eBay-unit");
@@ -13,23 +40,32 @@ function createEbayRating(root){
   eBayOptions.classList.add("eBay-options");
 
   var optionPositive = document.createElement("SPAN");
-  optionPositive.classList.add("far", "fa-smile","eBay-option","pos");
+  optionPositive.classList.add("far", "fa-smile");
 
   var optionNeutral  = document.createElement("SPAN");
-  optionNeutral.classList.add("far","fa-meh","eBay-option","neut");
-
+  optionNeutral.classList.add("far","fa-meh");
+ 
   var optionNegative = document.createElement("SPAN");
-  optionNegative.classList.add("far","fa-frown","eBay-option","neg");
+  optionNegative.classList.add("far","fa-frown");
 
+
+  if (type != 'readOnly'){
+    optionNeutral.classList.add("checked");
+    optionNeutral.classList.add("eBay-option","neut");
+    optionPositive.classList.add("eBay-option","pos");
+    optionNegative.classList.add("eBay-option","neg");
+    }
   eBayOptions.appendChild(optionNegative);
   eBayOptions.appendChild(optionNeutral);
   eBayOptions.appendChild(optionPositive);
   eBayUnit.appendChild(eBayOptions);
   eBayWrapper.appendChild(eBayUnit);
   root.appendChild(eBayWrapper);
+  if (type != 'readOnly'){
   optionNegative.addEventListener("click", function(){changeColor("red",optionNegative,optionPositive,optionNeutral,eBayWrapper)});  
   optionPositive.addEventListener("click", function(){changeColor("green",optionNegative,optionPositive,optionNeutral,eBayWrapper)});
   optionNeutral.addEventListener("click",  function(){changeColor("orange",optionNegative,optionPositive,optionNeutral,eBayWrapper)}); 
+  }
   return eBayWrapper;
 }
 

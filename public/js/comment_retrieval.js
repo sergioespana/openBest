@@ -2,7 +2,7 @@ commentlist = [];
 var db = firebase.firestore();
 var amountOfComments = 0;
 function getcomments(BPid) {
-    startstring = "/domain/domainstate/bestpractices/"
+    startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/comments"
     doelstring = startstring.concat(BPid,endstring);    
     now =  getcurrentDateTime();
@@ -135,7 +135,7 @@ function  lowerCounter(){
 }
 // remove one comment from the database and remove it from the screeen, last lower the counter.
 function removeComment(id,BPid,comment_element){
-        startstring = "/domain/domainstate/bestpractices/"
+    startstring = findPath(collectionPaths, 'bestpractices') + '/';
         endstring   = "/comments"
         doelstring  = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
@@ -146,7 +146,7 @@ function removeComment(id,BPid,comment_element){
 }
 // push comment to the database and draw it on the screen using its ID once it has been pushed.
 function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,comment_email,comment_thread,comment_level,comment_parent){
-        startstring = "/domain/domainstate/bestpractices/";
+        startstring = findPath(collectionPaths, 'bestpractices') + '/';
         endstring   = "/comments";       
         doelstring = startstring.concat(BPid,endstring);
         db.collection(doelstring).add({ //write comment to db
@@ -248,7 +248,7 @@ function add_comment_db_repr(comment_author,_ ,comment_text,comment_img,comment_
 
 }
 function editCommentDB(newcommenttext,BPid,id){
-    startstring    = "/domain/domainstate/bestpractices/"
+    startstring = findPath(collectionPaths, 'bestpractices') + '/';
     tussenstring   = "/comments/"
     doelstring     = startstring.concat(BPid,tussenstring);
     db.collection(doelstring).doc(id).update({

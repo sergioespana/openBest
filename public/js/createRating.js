@@ -16,13 +16,12 @@ createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
 //create rating input based on ratingdocument
 createRatingInput(ratinginputlocation,Bpid,transposedInfo);
 //create rating aggregations based on scores and ratingdocument
+if (lengte(transposedInfo) > 1){
 createRatingAggregation(transposedScores,transposedInfo);
+}
 //draw all individual ratings
 createAllRatings(individualratinglocation,ratinglist,transposedInfo,Bpid);
 }
-
-
-
 function setUpRatingSection(transposedInfo,root){
     var ratingAggregationTop = document.createElement('div');
     ratingAggregationTop.id  = "ratingaggregation";
@@ -99,15 +98,6 @@ function setUpRatingSection(transposedInfo,root){
     }
 
 }
-
-
-
-
-
-
-
-
-
 //function to create the rating input to be used by the user.
 function createRatingInput(root,BPid,list){
     var ratingcontainer = document.createElement("div");
@@ -136,8 +126,8 @@ function createRatingInput(root,BPid,list){
     //create submitbutton
     submitbutton = document.createElement("button");
     submitbutton.innerText = "Submit";
-    submitbutton.style.marginLeft = '75%';
-    submitbutton.style.width = '15%';
+    submitbutton.style.marginLeft = '70%';
+    submitbutton.style.width = '20%';
     submitbutton.style.marginRight = 'auto';
     submitbutton.classList.add("btn","btn-light");
     submitbutton.addEventListener("click",function () {
@@ -149,7 +139,7 @@ function createRatingInput(root,BPid,list){
     root.appendChild(ratingcontainer);
 }
 function removeRating(BPid,RatingID,RatingContainer){
-    startstring = "/domain/domainstate/bestpractices/"
+    startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/ratings"
     totalstring  = startstring.concat(BPid,endstring);
     db.collection(totalstring).doc(RatingID).delete();
@@ -159,7 +149,7 @@ function removeRating(BPid,RatingID,RatingContainer){
 }
 //function for submitting a rating to the database
 function submitrating(BPid,scores,text){
-    startstring = "/domain/domainstate/bestpractices/";
+    startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/ratings";       
     doelstring = startstring.concat(BPid,endstring);
     db.collection(doelstring).add({ //write rating to db
@@ -243,14 +233,24 @@ function collectrating(listOfDimensions){
     var score = 0
     for (dimension of listOfDimensions){
         //get score
+        console.log(dimension.getAttribute("name"));
        switch (dimension.getAttribute("name")){
            case "stars":
               score = dimension.getAttribute("data-rating");
             break;
             case "slider":
               score = dimension.value;
+            break;
             case "binstars":
               score = dimension.getAttribute("data-rating");
+            break;
+            case "dislikelike":
+                score = dimension.getAttribute("data-rating");
+            break;
+            case "like":
+            break;
+            case "eBay":
+                score = dimension.getAttribute("data-rating");
             break;
        }
        scorelist.push(score);
@@ -290,7 +290,7 @@ function createRating(root,name,dimension,scale,type,step,value,descr){
     switch(name){
         //dislikelike
         case "dislikelike":
-            createLikeDislikeRating(container,null,null,null);
+            var ratingmech = createLikeDislikeRating(container,null,null,null);
         break;
         //like
         case "like":
@@ -489,7 +489,7 @@ function createUserRatingDisplay(root,scores,dimension){
     ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
     ratingCollapsible.style.justifyContent = 'left';
 
-    ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
+    
     ratingCollapsible.style.width = '100%';
     ratingCollapsible.style.display = 'flex';
 
@@ -507,113 +507,171 @@ function createUserRatingDisplay(root,scores,dimension){
     dimname.style.marginTop = 'auto';
 
     ratingCollapsible.appendChild(dimname);
-    
-    var detailwrapper = document.createElement('div');
-    detailwrapper.style.display = "none";
+    root.appendChild(ratingCollapsible);
+    if (lengte(scores)> 1){
+        ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
+        var detailwrapper = document.createElement('div');
+        detailwrapper.style.display = "none";
 
-    var list = [];
-    var type = [];
-    for (i in scores){
-        let score         = scores[i];
-        let dimensionsub  = dimension[i];
-        let maxval        = dimensionsub[2];
-        type.push(dimensionsub[0]);
-        //get percentage of score. this indicates a quality
-        list.push(score/maxval);
-    }
-    const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
-    switch (type[0]){
-        
-        case 'slider':
-            createbarrating(ratingCollapsible,0,100,1,arrAvg(list)*100,"readOnly");
-            var ratingavg = document.createElement('p');
-            ratingavg.innerText = Math.round(arrAvg(list)*100*10)/10 + ' / ' + 100 ;
-            ratingavg.style.width  = '25%';
-            ratingavg.style.marginRight  = 'auto';
-            ratingavg.style.marginBottom = 'auto';
-            ratingavg.style.marginTop    = 'auto';
-            ratingCollapsible.appendChild(ratingavg);
-            break;
-        case 'stars':
-            starRatingResult(ratingCollapsible,arrAvg(list)*100,5);
-            var ratingavg = document.createElement('p');
-            // below the amount of stars on 1 decimal is calculated
-            ratingavg.innerText = Math.round((arrAvg(list)*5)*10)/10 + ' / ' + 5 ;
-            ratingavg.style.width  = '25%';
-            ratingavg.style.marginRight = 'auto';
-            ratingavg.style.marginBottom = 'auto';
-            ratingavg.style.marginTop    = 'auto';
-            ratingCollapsible.appendChild(ratingavg);
-            break;
-        case 'binstars':
-            let score = (arrAvg(list));
-            console.log(list, arrAvg(list));
-            if (arrAvg(list) > 0){
-                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score*5);
-                binstar.style.marginRight = 'auto';
-            }
-            else {
-                let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score*5,0);
-                binstar.style.marginRight = 'auto';
-            }
-            break;
-    }
-    icon.appendChild(iconinstantiation);
-    ratingCollapsible.appendChild(icon);
-
-    
-   for (i in scores){
-    let score         = scores[i];
-    let dimensionsub  = dimension[i];
-    let ratingtype    = dimensionsub[0];
-    let dimensionname = dimensionsub[1];
-    let maxval        = dimensionsub[2];
-    let step          = dimensionsub[4];
-
-    var div = document.createElement('div');
-    div.style.display = 'flex';
-
-    var dimensionlabel = document.createElement('p');
-    dimensionlabel.innerText = dimensionname;
-    dimensionlabel.style.marginBottom = 'auto';
-    dimensionlabel.style.marginTop    = 'auto';
-    dimensionlabel.style.width        = '25%';
-    div.appendChild(dimensionlabel);
-
-    switch (ratingtype){
-        case 'slider':
-            createbarrating(div,0,maxval,step,score,"readOnly");
-            var ratingavg = document.createElement('p');
-            ratingavg.innerText = score + ' / ' + maxval ;
-            ratingavg.style.width        = '25%';
-            ratingavg.style.textAlign    = 'center';
-            ratingavg.style.marginBottom = 'auto';
-            ratingavg.style.marginTop    = 'auto';
-            div.appendChild(ratingavg);
-            break;
-        case 'stars':
-            createStarRating(div,maxval,score,"readOnly");
-            break;
-        case 'binstars':
-            if (score > 0){
-                createBinaryStarRating(div,maxval,maxval,"readOnly", 0, score);
-            }
-            else {
-                createBinaryStarRating(div,maxval,maxval,"readOnly", score, 0);
-            }
+        var list = [];
+        var type = [];
+        for (i in scores){
+            let score         = scores[i];
+            let dimensionsub  = dimension[i];
+            let maxval        = dimensionsub[2];
+            type.push(dimensionsub[0]);
+            //get percentage of score. this indicates a quality
+            list.push(score/maxval);
+        }
+        const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
+        switch (type[0]){ 
+            case 'slider':
+                createbarrating(ratingCollapsible,0,100,1,arrAvg(list)*100,"readOnly");
+                var ratingavg = document.createElement('p');
+                ratingavg.innerText = Math.round(arrAvg(list)*100*10)/10 + ' / ' + 100 ;
+                ratingavg.style.width  = '25%';
+                ratingavg.style.marginRight  = 'auto';
+                ratingavg.style.marginBottom = 'auto';
+                ratingavg.style.marginTop    = 'auto';
+                ratingCollapsible.appendChild(ratingavg);
+                break;
+            case 'stars':
+                starRatingResult(ratingCollapsible,arrAvg(list)*100,5);
+                var ratingavg = document.createElement('p');
+                // below the amount of stars on 1 decimal is calculated
+                ratingavg.innerText = Math.round((arrAvg(list)*5)*10)/10 + ' / ' + 5 ;
+                ratingavg.style.width  = '25%';
+                ratingavg.style.marginRight = 'auto';
+                ratingavg.style.marginBottom = 'auto';
+                ratingavg.style.marginTop    = 'auto';
+                ratingCollapsible.appendChild(ratingavg);
+                break;
+            case 'binstars':
+                let score = (arrAvg(list));
+                console.log(list, arrAvg(list));
+                if (arrAvg(list) > 0){
+                    let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score*5);
+                    binstar.style.marginRight = 'auto';
+                }
+                else {
+                    let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",score*5,0);
+                    binstar.style.marginRight = 'auto';
+                }
             break;
         }
-        detailwrapper.appendChild(div);
+        icon.appendChild(iconinstantiation);
+        ratingCollapsible.appendChild(icon);
+
+        
+        for (i in scores){
+            let score         = scores[i];
+            let dimensionsub  = dimension[i];
+            let ratingtype    = dimensionsub[0];
+            let dimensionname = dimensionsub[1];
+            let maxval        = dimensionsub[2];
+            let step          = dimensionsub[4];
+
+            var div = document.createElement('div');
+            div.style.display = 'flex';
+
+            var dimensionlabel = document.createElement('p');
+            dimensionlabel.innerText = dimensionname;
+            dimensionlabel.style.marginBottom = 'auto';
+            dimensionlabel.style.marginTop    = 'auto';
+            dimensionlabel.style.width        = '25%';
+            div.appendChild(dimensionlabel);
+
+            switch (ratingtype){
+                case 'slider':
+                    createbarrating(div,0,maxval,step,score,"readOnly");
+                    var ratingavg = document.createElement('p');
+                    ratingavg.innerText = score + ' / ' + maxval ;
+                    ratingavg.style.width        = '25%';
+                    ratingavg.style.textAlign    = 'center';
+                    ratingavg.style.marginBottom = 'auto';
+                    ratingavg.style.marginTop    = 'auto';
+                    div.appendChild(ratingavg);
+                break;
+
+                case 'stars':
+                    createStarRating(div,maxval,score,"readOnly");
+                break;
+
+                case 'binstars':
+                    if (score > 0){
+                        createBinaryStarRating(div,maxval,maxval,"readOnly", 0, score);
+                    }
+                    else {
+                        createBinaryStarRating(div,maxval,maxval,"readOnly", score, 0);
+                    }
+                    break;
+                }
+                detailwrapper.appendChild(div);
+            }
+        root.appendChild(detailwrapper);
+        
+    
     }
-   
-    root.appendChild(ratingCollapsible);
-    root.appendChild(detailwrapper); 
+    else{
+        let dimensionsub  = dimension[0];
+        let ratingtype    = dimensionsub[0];
+        let dimensionname = dimensionsub[1];
+        let maxval        = dimensionsub[2];
+        let step          = dimensionsub[4];
+        let score         = scores[0];
+        dimname.innerText = dimensionname;
+        switch (ratingtype){ 
+            case 'slider':
+                createbarrating(ratingCollapsible,0,maxval,step,score,"readOnly");
+                var ratingavg = document.createElement('p');
+                ratingavg.innerText = score + ' / ' + maxval ;
+                ratingavg.style.width  = '25%';
+                ratingavg.style.marginRight  = 'auto';
+                ratingavg.style.marginBottom = 'auto';
+                ratingavg.style.marginTop    = 'auto';
+                ratingCollapsible.appendChild(ratingavg);
+                break;
+            case 'stars':
+                starRatingResult(ratingCollapsible,(score/maxval)*100,5);
+                var ratingavg = document.createElement('p');
+                // below the amount of stars on 1 decimal is calculated
+                ratingavg.innerText = score + ' / ' + 5 ;
+                ratingavg.style.width  = '25%';
+                ratingavg.style.marginRight = 'auto';
+                ratingavg.style.marginBottom = 'auto';
+                ratingavg.style.marginTop    = 'auto';
+                ratingCollapsible.appendChild(ratingavg);
+                break;
+            case 'binstars':
+                if (score > 0){
+                    let binstar = createBinaryStarRating(ratingCollapsible,max,max,"readOnly",0, score);
+                    binstar.style.marginRight = 'auto';
+                }
+                else {
+                    let binstar = createBinaryStarRating(ratingCollapsible,max,max,"readOnly",score,0);
+                    binstar.style.marginRight = 'auto';
+                }
+            break;
+            case 'dislikelike':
+                if (score > 0){createLike(ratingCollapsible)}
+                else if (score < 0){createDislike(ratingCollapsible)}
+            break;
+            case 'eBay':
+                if(score == 1){createPositiveOption(ratingCollapsible);}
+                else if (score == 0){ createNeutralOption(ratingCollapsible);}
+                else if (score == -1){createNegativeOption(ratingCollapsible);}
+
+        }
+
+    }
 }
 function displayAggregation(root,listofscores,dimension,scale,step,type){
     if (lengte(listofscores) > 0){
 
         if (type == 'binstars'){
             var [scorelist,max,avg,pAVG,pAmt,nAvg,nAmt] = organizelist(listofscores,scale,step,"binstar");
+            if (!pAVG){pAVG = 0;}
+            if (!nAvg){nAvg = 0;}
         }
         else{
             var [scorelist,max,avg] = organizelist(listofscores,scale,step);
@@ -621,8 +679,10 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         }
     else {
         scorelist = [];
-        max       = 0;
+        max       = scale;
         avg       = 0;
+        pAVG      = 0;
+        nAvg      = 0;
     }
     
         var ratingCollapsible = document.createElement('button');
@@ -742,12 +802,6 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         return detailwrapper;
 
 }
-
-
-function displayBinstarAggregation(){}
-function displayLikeDislikeReview(){}
-function displayeBayReview(){}
-
 // supporting function for getting an array from all numbers between lowEnd and highEnd
 function numbersBetweenAandB(lowEnd,highEnd){
     var list = [];
@@ -882,6 +936,9 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         if (type == 'dislikelike'){
         score   = dimensionavg;
         }
+        if (type == 'eBay'){
+            score = dimensionavg;
+        }
 
         dimensionScores.push([score,dimensionavg,dimensionname]);
     }
@@ -916,24 +973,37 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     amtlabel.style.width = '20%';
     amtlabel.style.textAlign = 'center';
 
+    // make sure to give a score, otherwhise arrAvg = undefined
+    if (lengte(transposedScores[0]) > 0){ 
+        score = arrAvg(scores);
+    }
+    else { 
+        score = 0;
+    }
     if (type == 'slider'){
-        createbarrating(wrapper,0,100,1,arrAvg(scores),"readOnly");
-        avglabel.innerText = Math.round(arrAvg(scores)) + ' / ' + 100;
+        createbarrating(wrapper,0,100,1,score,"readOnly");
+        avglabel.innerText = Math.round(score) + ' / ' + 100;
         wrapper.appendChild(avglabel);
     }
     else if(type == 'stars'){
-        starRatingResult(wrapper,arrAvg(scores),5);
-        avglabel.innerText = (Math.round(arrAvg(scores))/100*5) + ' / ' + 5;
+        starRatingResult(wrapper,Math.round(score),5);
+        avglabel.innerText = Math.round(score/100*5*10)/10 + ' / ' + 5;
         wrapper.appendChild(avglabel);
     }
     else if(type == 'binstars'){
         if (arrAvg(scores)> 0){
-        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg", 0, Math.round(arrAvg(scores)));
+        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg", 0, Math.round(score));
         }
         else{
-        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg",Math.round(arrAvg(scores)), 0);
+        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg",Math.round(score), 0);
         }
         mech.style.marginRight = 'auto';
+    }
+    else if(type == 'dislikelike'){
+        createLikeDislikeRating (wrapper,null,null,null,'readOnly');
+    }
+    else if(type == 'eBay'){
+        createEbayRating(wrapper,'readOnly');
     }
     wrapper.appendChild(amtlabel);
     
