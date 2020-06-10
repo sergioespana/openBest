@@ -1,7 +1,7 @@
 .eBay-options{
-    color: black;
     font-size: 1.6rem;
     display: flex;
+    color: gray;
   }
 .eBay-options::before{
     cursor: pointer;

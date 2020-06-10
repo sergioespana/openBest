@@ -1,7 +1,7 @@
 
 function createPositiveOption(root){
   var optionPositive = document.createElement("SPAN");
-  optionPositive.classList.add("far", "fa-smile","eBay-option","pos","checked");
+  optionPositive.classList.add("fas","fa-plus-circle","eBay-option","pos","checked");
   optionPositive.style.fontSize = '160%';
   optionPositive.style.marginBottom = 'auto';
   optionPositive.style.marginTop = 'auto';
@@ -9,7 +9,7 @@ function createPositiveOption(root){
 }
 function createNegativeOption(root){
   var optionNegative = document.createElement("SPAN");
-  optionNegative.classList.add("far","fa-frown","eBay-option","neg","checked");
+  optionNegative.classList.add("fas","fa-minus-circle","eBay-option","neg","checked");
   optionNegative.style.fontSize = '160%';  
   optionNegative.style.marginBottom = 'auto';
   optionNegative.style.marginTop = 'auto';
@@ -18,7 +18,7 @@ function createNegativeOption(root){
 }
 function createNeutralOption(root){
   var optionNeutral  = document.createElement("SPAN");
-  optionNeutral.classList.add("far","fa-meh","eBay-option","neut","checked");
+  optionNeutral.classList.add("fas","fa-dot-circle","eBay-option","neut","checked");
   optionNeutral.style.fontSize = '160%';
   optionNeutral.style.marginBottom = 'auto';
   optionNeutral.style.marginTop = 'auto';
@@ -27,7 +27,7 @@ function createNeutralOption(root){
 }
 
 //this function creates the input for the eBay rating system.
-function createEbayRating(root,type){
+function createEbayRating(root,type,amtneg,amtneut,amtpos){
   var eBayWrapper    = document.createElement("DIV");
   eBayWrapper.classList.add("eBay-rating");
   eBayWrapper.setAttribute("data-rating",0);
@@ -39,25 +39,42 @@ function createEbayRating(root,type){
   var eBayOptions    = document.createElement("DIV");
   eBayOptions.classList.add("eBay-options");
 
+  if (type == 'readOnly'){
+    eBayOptions.style.marginTop    = '10%';
+    eBayOptions.style.marginBottom = '10%';
+  }
+
   var optionPositive = document.createElement("SPAN");
-  optionPositive.classList.add("far", "fa-smile");
-
+  optionPositive.classList.add("fas","fa-plus-circle","couponcode");
+  
   var optionNeutral  = document.createElement("SPAN");
-  optionNeutral.classList.add("far","fa-meh");
- 
-  var optionNegative = document.createElement("SPAN");
-  optionNegative.classList.add("far","fa-frown");
+  optionNeutral.classList.add("fas","fa-dot-circle","couponcode");
 
+  var optionNegative = document.createElement("SPAN");
+  optionNegative.classList.add("fas","fa-minus-circle","couponcode");
 
   if (type != 'readOnly'){
+    createTooltip(optionPositive,'Positive');
+    createTooltip(optionNeutral,'Neutral');
+    createTooltip(optionNegative,'Negative');
+
     optionNeutral.classList.add("checked");
     optionNeutral.classList.add("eBay-option","neut");
     optionPositive.classList.add("eBay-option","pos");
     optionNegative.classList.add("eBay-option","neg");
     }
+  else{
+    createAmttext(optionPositive,amtpos);
+    createAmttext(optionNeutral,amtneut);
+    createAmttext(optionNegative,amtneg);
+
+  }
   eBayOptions.appendChild(optionNegative);
+    
   eBayOptions.appendChild(optionNeutral);
+  
   eBayOptions.appendChild(optionPositive);
+ 
   eBayUnit.appendChild(eBayOptions);
   eBayWrapper.appendChild(eBayUnit);
   root.appendChild(eBayWrapper);
@@ -108,4 +125,23 @@ function fliptags(item,eBayWrapper){
 //this helper function unchecks other options
 function removetags(item){
   item.classList.remove('checked');
+}
+
+
+function createTooltip(root,text){
+  var tt = document.createElement("span");
+  tt.classList.add("coupontooltip");
+  tt.innerHTML = text;
+  tt.style.fontSize = '1rem';
+  tt.style.color = 'rgb(133, 135, 150)';
+  root.appendChild(tt);
+}
+function createAmttext(root,amount){
+  var amt = document.createElement("p");
+  amt.innerHTML          = amount;
+  amt.style.fontSize     = '1rem';
+  amt.style.color        = 'rgb(133, 135, 150)';
+  amt.style.textAlign    = 'center';
+  amt.style.marginBottom = '0';
+  root.appendChild(amt);
 }

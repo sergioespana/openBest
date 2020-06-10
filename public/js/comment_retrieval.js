@@ -1,10 +1,11 @@
 commentlist = [];
 var db = firebase.firestore();
 var amountOfComments = 0;
+//function for collecting the comments from the database
 function getcomments(BPid) {
     startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/comments"
-    doelstring = startstring.concat(BPid,endstring);    
+    doelstring  = startstring.concat(BPid,endstring);    
     now =  getcurrentDateTime();
      // Getting a reference to all documents in the comment sub-collection for a best practice
      db.collection(doelstring)
@@ -12,14 +13,14 @@ function getcomments(BPid) {
              // Each document that matches the query is cycled through
              snapshot.docs.forEach(doc => {
                  // for every comment get de relevant info
-                comment_date = getTimeDifference(now,doc.data().date);
+                comment_date   = getTimeDifference(now,doc.data().date);
                 comment_author = doc.data().author; 
-                comment_img = doc.data().img; 
-                comment_text = doc.data().text;
-                comment_email = doc.data().email;
-                comment_level = doc.data().level;
+                comment_img    = doc.data().img; 
+                comment_text   = doc.data().text;
+                comment_email  = doc.data().email;
+                comment_level  = doc.data().level;
                 comment_parent = doc.data().parent;
-                comment_id = doc.id; 
+                comment_id     = doc.id; 
                  addtolist([comment_author,comment_date,comment_text,comment_img,comment_id,BPid, issame(comment_email),"main",comment_level,comment_parent]);
              })
             splitlist();
@@ -31,7 +32,7 @@ function addtolist(sublist){
      tussenlijst.push(sublist);
      commentlist.push(tussenlijst);
 }
-// splits the list gotten from the database into levels so that not the complete list schould be gone over on each ordering.
+// splits the list gotten from the database into levels so that not the complete list schould be gone over looking for childs of a comment on a certain level
 function splitlist(){
     head   = [];
     first  = [];
@@ -46,28 +47,20 @@ function splitlist(){
         if (document1[8] == 3){third.push(doc[0]);}
         if (document1[8] == 4){fourth.push(doc[0]);}
     }
-    draw_all();
+    recursive();
 }
-// this function calls a function to draw all comments and offers a text if there is no comment to be shown.
-function draw_all(){
-    if (lengte(head) < 1){
-    //create_encouragement();
-    }
-    else{
-        recursive();
-    }
-}
+
+// function for finding out if a comment has child comments
 function checkChildren(messageID,level){
    var hasChildren = getLevelList(level+1).map(x => x[9]).includes(messageID);
    return hasChildren;  
 }
-
+// function for getting the amount of comments where its parent comment is the comment with messageID
 function amountOfChildren(messageID,level){
     var amountofchildren = lengte(getLevelList(level+1).map(x => x[9]).filter(x => x == messageID));
-    //console.log(amountofchildren);
-    
     return amountofchildren;
 }
+// supporting function for getting the corresponding list based on a level
 function getLevelList(level){
     switch(level){
         case 0:
@@ -135,7 +128,7 @@ function  lowerCounter(){
 }
 // remove one comment from the database and remove it from the screeen, last lower the counter.
 function removeComment(id,BPid,comment_element){
-    startstring = findPath(collectionPaths, 'bestpractices') + '/';
+    startstring     = findPath(collectionPaths, 'bestpractices') + '/';
         endstring   = "/comments"
         doelstring  = startstring.concat(BPid,endstring);
         db.collection(doelstring).doc(id).delete();
