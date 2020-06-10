@@ -359,7 +359,7 @@ span.onclick = function() {
     while (dateArea.hasChildNodes()) {  
         dateArea.removeChild(dateArea.firstChild);
     }
-    while (coreContent.hasChildNodes()) {
+    while (coreContent.hasChildNodes()) {  
         coreContent.removeChild(coreContent.firstChild);
     }
     while (otherSections.hasChildNodes()) {  
