@@ -4,6 +4,7 @@ var db = firebase.firestore();
 async function startupRatings(Bpid){ 
 
 [ratinglist,ratinginfo] = await getratings(BPid);
+console.log(ratinglist,ratinginfo);
 //transpose the ratings so that every item in the array contains scores belonging to one dimension
 let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
 //transpose the ratinginfo so that every item in the array contains all info on one rating dimension
@@ -14,7 +15,7 @@ let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
 //create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
 createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
 //create rating input based on ratingdocument
-createRatingInput(ratinginputlocation,Bpid,transposedInfo);
+createRatingInput(ratinginputlocation,Bpid,transposedInfo,individualratinglocation);
 //create rating aggregations based on scores and ratingdocument
 if (lengte(transposedInfo) > 1){
 createRatingAggregation(transposedScores,transposedInfo);
@@ -29,69 +30,69 @@ function setUpRatingSection(transposedInfo,root){
     //if there is more than one rating dimension
     if (lengte(transposedInfo) > 1){
  
-    var ratingCollapsible = document.createElement('button');
-    ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
-    ratingCollapsible.style.justifyContent = 'left';
+        var ratingCollapsible = document.createElement('button');
+        ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
+        ratingCollapsible.style.justifyContent = 'left';
 
-    ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
-    ratingCollapsible.style.width = '100%';
-    ratingCollapsible.style.display = 'flex';
+        ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
+        ratingCollapsible.style.width   = '100%';
+        ratingCollapsible.style.display = 'flex';
 
-    var icon = document.createElement('span');
-    icon.classList.add('icon','text-gray-600');
+        var icon = document.createElement('span');
+        icon.classList.add('icon','text-gray-600');
 
-    var iconinstantiation = document.createElement('i');
-    iconinstantiation.classList.add('fa','fa-plus');
-    icon.appendChild(iconinstantiation);
+        var iconinstantiation = document.createElement('i');
+        iconinstantiation.classList.add('fas','fa-sort-down');
+        icon.appendChild(iconinstantiation);
 
-    var dimname = document.createElement('p');
-    dimname.innerText          = "Give your rating!";
-    dimname.style.width        = '25%';
-    dimname.style.marginLeft   = '10%';
-    dimname.style.marginRight  = 'auto';
-    dimname.style.textAlign    = 'initial'
-    dimname.style.marginBottom = 'auto';
-    dimname.style.marginTop    = 'auto';
+        var dimname = document.createElement('p');
+        dimname.innerText          = "Give your rating!";
+        dimname.style.width        = '25%';
+        dimname.style.marginLeft   = '10%';
+        dimname.style.marginRight  = 'auto';
+        dimname.style.textAlign    = 'initial'
+        dimname.style.marginBottom = 'auto';
+        dimname.style.marginTop    = 'auto';
 
-    ratingCollapsible.appendChild(dimname);
-    ratingCollapsible.appendChild(icon);
-    
-    var detailwrapper = document.createElement('div');
-    detailwrapper.id = 'ratinginput';
-    detailwrapper.style.display = "none";
+        ratingCollapsible.appendChild(dimname);
+        ratingCollapsible.appendChild(icon);
+        
+        var detailwrapper = document.createElement('div');
+        detailwrapper.id = 'ratinginput';
+        detailwrapper.style.display = "none";
 
-    root.appendChild(ratingCollapsible);
-    root.appendChild(detailwrapper);
+        root.appendChild(ratingCollapsible);
+        root.appendChild(detailwrapper);
 
-    var buttonbar  = document.createElement('div');
-    buttonbar.classList.add('buttonbar');
+        var buttonbar  = document.createElement('div');
+        buttonbar.classList.add('buttonbar');
 
-    var individualRatings = document.createElement('button');
-    individualRatings.classList.add('btn','btn-light');
-    individualRatings.style.marginRight = '10px';
-    individualRatings.innerText         = 'Individual ratings';
-    individualRatings.selected          = true;
-    individualRatings.addEventListener('click', function (){makeinvisible('Aggregated-ratings','Individual-ratings')});
-    buttonbar.appendChild(individualRatings);
+        var individualRatings = document.createElement('button');
+        individualRatings.classList.add('btn','btn-light');
+        individualRatings.style.marginRight = '10px';
+        individualRatings.innerText         = 'Individual ratings';
+        individualRatings.selected          = true;
+        individualRatings.addEventListener('click', function (){makeinvisible('Aggregated-ratings','Individual-ratings')});
+        buttonbar.appendChild(individualRatings);
 
-    var aggregatedRatings = document.createElement('button');
-    aggregatedRatings.classList.add('btn','btn-light');
-    aggregatedRatings.innerText = "Aggregated ratings";
-    aggregatedRatings.addEventListener('click', function (){makeinvisible('Individual-ratings','Aggregated-ratings')});
-    buttonbar.appendChild(aggregatedRatings);
-    
-    root.appendChild(buttonbar);
+        var aggregatedRatings = document.createElement('button');
+        aggregatedRatings.classList.add('btn','btn-light');
+        aggregatedRatings.innerText = "Aggregated ratings";
+        aggregatedRatings.addEventListener('click', function (){makeinvisible('Individual-ratings','Aggregated-ratings')});
+        buttonbar.appendChild(aggregatedRatings);
+        
+        root.appendChild(buttonbar);
 
-    var individualRatingsContainer = document.createElement('div');
-    individualRatingsContainer.id = "Individual-ratings";
-    root.appendChild(individualRatingsContainer);
+        var individualRatingsContainer = document.createElement('div');
+        individualRatingsContainer.id  = "Individual-ratings";
+        root.appendChild(individualRatingsContainer);
 
-    var aggregatedRatingsContainer = document.createElement('div');
-    aggregatedRatingsContainer.id = "Aggregated-ratings";
-    aggregatedRatingsContainer.style.display = 'none';
-    root.appendChild(aggregatedRatingsContainer);
+        var aggregatedRatingsContainer = document.createElement('div');
+        aggregatedRatingsContainer.id  = "Aggregated-ratings";
+        aggregatedRatingsContainer.style.display = 'none';
+        root.appendChild(aggregatedRatingsContainer);
 
-    return [ratingAggregationTop,detailwrapper,individualRatingsContainer];
+        return [ratingAggregationTop,detailwrapper,individualRatingsContainer];
     }
     else{
         return [ratingAggregationTop,ratingAggregationTop,ratingAggregationTop];
@@ -99,12 +100,12 @@ function setUpRatingSection(transposedInfo,root){
 
 }
 //function to create the rating input to be used by the user.
-function createRatingInput(root,BPid,list){
+function createRatingInput(root,BPid,list,individualratinglocation){
     var ratingcontainer = document.createElement("div");
     ratingcontainer.classList.add("wrapper");
     
-    var ratinglabel = document.createElement('p');
-    ratinglabel.innerText = "Scores (required)";
+    var ratinglabel                = document.createElement('p');
+    ratinglabel.innerText          = "Scores (required)";
     ratinglabel.style.marginBottom = '0px';
     ratinglabel.style.marginLeft   =  '10%';
     ratingcontainer.appendChild(ratinglabel);
@@ -115,23 +116,25 @@ function createRatingInput(root,BPid,list){
         ratingdimensions.push(rating);
     }
     //textlabel 'Explaination (optional)'
-    var textlabel = document.createElement('p');
-    textlabel.innerText = "Explaination (optional)";
+    var textlabel                = document.createElement('p');
+    textlabel.innerText          = "Explaination (optional)";
     textlabel.style.marginBottom = '0px';
     textlabel.style.marginLeft   =  '10%';
     ratingcontainer.appendChild(textlabel);
 
     //create text input area
     textinput = createTextArea();
+
     //create submitbutton
-    submitbutton = document.createElement("button");
-    submitbutton.innerText = "Submit";
-    submitbutton.style.marginLeft = '70%';
-    submitbutton.style.width = '20%';
+    submitbutton                   = document.createElement("button");
+    submitbutton.innerText         = "Submit";
+    submitbutton.style.marginLeft  = '70%';
+    submitbutton.style.width       = '20%';
     submitbutton.style.marginRight = 'auto';
     submitbutton.classList.add("btn","btn-light");
+
     submitbutton.addEventListener("click",function () {
-        submitrating(BPid,collectrating(ratingdimensions),textinput.value);
+        submitrating(BPid,collectrating(ratingdimensions),textinput.value,list,individualratinglocation);
         alert("Your review has been posted! refresh this page to see its impact on the ratings average score");
     })
     ratingcontainer.appendChild(textinput);
@@ -148,28 +151,31 @@ function removeRating(BPid,RatingID,RatingContainer){
     }
 }
 //function for submitting a rating to the database
-function submitrating(BPid,scores,text){
+function submitrating(BPid,scores,text,dimensioninfo,root){
     startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/ratings";       
     doelstring = startstring.concat(BPid,endstring);
     db.collection(doelstring).add({ //write rating to db
-            date       :   getcurrentDateTime(),
-            author     : getUserName(),
-            img        :    getUserImage(),
+            date       :  getcurrentDateTime(),
+            author     :  getUserName(),
+            img        :  getUserImage(),
             email      :  getUserEmail(),
             rating     :  scores,
             ratingtext :  text
         })
+        //  .then(docRef => {
+        //      drawRating(author,date,rating,img,docRef,BPid,issame(email),root,dimensioninfo,ratingtext);
+        // })
 
 }
 //function to retrieve all ratings and the ratingdocument from the database
 async function getratings(BPid) {
-    var ratinglist = [];
-    var ratinginfo = [];
-    let startstring = "/domain/domainstate/bestpractices/"
+    var ratinglist  = [];
+    var ratinginfo  = [];
+    let startstring = findPath(collectionPaths, 'bestpractices') + '/';
     let endstring   = "/ratings"
-    let doelstring = startstring.concat(BPid,endstring);    
-    let now =  getcurrentDateTime();
+    let doelstring  = startstring.concat(BPid,endstring);    
+    let now         =  getcurrentDateTime();
      // Getting a reference to all documents in the comment sub-collection for a best practice
     let documents = await db.collection(doelstring).get();
     // Each document that matches the query is cycled through
@@ -192,8 +198,12 @@ async function getratings(BPid) {
             rating_dimensions       = doc.data().dimensions;
             rating_dimensions_descr = doc.data().Dimension_descr;
             rating_stepsize         = doc.data().stepsize;
+            // rating_type             = doc.data().ratingtype;
+            // rating_scale            = doc.data().scale;
+            // rating_dimensions       = doc.data().dimension;
+            // rating_dimensions_descr = doc.data().dimensiondescription;
+            // rating_stepsize         = doc.data().stepsize;
             ratinginfo.push([rating_type,rating_dimensions,rating_scale,rating_stepsize,rating_dimensions_descr]);
-        
         }
     })
     return [ratinglist,ratinginfo[0]];
@@ -233,16 +243,15 @@ function collectrating(listOfDimensions){
     var score = 0
     for (dimension of listOfDimensions){
         //get score
-        console.log(dimension.getAttribute("name"));
        switch (dimension.getAttribute("name")){
            case "stars":
-              score = dimension.getAttribute("data-rating");
+                score = dimension.getAttribute("data-rating");
             break;
             case "slider":
-              score = dimension.value;
+                score = dimension.value;
             break;
             case "binstars":
-              score = dimension.getAttribute("data-rating");
+                score = dimension.getAttribute("data-rating");
             break;
             case "dislikelike":
                 score = dimension.getAttribute("data-rating");
@@ -271,6 +280,7 @@ function createRating(root,name,dimension,scale,type,step,value,descr){
     var container = document.createElement("div");
     container.classList.add("ratingcontainer");
     container.style.marginLeft = '10%';
+    container.style.display    = 'flex';
 
     var info = document.createElement("div");
     info.classList.add("far", "fa-question-circle","questionicon","couponcode");
@@ -280,7 +290,7 @@ function createRating(root,name,dimension,scale,type,step,value,descr){
     info.appendChild(tt);
     tt.innerHTML = descr;
     
-    var label = document.createElement("p");
+    var label       = document.createElement("p");
     label.innerText = dimension;
     label.classList.add("label");
     
@@ -290,7 +300,7 @@ function createRating(root,name,dimension,scale,type,step,value,descr){
     switch(name){
         //dislikelike
         case "dislikelike":
-            var ratingmech = createLikeDislikeRating(container,null,null,null);
+            var ratingmech = createLikeDislikeRating(container);
         break;
         //like
         case "like":
@@ -378,7 +388,7 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
    date_posted_text.classList.add("date_poster");
    date_posted_text.innerText = date;
       
-//    the comment text itself
+   //the rating text itself
    var comment_text = document.createElement("p");
    comment_text.innerText = ratingtext;
      
@@ -393,14 +403,7 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
 
     //if current user is the same as the rater he can remove or edit the rating
     if (issame == "true"){
-        // //editing component
-        // var edit_comment = document.createElement("i");
-        // edit_comment.classList.add("far","fa-edit","edit_button");
-        // //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
-        // edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
-        // toolbar_wrapper.appendChild(edit_comment);
-
-        //remove comment component
+        //remove rating component
         var remove_comment = document.createElement("i");
         remove_comment.classList.add("fa","fa-trash","remove_button");
         toolbar_wrapper.appendChild(remove_comment);
@@ -422,8 +425,8 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
 
    //add topbar in the content wrapper
    content_wrapper.appendChild(topbar_wrapper); 
-   //paste the comment text into the content wrapper
-
+  
+   //display the users ratings
    createUserRatingDisplay(content_wrapper,text,dimensioninfo);
 
    if (ratingtext){
@@ -433,7 +436,6 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
    rating_wrapper.appendChild(picture_wrapper); 
    //paste content into the comment wrapper
    rating_wrapper.appendChild(content_wrapper); 
-   // createLikeDislikeRating(content_wrapper,4,3);//create dislikelike
    root.appendChild(rating_wrapper);
 }
 //function to get occurences of ratings 
@@ -485,19 +487,12 @@ function organizelist(arr,max,stepsize,type) {
 }
 //function for displaying the readOnly mechanisms in the individual user reviews
 function createUserRatingDisplay(root,scores,dimension){
-    var ratingCollapsible = document.createElement('button');
-    ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
-    ratingCollapsible.style.justifyContent = 'left';
-
-    
-    ratingCollapsible.style.width = '100%';
-    ratingCollapsible.style.display = 'flex';
 
     var icon = document.createElement('span');
     icon.classList.add('icon','text-gray-600');
 
     var iconinstantiation = document.createElement('i');
-    iconinstantiation.classList.add('fa','fa-plus');
+    iconinstantiation.classList.add('fas', 'fa-sort-down');
 
     var dimname = document.createElement('p');
     dimname.innerText = "Average score";
@@ -506,9 +501,15 @@ function createUserRatingDisplay(root,scores,dimension){
     dimname.style.marginBottom = 'auto';
     dimname.style.marginTop = 'auto';
 
-    ratingCollapsible.appendChild(dimname);
-    root.appendChild(ratingCollapsible);
+   
     if (lengte(scores)> 1){
+        var ratingCollapsible = document.createElement('button');
+        ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
+        ratingCollapsible.style.justifyContent = 'left';
+        ratingCollapsible.style.width = '100%';
+        ratingCollapsible.style.display = 'flex';
+        ratingCollapsible.appendChild(dimname);
+        root.appendChild(ratingCollapsible);
         ratingCollapsible.addEventListener("click",function(){togglevisibility(detailwrapper); changeicon(iconinstantiation)});
         var detailwrapper = document.createElement('div');
         detailwrapper.style.display = "none";
@@ -528,8 +529,8 @@ function createUserRatingDisplay(root,scores,dimension){
             case 'slider':
                 createbarrating(ratingCollapsible,0,100,1,arrAvg(list)*100,"readOnly");
                 var ratingavg = document.createElement('p');
-                ratingavg.innerText = Math.round(arrAvg(list)*100*10)/10 + ' / ' + 100 ;
-                ratingavg.style.width  = '25%';
+                ratingavg.innerText          = Math.round(arrAvg(list)*100*10)/10 + ' / ' + 100 ;
+                ratingavg.style.width        = '25%';
                 ratingavg.style.marginRight  = 'auto';
                 ratingavg.style.marginBottom = 'auto';
                 ratingavg.style.marginTop    = 'auto';
@@ -540,15 +541,14 @@ function createUserRatingDisplay(root,scores,dimension){
                 var ratingavg = document.createElement('p');
                 // below the amount of stars on 1 decimal is calculated
                 ratingavg.innerText = Math.round((arrAvg(list)*5)*10)/10 + ' / ' + 5 ;
-                ratingavg.style.width  = '25%';
-                ratingavg.style.marginRight = 'auto';
+                ratingavg.style.width        = '25%';
+                ratingavg.style.marginRight  = 'auto';
                 ratingavg.style.marginBottom = 'auto';
                 ratingavg.style.marginTop    = 'auto';
                 ratingCollapsible.appendChild(ratingavg);
                 break;
             case 'binstars':
                 let score = (arrAvg(list));
-                console.log(list, arrAvg(list));
                 if (arrAvg(list) > 0){
                     let binstar = createBinaryStarRating(ratingCollapsible,5,5,"readOnly",0, score*5);
                     binstar.style.marginRight = 'auto';
@@ -613,6 +613,14 @@ function createUserRatingDisplay(root,scores,dimension){
     
     }
     else{
+
+        var ratingCollapsible = document.createElement('div');
+        ratingCollapsible.style.justifyContent = 'left';
+        ratingCollapsible.style.width = '100%';
+        ratingCollapsible.style.display = 'flex';
+        ratingCollapsible.appendChild(dimname);
+        root.appendChild(ratingCollapsible);
+
         let dimensionsub  = dimension[0];
         let ratingtype    = dimensionsub[0];
         let dimensionname = dimensionsub[1];
@@ -632,7 +640,8 @@ function createUserRatingDisplay(root,scores,dimension){
                 ratingCollapsible.appendChild(ratingavg);
                 break;
             case 'stars':
-                starRatingResult(ratingCollapsible,(score/maxval)*100,5);
+                stars = starRatingResult(ratingCollapsible,(score/maxval)*100,5);
+                stars.style.marginRight = '5%';
                 var ratingavg = document.createElement('p');
                 // below the amount of stars on 1 decimal is calculated
                 ratingavg.innerText = score + ' / ' + 5 ;
@@ -697,7 +706,7 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         icon.classList.add('icon','text-gray-600');
     
         var iconinstantiation = document.createElement('i');
-        iconinstantiation.classList.add('fa','fa-plus');
+        iconinstantiation.classList.add('fas', 'fa-sort-down');
     
         var dimname = document.createElement('p');
         dimname.innerText = dimension;
@@ -762,8 +771,6 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         topbar.appendChild(t3);
         detailwrapper.appendChild(topbar);
         }
-    
-    
         for (score of scorelist){
             var containerwrapper = document.createElement('div');
             containerwrapper.style.display = "flex";
@@ -880,21 +887,22 @@ function Comparator(a, b) {
 function togglevisibility(e) {
     if (e.style.display === "none") {
       e.style.display = "block";
-    } else {
+    } 
+    else {
       e.style.display = "none";
     }
 }
-//supporting function for changing the plus icon to a minus icon once the collapsible is opened
+//supporting function for changing the collapsible and collapsed icons once the button is clicked
 function changeicon(e){
-    e.classList.toggle("fa-plus");
-    e.classList.toggle("fa-minus");
+    e.classList.toggle("fa-sort-down");
+    e.classList.toggle("fa-sort-up");
 }
 //supporting for creating a textinput area
 function createTextArea(){
    var textarea = document.createElement('textarea');
-   textarea.type = "field";
+   textarea.type               = "field";
    textarea.classList.add("form-control","bg-light","border-0","small");
-   textarea.style.marginTop = '0px';
+   textarea.style.marginTop    = '0px';
    textarea.style.marginBottom = '15px';
    textarea.style.height       = 'auto';
    textarea.style.width        = '80%';
@@ -921,6 +929,8 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     }
     //extract the dimension info per dimension
     //calculate % with the use of dimensionmax and avgdimension
+
+
     for (i in transposedInfo){
         dimension         = transposedInfo[i];
         type              = dimension[0];
@@ -928,51 +938,76 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         let dimensionmax  = dimension[2];
         let dimensionavg  = dimensionAvglist[i];
         if (type == 'slider' || type == 'stars'){
-        score    = (dimensionavg/dimensionmax)*100;
-        }
-        if (type == 'binstars'){
-        score    = dimensionavg;
+            score    = (dimensionavg/dimensionmax)*100;
         }
         if (type == 'dislikelike'){
-        score   = dimensionavg;
+            score   = dimensionavg;
         }
         if (type == 'eBay'){
             score = dimensionavg;
         }
-
+        if (type == 'binstars'){
+            score = 0;
+        }
+        
         dimensionScores.push([score,dimensionavg,dimensionname]);
+        
     }
     var scores = dimensionScores.map(function(x) {
         return x[0];
     });
 
-    var wrapper       = document.createElement('div');
-    wrapper.style.display = 'flex';
-    wrapper.style.border  = '1px solid black';
-    wrapper.style.marginTop = '10px';
-    wrapper.style.marginBottom = '10px';
+    var wrapper                 = document.createElement('div');
+    wrapper.style.display       = 'flex';
+    wrapper.style.border        = '1px solid black';
+    wrapper.style.marginTop     = '10px';
+    wrapper.style.marginBottom  = '10px';
 
-    var label         = document.createElement('p');
-    label.innerText   = "Overall rating";
-    label.style.marginBottom = 'auto';
-    label.style.width = '30%';
-    label.style.marginTop    = 'auto';
-    label.style.textAlign = 'center';
+    var label                   = document.createElement('p');
+    label.innerText             = "Overall rating";
+    label.style.marginBottom    = 'auto';
+    label.style.marginTop       = 'auto';
+ 
 
-    var avglabel      = document.createElement('p');
+    var avglabel                = document.createElement('p');
     avglabel.style.marginBottom = 'auto';
     avglabel.style.marginTop    = 'auto';
-    avglabel.style.width = '20%';
-    avglabel.style.textAlign = 'center';
+    avglabel.style.width        = '20%';
+    avglabel.style.textAlign    = 'center';
     wrapper.appendChild(label);
 
-    var amtlabel = document.createElement('p');
-    amtlabel.innerText = lengte_ + ' ratings';
+    var amtlabel                = document.createElement('p');
+    amtlabel.innerText          = roundScore(lengte_) + ' ratings';
     amtlabel.style.marginBottom = 'auto';
     amtlabel.style.marginTop    = 'auto';
-    amtlabel.style.width = '20%';
-    amtlabel.style.textAlign = 'center';
+    amtlabel.style.width        = '20%';
+    amtlabel.style.textAlign    = 'center';
 
+    if (type == 'binstars' || type == 'slider' || type == 'stars'){
+        label.style.marginLeft  = '10%';
+        label.style.marginRight = 'auto';
+
+        if (type == 'binstars'){
+            label.style.width = '22%';
+        }
+        if (type == 'stars'){
+           label.style.width       = '23%';
+           label.style.marginRight = '0px';
+        }
+        if (type == 'slider'){
+            label.style.marginRight    = '8%';
+            avglabel.style.width       = '10%';
+            avglabel.style.marginRight = 'auto';
+            amtlabel.style.width       = '10%';
+        }
+    }
+    else if (type == 'eBay' || type == 'dislikelike'){
+        label.style.width = '23%';
+        label.style.marginLeft = '10%';
+    }
+    else{
+    label.style.width = '30%';
+    label.style.textAlign = 'center';}
     // make sure to give a score, otherwhise arrAvg = undefined
     if (lengte(transposedScores[0]) > 0){ 
         score = arrAvg(scores);
@@ -981,7 +1016,8 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         score = 0;
     }
     if (type == 'slider'){
-        createbarrating(wrapper,0,100,1,score,"readOnly");
+        bar = createbarrating(wrapper,0,100,1,score,"readOnly");
+        bar.style.marginRight = 'auto';
         avglabel.innerText = Math.round(score) + ' / ' + 100;
         wrapper.appendChild(avglabel);
     }
@@ -991,23 +1027,96 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         wrapper.appendChild(avglabel);
     }
     else if(type == 'binstars'){
-        if (arrAvg(scores)> 0){
-        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg", 0, Math.round(score));
+      totallength = lengte(transposedScores);
+      neglist  = [];
+      poslist  = [];
+      neutlist = [];
+
+      let max  = 0;
+      let pAVG = 0;      
+      let nAvg = 0;
+      let pAmt = 0;
+      let nAmt = 0;
+
+      if (lengte(transposedScores) > 0){   
+        for (i of transpose(transposedScores)){
+            avgScore = arrAvg(i.map(Number));
+                if (avgScore > 0)      {poslist.push(avgScore);}
+                else if (avgScore < 0) {neglist.push(avgScore);}
+                else if (avgScore == 0){neutlist.push(avgScore);}
         }
-        else{
-        mech = createBinaryStarRating(wrapper,5,5,"readOnlyAgg",Math.round(score), 0);
-        }
-        mech.style.marginRight = 'auto';
+        max  = 5;
+        pAVG = Math.round(arrAvg(poslist)*10)/10;
+        nAvg = Math.round(arrAvg(neglist)*10)/10;
+        pAmt = lengte(poslist);
+        nAmt = lengte(neglist);
+    }
+    else {
+        max = 5;
+        pAVG = 0;
+        pAmt = 0;
+        nAvg = 0;
+        nAmt = 0;
+    }
+    if (!pAVG){pAVG = 0;}
+    if (!pAmt){pAmt = 0;}
+    if (!nAvg){nAvg = 0;}
+    if (!nAmt){nAmt = 0;}
+   
+    let tAvg = arrAvg( neglist.concat(poslist));
+    mech = createBinaryStarRating(wrapper,max,max,"readOnlyAgg", nAvg, pAVG,pAmt,nAmt,tAvg);
+    mech.style.marginRight = 'auto';
     }
     else if(type == 'dislikelike'){
-        createLikeDislikeRating (wrapper,null,null,null,'readOnly');
+       let counterpos = 0;
+       let counterneg = 0;
+       var scores = transposedScores[0].map(numStr => parseInt(numStr));
+       for (score of scores){
+           if (score < 0){  counterneg  += 1;}
+           else if (score > 0){  counterpos  += 1;}
+       }
+      
+       createLike(wrapper);
+       postext = document.createElement('p');
+       postext.style.marginTop    = 'auto';
+       postext.style.marginBottom = 'auto';
+       postext.innerText = roundScore(counterpos);
+       postext.style.marginRight = '5px';
+       wrapper.append(postext);
+       createDislike(wrapper);
+       negtext = document.createElement('p');
+       negtext.style.marginTop    = 'auto';
+       negtext.style.marginBottom = 'auto';
+       negtext.innerText = roundScore(counterneg);
+       wrapper.append(negtext);
     }
     else if(type == 'eBay'){
-        createEbayRating(wrapper,'readOnly');
+        let counterpos  = 0;
+        let counterneut = 0;
+        let counterneg  = 0;
+        var scores = transposedScores[0].map(numStr => parseInt(numStr));
+        for (score of scores){
+
+
+            if      (score == 0){ counterneut += 1;}
+            else if (score < 0){  counterneg  += 1;}
+            else if (score > 0){  counterpos  += 1;}
+        }
+        console.log(counterneg);
+        createEbayRating(wrapper,'readOnly',roundScore(counterneg),roundScore(counterneut),roundScore(counterpos));
     }
     wrapper.appendChild(amtlabel);
-    
- 
     root.appendChild(wrapper);
 
+}
+
+//supporting function to round of scores to 1k or 1m
+function roundScore(score){
+if (score > 1000 && score < 1000000){
+    score = score/1000 + 'k';
+}
+if (score >= 1000000){
+    score = score/1000000 + 'm';
+}
+return score;
 }
