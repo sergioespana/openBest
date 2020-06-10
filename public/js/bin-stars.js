@@ -1,6 +1,6 @@
 
 //function to draw the binary rating mechanism
-function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault,amountofPositiveReviews,amountofNegativeReviews,total){
+function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault){
   var negdefault = parseFloat(negdefault);
   var plusdefault = parseFloat(plusdefault);
 
@@ -11,25 +11,21 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault,a
   binStarsRatings.setAttribute("name","binstars");
   binStarsRatings.style.marginTop   = 'auto';
   binStarsRatings.style.marginBottom = 'auto';
+  if (type !='readOnly'){
+    binStarsRatings.style.width = '100%';
+  }
+  else {binStarsRatings.style.width = '45%';}
+  if (type == 'readOnlyAgg'){
+    binStarsRatings.style.width = '65%';
+    binStarsRatings.style.marginLeft = 'auto';
 
-
+  }
   var binStarsUnit    = document.createElement("div");
   binStarsUnit.classList.add("bin-star-unit");
 
   var postext = document.createElement('p');
   postext.innerText = plusdefault;
   postext.style.marginBottom = '0px';
-
-  var bottombar = document.createElement('div');
-  bottombar.style.display = 'flex';
-  
-  var posamt = document.createElement('p');
-  posamt.innerText = amountofPositiveReviews + ' positive scores';
-  posamt.style.marginBottom = 'auto';
-  posamt.style.marginTop    = 'auto';
-  posamt.style.width        = '50%';
-  posamt.style.textAlign    = 'center';
-  
 
   var negtext = document.createElement('p');
   negtext.innerText =  negdefault;
@@ -59,24 +55,8 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault,a
     text.style.width = '10%';
   }
 
-  if (total){
-    text.innerText = Math.round(total*10)/10;
-  }
-  else {text.innerText = Math.round((negdefault + plusdefault)*10)/10;}
+  text.innerText = Math.round((negdefault + plusdefault)*10)/10;
 
-  if (type !='readOnly'){
-    binStarsRatings.style.width = '100%';
-  }
-  else {binStarsRatings.style.width = '45%';}
-  if (type == 'readOnlyAgg'){
-    binStarsRatings.style.width = '50%';
-    binStarsRatings.style.marginLeft = 'auto';
-    postext.style.width = '10%';
-    negtext.style.width = '10%';
-    postext.style.textAlign = 'center';
-    negtext.style.textAlign = 'center';
-
-  }
   //posstars wrapper
   var posStars        = document.createElement("div");
   posStars.setAttribute("data-rating", Math.round(plusdefault));
@@ -89,14 +69,6 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault,a
     posstars.push(star);
     posStars.appendChild(star);
   } 
-
-
-  var negamt = document.createElement('p');
-  negamt.innerText = amountofNegativeReviews + ' negative scores';
-  negamt.style.marginBottom = 'auto';
-  negamt.style.marginTop    = 'auto';
-  negamt.style.width        = '50%';
-  negamt.style.textAlign    = 'center';
   
   if (type != "readOnly" && type != "readOnlyAgg"){
   //listeners for all stars
@@ -118,15 +90,8 @@ function createBinaryStarRating(root,amtPos,amtNeg,type,negdefault,plusdefault,a
   if (type == "readOnlyAgg"){
   binStarsUnit.appendChild(postext);
 }
-  binStarsRatings.appendChild(binStarsUnit);
-  
-  if (type == "readOnlyAgg"){
-  bottombar.appendChild(negamt);
-  bottombar.appendChild(posamt);
-  
-  binStarsRatings.appendChild(bottombar);
-  }
 
+  binStarsRatings.appendChild(binStarsUnit);
   root.appendChild(binStarsRatings);
   return binStarsRatings;
 }

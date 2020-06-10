@@ -96,7 +96,6 @@ function starRatingResult(root,percentage,max){
     scoreWrap.appendChild(starsInactive);
     score.appendChild(scoreWrap);
     root.appendChild(score);
-    return score;
   }
   
   
