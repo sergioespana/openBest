@@ -306,12 +306,17 @@
                   <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings" value="Ratings"></input>
                   <label id="comments-checkbox" for="ratings">Ratings</label>
                   <br>
-                  <a style="margin-top: 20px" id="add-sub-concept" class="btn btn-light btn-icon-split" btn-counter="c" parent-counter="pc">
-                    <span class="text">
-                    <i class="fas fa-plus"></i>
-                    </span>
-                    <span class="text">Add sub-concept</span>
-                  </a>
+                  <select id="rating-choice" class="form-control bg-light border-0 small">
+                    <option>Stars</option>
+                    <option>Slider</option>
+                    <option>eBay</option>
+                    <option>binStars</option>
+                    <option>DislikeLike</option>
+                    <option>Like</option>
+                  </select>
+                  <br>
+                  <input id="rating-scale" class="form-control bg-light border-0 small" placeholder="Scale"></input>
+                  <input id="rating-stepsize" class="form-control bg-light border-0 small" placeholder="Step size"></input>
               </div>
 
               <!-- Problem info -->

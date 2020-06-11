@@ -24,6 +24,26 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
 })
 
+// Displaying the ratings dropdown when ratings is checked
+$('#ratings-checkbox').change(function(){
+    if($(this).is(':checked')) {
+        document.getElementById('rating-choice').style.display = 'inline-block';
+    } else {
+        document.getElementById('rating-choice').style.display = 'none';
+    }
+});
+
+// Displaying the input fields for scale and step size when Slider is selected
+$('#rating-choice').change(function(){
+    if($(this).children("option:selected").val() == 'Slider') {
+        document.getElementById('rating-scale').style.display = 'inline-block';
+        document.getElementById('rating-stepsize').style.display = 'inline-block';
+    } else {
+        document.getElementById('rating-scale').style.display = 'none';
+        document.getElementById('rating-stepsize').style.display = 'none';
+    }
+});
+
 
 function addConceptFunction(c, pc) {
 
@@ -246,6 +266,19 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     // Adding ratings > this is a RECOMMENDED subcollection
     let ratingsCheckbox = document.getElementById("ratings-checkbox");
 
+    let selectedRating = $("#rating-choice").children("option:selected").val();
+    let selectedScale;
+    let selectedStep;
+    if(selectedRating == 'Slider'){
+        selectedScale = $('#rating-scale').val();
+        selectedStep = $('#rating-stepsize').val();
+    }
+    else{
+        selectedScale = "5";
+        selectedStep = "1";
+    }
+
+
     // Both are checked
     if(commentsCheckbox.checked && ratingsCheckbox.checked){
         let commentsRatingsString = "\
@@ -260,7 +293,12 @@ document.getElementById("dsl-create").addEventListener("click", async function()
             \"ratingdocument\": \{\
                 \"01grouptitle\": \"ratings title\",\
                 \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false\
+                \"1displayfeature\": false,\
+                \"2ratingtype\": [\""+selectedRating+"\"],\
+                \"3dimension\": [\"string\"],\
+                \"4dimension description\": [\"string\"],\
+                \"5scale\": [\""+selectedScale+"\"],\
+                \"6stepsize\": [\""+selectedStep+"\"]\
             \}\
         \}\
         \}\
@@ -274,7 +312,12 @@ document.getElementById("dsl-create").addEventListener("click", async function()
             \"ratingdocument\": \{\
                 \"01grouptitle\": \"ratings title\",\
                 \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false\
+                \"1displayfeature\": false,\
+                \"2ratingtype\": [\""+selectedRating+"\"],\
+                \"3dimension\": [\"string\"],\
+                \"4dimension description\": [\"string\"],\
+                \"5scale\": [\""+selectedScale+"\"],\
+                \"6stepsize\": [\""+selectedStep+"\"]\
             \}\
         \}\
         \}\
@@ -360,19 +403,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         }
     });
 
-
-    // Calling the function on the first element
-    for(let c = 0; c < 1; c++){
-        // The last counter element in the array
-        let finalcounter = counterArray[counterArray.length - 1];
-
-        // Storing the counters that have been checked already
-        let checkedCounters = [];
-
-        JSONmodel += ",";
-        addNonNested(finalcounter, checkedCounters, counterArray[c], counterArray);
-    }
-
     // If no other concepts are added by the user
     if(counterArray.length == 0){
         JSONmodel += "\
@@ -382,6 +412,19 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         "
     
         console.log(JSONmodel);
+    }
+    else{
+        // Calling the function on the first element
+        for(let c = 0; c < 1; c++){
+            // The last counter element in the array
+            let finalcounter = counterArray[counterArray.length - 1];
+
+            // Storing the counters that have been checked already
+            let checkedCounters = [];
+
+            JSONmodel += ",";
+            addNonNested(finalcounter, checkedCounters, counterArray[c], counterArray);
+        }
     }
 
 })
@@ -680,7 +723,7 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
         // Otherwise, check if the previous element still has children to be added
         else{
             // Getting the previousCount for the previous element
-            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter').toString();
+            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter');
 
             // Calling addConcepts for the previous element
             addConcepts(previousCount.toString(), subConceptCount, finalcounter, previousPreviousCount, checked, cArray)
