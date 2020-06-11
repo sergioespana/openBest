@@ -52,6 +52,7 @@ function initTable() {
   data = [];
   indexArr = [];
   keyArray = [];
+  docIDs = [];
 
   // extractJSON instantiates the collection paths
   extractJSON(jsontest, 0, '');
@@ -192,6 +193,8 @@ function populateCat() {
 // When a category is selected
 $("#category-select").change(function() {
 
+  docIDs = [];
+
   const selectedCat = document.getElementById("category-select").value;
 
   if(selectedCat == ''){
@@ -211,6 +214,8 @@ $("#category-select").change(function() {
                 let docdata = [`${doc.data()[Object.keys(doc.data())[title]]}`, `${doc.data()[Object.keys(doc.data())[description]]}`, `${doc.data()[Object.keys(doc.data())[date]]}`];
                 data.push(docdata);
 
+                docIDs.push(doc.id);
+
             });
 
             // DataTable needs to be destroyed before reinitializing
@@ -218,6 +223,18 @@ $("#category-select").change(function() {
 
             $('#dataTable').DataTable( {
               data: data,
+              // createdRow is a function that adds data to the rows created
+              "createdRow": function( row, data, dataIndex ) {
+                // docIDs stores the document id's of the retrieved best practices
+                for(i = 0; i < docIDs.length; i++){
+                  // dataIndex is the internal index of the rows in the dataTable > can therefore be linked to index in docIDs 
+                  if(dataIndex == i){
+                    $(row).attr( 'doc-id', `${docIDs[i]}` )
+                    .attr('onClick', 'tableClick(event)')
+                    .addClass('bp-row');
+                  }
+                }
+              }
             } );
             
 
