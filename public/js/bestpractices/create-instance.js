@@ -38,16 +38,16 @@ var jsontest = {
                     "5categories":
                         ["string"],
                     "6date": "string",
-                    "subcollectiontest": {
-                        "testdocument":{
-                            "01grouptitle": "Testing subcollections",
-                            "02groupdesc": "Enter basic test information here.",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3description": "text",
-                            "4testfield": "string"
-                        }
-                    },
+                    // "subcollectiontest": {
+                    //     "testdocument":{
+                    //         "01grouptitle": "Testing subcollections",
+                    //         "02groupdesc": "Enter basic test information here.",
+                    //         "1displayfeature": true,
+                    //         "2name": "string",
+                    //         "3description": "text",
+                    //         "4testfield": "string"
+                    //     }
+                    // },
                     //collection
                     "comments": {
                         "commentdocument": {
