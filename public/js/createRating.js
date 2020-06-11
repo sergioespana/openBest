@@ -2,14 +2,12 @@ var db = firebase.firestore();
 //function which calls all essential functions in this file
 //it gets the ratings and their ratinginfo from the database and draws the aggregates and a ratinginput
 async function startupRatings(Bpid){ 
-
+ 
 [ratinglist,ratinginfo] = await getratings(BPid);
-console.log(ratinglist,ratinginfo);
 //transpose the ratings so that every item in the array contains scores belonging to one dimension
 let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
 //transpose the ratinginfo so that every item in the array contains all info on one rating dimension
 let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
-
 //set up rating section skeleton
 [topOfratingSegment,ratinginputlocation,individualratinglocation] = setUpRatingSection(transposedInfo,document.getElementById('ratingsection'));
 //create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
@@ -133,9 +131,19 @@ function createRatingInput(root,BPid,list,individualratinglocation){
     submitbutton.style.marginRight = 'auto';
     submitbutton.classList.add("btn","btn-light");
 
-    submitbutton.addEventListener("click",function () {
-        submitrating(BPid,collectrating(ratingdimensions),textinput.value,list,individualratinglocation);
+    submitbutton.addEventListener("click",async function () {
+        let ratings = collectrating(ratingdimensions)
+        if (ratings.includes(null)){
+        alert("Please select a value for your rating before submitting your rating");
+        }
+        else {
+            let docid = await getRatingOfCurrentUser();
+            if (docid){
+                removeRating(BPid,docid,document.getElementById(docid));
+            }
+        submitrating(BPid,ratings,textinput.value,list,individualratinglocation);
         alert("Your review has been posted! refresh this page to see its impact on the ratings average score");
+        }
     })
     ratingcontainer.appendChild(textinput);
     ratingcontainer.appendChild(submitbutton);
@@ -152,20 +160,22 @@ function removeRating(BPid,RatingID,RatingContainer){
 }
 //function for submitting a rating to the database
 function submitrating(BPid,scores,text,dimensioninfo,root){
+    now         =  getcurrentDateTime();
     startstring = findPath(collectionPaths, 'bestpractices') + '/';
     endstring   = "/ratings";       
-    doelstring = startstring.concat(BPid,endstring);
-    db.collection(doelstring).add({ //write rating to db
+    doelstring  = startstring.concat(BPid,endstring);
+    db.collection(doelstring).add({ 
+        //write rating to db
             date       :  getcurrentDateTime(),
             author     :  getUserName(),
             img        :  getUserImage(),
             email      :  getUserEmail(),
             rating     :  scores,
             ratingtext :  text
+        }).then(docRef => {
+            //draw rating locally
+             drawRating(getUserName(),getTimeDifference(now,getcurrentDateTime()),scores,getUserImage(),docRef,BPid,issame(email),root,dimensioninfo,text);
         })
-        //  .then(docRef => {
-        //      drawRating(author,date,rating,img,docRef,BPid,issame(email),root,dimensioninfo,ratingtext);
-        // })
 
 }
 //function to retrieve all ratings and the ratingdocument from the database
@@ -255,11 +265,13 @@ function collectrating(listOfDimensions){
             break;
             case "dislikelike":
                 score = dimension.getAttribute("data-rating");
+                if (score == 0){ score = null}
             break;
             case "like":
             break;
             case "eBay":
                 score = dimension.getAttribute("data-rating");
+                if (score == 'null'){ score = null}
             break;
        }
        scorelist.push(score);
@@ -1109,7 +1121,6 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     root.appendChild(wrapper);
 
 }
-
 //supporting function to round of scores to 1k or 1m
 function roundScore(score){
 if (score > 1000 && score < 1000000){
@@ -1119,4 +1130,24 @@ if (score >= 1000000){
     score = score/1000000 + 'm';
 }
 return score;
+}
+//function for finding out if a user has already made a rating and if so return the ratingsID
+async function getRatingOfCurrentUser(){
+    let userEmail = getUserEmail()
+    let ratingid  = null;
+    startstring   = findPath(collectionPaths, 'bestpractices') + '/';
+    tussenstring  = "/ratings/"
+    doelstring    = startstring.concat(BPid,tussenstring);
+    await db.collection(doelstring)
+            .where("email", "==", userEmail)
+                .get()
+                    .then(async function(querySnapshot) {
+                        await querySnapshot.forEach(function(doc) {
+                            ratingid = doc.id;          
+        });
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });;
+    return (ratingid);
 }

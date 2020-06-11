@@ -1,22 +1,18 @@
 
-
 function createLike(root){
   var likingOptionUp   = document.createElement("i");
-  likingOptionUp.classList.add("far", "fa-thumbs-up","pos","checked",'liking-options');
+  likingOptionUp.classList.add("far", "fa-thumbs-up","pos",'liking-options','checked');
   root.appendChild(likingOptionUp);
-
 }
+
 function createDislike(root){
   var likingOptionDown = document.createElement("i");
-  likingOptionDown.classList.add("far","fa-thumbs-down","neg","checked",'liking-options');
+  likingOptionDown.classList.add("far","fa-thumbs-down","neg",'liking-options','checked');
   root.appendChild(likingOptionDown);
-
 }
 
-
-
 //function to create the likedislikerating
-function createLikeDislikeRating (root){
+function createLikeDislikeRating (root,type){
 
   var DislikeLikeWrapper = document.createElement("DIV");
   DislikeLikeWrapper.classList.add("dislike-like");
@@ -25,12 +21,12 @@ function createLikeDislikeRating (root){
   DislikeLikeUnit.classList.add("liking-unit");
 
   var DislikeLikeOptions = document.createElement("DIV");
-  DislikeLikeOptions.setAttribute('data-rating', 1);
+  DislikeLikeOptions.setAttribute('data-rating', null);
   DislikeLikeOptions.setAttribute('name','dislikelike');
   DislikeLikeOptions.classList.add("liking-options");
 
   var likingOptionUp   = document.createElement("i");
-  likingOptionUp.classList.add("far", "fa-thumbs-up","pos",'checked');
+  likingOptionUp.classList.add("far", "fa-thumbs-up","pos");
 
   var likingOptionDown = document.createElement("i");
   likingOptionDown.classList.add("far","fa-thumbs-down","neg");

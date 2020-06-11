@@ -73,8 +73,6 @@ function getLevelList(level){
             return third;
         case 4:
             return fourth;
-
-
     }
 }
 // this function uses draw_comment_db to translate and draw all comments of all levels, every comment above level 0 is not shown but already retrieved.
@@ -151,7 +149,6 @@ function pushcomment(BPid,comment_date,comment_author,comment_img,comment_text,c
                 level:  comment_level,
                 parent: comment_parent
             }).then(docRef => {
-                //append.....
                 //add to local representation of database
                 add_comment_db_repr(comment_author,comment_date,comment_text,comment_img,docRef.id,BPid, "true",comment_thread,comment_level,comment_parent);
 

@@ -12,7 +12,8 @@ function startup(BPID){
    // create comment input bar
    create_comment_input(comment_input_location,"false");
    // get all comments from the database and draw them in the comment section
-   getcomments(BPID);
+   BPid = BPID;
+   getcomments(BPid);
 }
 //function to collapse the rules container
 function collapsible(){

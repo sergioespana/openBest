@@ -30,7 +30,7 @@ function createNeutralOption(root){
 function createEbayRating(root,type,amtneg,amtneut,amtpos){
   var eBayWrapper    = document.createElement("DIV");
   eBayWrapper.classList.add("eBay-rating");
-  eBayWrapper.setAttribute("data-rating",0);
+  eBayWrapper.setAttribute("data-rating",null);
   eBayWrapper.setAttribute("name","eBay");
 
   var eBayUnit       = document.createElement("DIV");
@@ -38,11 +38,6 @@ function createEbayRating(root,type,amtneg,amtneut,amtpos){
 
   var eBayOptions    = document.createElement("DIV");
   eBayOptions.classList.add("eBay-options");
-
-  if (type == 'readOnly'){
-    eBayOptions.style.marginTop    = '10%';
-    eBayOptions.style.marginBottom = '10%';
-  }
 
   var optionPositive = document.createElement("SPAN");
   optionPositive.classList.add("fas","fa-plus-circle","couponcode");
@@ -58,7 +53,6 @@ function createEbayRating(root,type,amtneg,amtneut,amtpos){
     createTooltip(optionNeutral,'Neutral');
     createTooltip(optionNegative,'Negative');
 
-    optionNeutral.classList.add("checked");
     optionNeutral.classList.add("eBay-option","neut");
     optionPositive.classList.add("eBay-option","pos");
     optionNegative.classList.add("eBay-option","neg");
@@ -67,7 +61,13 @@ function createEbayRating(root,type,amtneg,amtneut,amtpos){
     createAmttext(optionPositive,amtpos);
     createAmttext(optionNeutral,amtneut);
     createAmttext(optionNegative,amtneg);
-
+    eBayOptions.style.marginTop    = '10%';
+    eBayOptions.style.marginBottom = '10%';
+    optionNeutral.classList.add("checked","neut");
+    optionPositive.classList.add("checked","pos");
+    optionNegative.classList.add("checked","neg");
+    
+  
   }
   eBayOptions.appendChild(optionNegative);
     
@@ -131,9 +131,9 @@ function removetags(item){
 function createTooltip(root,text){
   var tt = document.createElement("span");
   tt.classList.add("coupontooltip");
-  tt.innerHTML = text;
+  tt.innerHTML      = text;
   tt.style.fontSize = '1rem';
-  tt.style.color = 'rgb(133, 135, 150)';
+  tt.style.color    = 'rgb(133, 135, 150)';
   root.appendChild(tt);
 }
 function createAmttext(root,amount){
