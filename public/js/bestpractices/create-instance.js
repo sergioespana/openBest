@@ -14,14 +14,14 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "domain": {
+    "experimentdomain": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Test Domain",
-            "administrator": "plomp1996@gmail.com",
+            "name": "Experiment Domain",
+            "administrator": "s.w.vanderpijl@students.uu.nl",
             //collection
             "bestpractices": {
                 //document
@@ -38,16 +38,16 @@ var jsontest = {
                     "5categories":
                         ["string"],
                     "6date": "string",
-                    "subcollectiontest": {
-                        "testdocument":{
-                            "01grouptitle": "Testing subcollections",
-                            "02groupdesc": "Enter basic test information here.",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3description": "text",
-                            "4testfield": "string"
-                        }
-                    },
+                    // "subcollectiontest": {
+                    //     "testdocument":{
+                    //         "01grouptitle": "Testing subcollections",
+                    //         "02groupdesc": "Enter basic test information here.",
+                    //         "1displayfeature": true,
+                    //         "2name": "string",
+                    //         "3description": "text",
+                    //         "4testfield": "string"
+                    //     }
+                    // },
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -64,7 +64,7 @@ var jsontest = {
                             "02groupdesc": "Enter rating information here.",
                             "1displayfeature": true,
                             //These categories can be changed by user creating the model
-                            "2ratingtype": ["eBay"],
+                            "2ratingtype": ["stars"],
                             "3dimension": ["string"],
                             "4dimension description": ["string"],
                             "5scale": [5],

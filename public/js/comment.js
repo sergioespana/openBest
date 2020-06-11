@@ -262,7 +262,8 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         remove_comment.addEventListener("click", function(){
         // ask for confirmation that a user indeed wants to delete his comments
             if (confirm("Are you sure you want to delete this comment? please note that reactions to this comment will also be lost")== true){
-                removeComment(commentid,BP_id,comment_wrapper);
+                removeallChildren(level,commentid,BP_id);
+                //removeComment(commentid,BP_id,comment_wrapper);
             }
         }); 
    }
@@ -348,7 +349,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
        see_answers.style.display = "none";
     }
 }
-
 function editComment(see_more,comment_text,confirm,cancel,edit){  
     comment_text.toggleAttribute("contentEditable");
     if (comment_text.isContentEditable){
@@ -425,7 +425,6 @@ function subCancel(text,elem){
         elem.setAttribute("SubInputisDrawn","false");
     }
 }
-
 function getallChildren(level,commentid,see_answers,amountofchildren,reason){
    var isdrawn =  document.getElementById(commentid).getAttribute("subCommentDrawn");
     for (item of getLevelList(level+1)){
@@ -452,17 +451,12 @@ function getallChildren(level,commentid,see_answers,amountofchildren,reason){
         document.getElementById(commentid).setAttribute("SubCommentDrawn","false");
     }
 }
-
-
-
-
-
-
 function removeallChildren(level,commentid,BP_id){
+    removeComment(commentid,BP_id,document.getElementById(commentid));
     for (item of getLevelList(level+1)){
      if(item[9] == commentid){
-        removeComment(commentid,BP_id)
-        removeallChildren(level+1,item[4],"removechildren");        
+        getLevelList(level+1).splice(item,item); 
+        removeallChildren(level+1,item[4],BP_id);        
          }
      }
 }
@@ -551,4 +545,4 @@ function lengte (l1){
         lengte += 1;
     }
     return lengte;
-  }
+}

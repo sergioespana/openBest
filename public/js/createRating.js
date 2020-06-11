@@ -203,16 +203,16 @@ async function getratings(BPid) {
         }
         // get rating information on the dimensions
         else {
-            rating_type             = doc.data().ratingtype;
-            rating_scale            = doc.data().Scale;
-            rating_dimensions       = doc.data().dimensions;
-            rating_dimensions_descr = doc.data().Dimension_descr;
-            rating_stepsize         = doc.data().stepsize;
             // rating_type             = doc.data().ratingtype;
-            // rating_scale            = doc.data().scale;
-            // rating_dimensions       = doc.data().dimension;
-            // rating_dimensions_descr = doc.data().dimensiondescription;
+            // rating_scale            = doc.data().Scale;
+            // rating_dimensions       = doc.data().dimensions;
+            // rating_dimensions_descr = doc.data().Dimension_descr;
             // rating_stepsize         = doc.data().stepsize;
+            rating_type             = doc.data().ratingtype;
+            rating_scale            = doc.data().scale;
+            rating_dimensions       = doc.data().dimension;
+            rating_dimensions_descr = doc.data().dimensiondescription;
+            rating_stepsize         = doc.data().stepsize;
             ratinginfo.push([rating_type,rating_dimensions,rating_scale,rating_stepsize,rating_dimensions_descr]);
         }
     })
@@ -1106,7 +1106,10 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         let counterpos  = 0;
         let counterneut = 0;
         let counterneg  = 0;
+        if (lengte(transposedScores[0])){
         var scores = transposedScores[0].map(numStr => parseInt(numStr));
+        }
+        else {score = []}
         for (score of scores){
 
 

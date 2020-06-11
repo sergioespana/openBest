@@ -261,7 +261,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
                 // Arrays
                 // The following rating mechanisms allow for the user to specify multiple dimensions
                 if(Array.isArray(value) && (ratingType != 'like' && ratingType != 'dislikelike' && ratingType != 'eBay')){
-                //if(Array.isArray(value) && (ratingType != 'stars' ratingType != 'like' && ratingType != 'dislikelike' && ratingType != 'eBay')){
+                //if(Array.isArray(value) && (ratingType != 'stars' && ratingType != 'like' && ratingType != 'dislikelike' && ratingType != 'eBay')){
                     conceptDiv.appendChild(label);
                     conceptDiv.appendChild(input);
                     // Setting this attribute helps in determining the type of input to be added
