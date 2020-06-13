@@ -1082,7 +1082,10 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     else if(type == 'dislikelike'){
        let counterpos = 0;
        let counterneg = 0;
-       var scores = transposedScores[0].map(numStr => parseInt(numStr));
+       if ((transposedScores[0])){
+        var scores = transposedScores[0].map(numStr => parseInt(numStr));
+       }
+       else scores = [0];
        for (score of scores){
            if (score < 0){  counterneg  += 1;}
            else if (score > 0){  counterpos  += 1;}
@@ -1111,13 +1114,10 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         }
         else {score = []}
         for (score of scores){
-
-
             if      (score == 0){ counterneut += 1;}
             else if (score < 0){  counterneg  += 1;}
             else if (score > 0){  counterpos  += 1;}
         }
-        console.log(counterneg);
         createEbayRating(wrapper,'readOnly',roundScore(counterneg),roundScore(counterneut),roundScore(counterpos));
     }
     wrapper.appendChild(amtlabel);
