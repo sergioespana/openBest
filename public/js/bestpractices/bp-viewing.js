@@ -362,7 +362,7 @@ span.onclick = function() {
     while (coreContent.hasChildNodes()) {
         coreContent.removeChild(coreContent.firstChild);
     }
-    while (otherSections.hasChildNodes()) {  
-        otherSections.removeChild(otherSections.firstChild);
-    }
+    // while (otherSections.hasChildNodes()) {  
+    //     otherSections.removeChild(otherSections.firstChild);
+    // }
 }

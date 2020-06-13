@@ -25,6 +25,7 @@ function setUpRatingSection(transposedInfo,root){
     var ratingAggregationTop = document.createElement('div');
     ratingAggregationTop.id  = "ratingaggregation";
     root.appendChild(ratingAggregationTop);
+
     //if there is more than one rating dimension
     if (lengte(transposedInfo) > 1){
  
@@ -44,7 +45,7 @@ function setUpRatingSection(transposedInfo,root){
         icon.appendChild(iconinstantiation);
 
         var dimname = document.createElement('p');
-        dimname.innerText          = "Give your rating!";
+        dimname.innerText          = "Give your rating here!";
         dimname.style.width        = '25%';
         dimname.style.marginLeft   = '10%';
         dimname.style.marginRight  = 'auto';
@@ -346,7 +347,7 @@ function createAllRatings(root,ratinglist,transposedInfo,BPid){
         let date    = rating[1];
         let score   = rating[2];
         let img     = rating[3];
-        let email   = rating[4]
+        let email   = rating[4];
         let id      = rating[5];
         let text    = rating[6];
         drawRating(name,date,score,img,id,BPid, issame(email),root,transposedInfo,text);
@@ -370,7 +371,7 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
 
    //topbar wrapper, wrapper for the meta info and toolbar
    var topbar_wrapper = document.createElement("DIV");
-   topbar_wrapper.classList.add("topbar");
+   topbar_wrapper.classList.add("containertopbar");
 
    //meta info wrapper, name, date, etc.
    var meta_info_wrapper = document.createElement("DIV");
@@ -691,6 +692,8 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
 
         if (type == 'binstars'){
             var [scorelist,max,avg,pAVG,pAmt,nAvg,nAmt] = organizelist(listofscores,scale,step,"binstar");
+            if (!pAmt){pAmt = 0;}
+            if (!nAmt){nAmt = 0;}
             if (!pAVG){pAVG = 0;}
             if (!nAvg){nAvg = 0;}
         }
@@ -704,6 +707,8 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         avg       = 0;
         pAVG      = 0;
         nAvg      = 0;
+        pAmt      = 0;
+        nAmt      = 0;
     }
     
         var ratingCollapsible = document.createElement('button');
@@ -733,7 +738,7 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
             starRatingResult(ratingCollapsible,((avg/max)*100),max);
         }
         else if(type == 'binstars'){
-           let binstar = createBinaryStarRating(ratingCollapsible,max,max,"readOnlyAgg", nAvg, pAVG);
+            let binstar = createBinaryStarRating(ratingCollapsible,max,max,"readOnlyAgg", nAvg, pAVG,pAmt,nAmt);
            binstar.style.marginRight = 'auto';
         }
 

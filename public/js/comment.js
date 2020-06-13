@@ -7,8 +7,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
 function startup(BPID){
     //get amount of comments for the toptext
    create_meta_info();
-   // get comment section loaction
+   // get comment section location
    let comment_input_location = document.getElementById("searchbar");
+   //create 'make your comment below' text
+   let encouragement = document.createElement('p');
+   encouragement.innerText = 'Make your comment below.';
+   comment_input_location.appendChild(encouragement);
    // create comment input bar
    create_comment_input(comment_input_location,"false");
    // get all comments from the database and draw them in the comment section
@@ -200,7 +204,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
 
    //topbar wrapper, wrapper for the meta info and toolbar
    var topbar_wrapper = document.createElement("DIV");
-   topbar_wrapper.classList.add("topbar");
+   topbar_wrapper.classList.add("containertopbar");
 
    //meta info wrapper, name, date, etc.
    var meta_info_wrapper = document.createElement("DIV");
@@ -411,7 +415,8 @@ function changeflag(element){
 }
 //function to check overflow of text to enable the see_more button if needed
 function showReadMoreButton(element){
-    if (element.offsetHeight < element.scrollHeight || element.offsetWidth < element.scrollWidth){
+    //if (element.offsetHeight < element.scrollHeight){
+      if  (element.scrollHeight > element.clientHeight || element.offsetHeight < element.scrollHeight){
          return "true";
      } 
      else{

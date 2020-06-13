@@ -114,12 +114,12 @@
    flex: 2; 
   }
   
-  .topbar{
+  .containertopbar{
     display: flex;
     width: 100%;
     margin-top: 5px;
     margin-bottom: 5px;
-    height: 25% !important;
+    height: 3rem;
   }
 
   .meta_info{
