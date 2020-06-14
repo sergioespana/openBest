@@ -175,7 +175,7 @@ function submitrating(BPid,scores,text,dimensioninfo,root){
             ratingtext :  text
         }).then(docRef => {
             //draw rating locally
-             drawRating(getUserName(),getTimeDifference(now,getcurrentDateTime()),scores,getUserImage(),docRef,BPid,issame(email),root,dimensioninfo,text);
+             drawRating(getUserName(),getTimeDifference(now,getcurrentDateTime()),scores,getUserImage(),docRef.id,BPid,issame(email),root,dimensioninfo,text);
         })
 
 }
@@ -355,7 +355,7 @@ function createAllRatings(root,ratinglist,transposedInfo,BPid){
 }
 //function to draw one instance of a rating, this rating has the same interface as the comments from comment.js
 function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,ratingtext){
-  
+    console.log(ratingid);
    // rating wrapper e.g. the wrapper for all the comments contents
    var rating_wrapper = document.createElement("DIV");  
    rating_wrapper.id = ratingid;
