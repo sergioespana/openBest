@@ -12,7 +12,7 @@ function createDislike(root){
 }
 
 //function to create the likedislikerating
-function createLikeDislikeRating (root,type){
+function createLikeDislikeRating (root){
 
   var DislikeLikeWrapper = document.createElement("DIV");
   DislikeLikeWrapper.classList.add("dislike-like");
@@ -39,14 +39,14 @@ function createLikeDislikeRating (root,type){
   DislikeLikeWrapper.appendChild(DislikeLikeUnit);
   root.appendChild(DislikeLikeWrapper);
   
-  likingOptionUp.addEventListener("click",   function(){changeColor_like("green",likingOptionUp,likingOptionDown,DislikeLikeOptions)});  
-  likingOptionDown.addEventListener("click", function(){changeColor_like("red",likingOptionUp,likingOptionDown,DislikeLikeOptions)});
+  likingOptionUp.addEventListener("click",   function(){changeColor_Dislikelike("green",likingOptionUp,likingOptionDown,DislikeLikeOptions)});  
+  likingOptionDown.addEventListener("click", function(){changeColor_Dislikelike("red",likingOptionUp,likingOptionDown,DislikeLikeOptions)});
   
   return DislikeLikeOptions;
    
 }
 
-function changeColor_like(colour,itempos,itemneg,options) {  
+function changeColor_Dislikelike(colour,itempos,itemneg,options) {  
   switch(colour){
       case "red":  
           removetags_like(itempos);//remove 'rated' tags from the other option
@@ -54,17 +54,12 @@ function changeColor_like(colour,itempos,itemneg,options) {
           if (itemneg.classList.contains('checked')){
             options.setAttribute('data-rating', -1);
           }
-          else {
-            
-          }
           break;
       case "green":
           removetags_like(itemneg);//remove 'checked' tags from the other option
           fliptags_like(itempos,options);// switch tags from checked to not checked and vice versa for this option
           if (itempos.classList.contains('checked')){
             options.setAttribute('data-rating', +1);
-          }
-          else {
           }
           break;
     }
@@ -86,4 +81,49 @@ function removetags_like(item){
   if (item.classList.contains('checked')){
   item.classList.remove('checked');
   }
+}
+
+
+function createlikeRating (root){
+
+  var LikeWrapper = document.createElement("DIV");
+  LikeWrapper.classList.add("dislike-like");
+
+  var LikeUnit    = document.createElement("DIV");
+  LikeUnit.classList.add("liking-unit");
+
+  var LikeOptions = document.createElement("DIV");
+  LikeOptions.setAttribute('data-rating', null);
+  LikeOptions.setAttribute('name','dislikelike');
+  LikeOptions.classList.add("liking-options");
+
+  var likingOptionUp   = document.createElement("i");
+  likingOptionUp.classList.add("far", "fa-thumbs-up","pos");
+
+  LikeOptions.appendChild(likingOptionUp);
+
+  
+  LikeUnit.appendChild(LikeOptions);
+  LikeWrapper.appendChild(LikeUnit);
+  root.appendChild(LikeWrapper);
+  
+  likingOptionUp.addEventListener("click",   function(){changeColor_like("green",likingOptionUp,LikeOptions)});  
+  
+  return LikeOptions;
+   
+}
+
+function changeColor_like(colour,itempos,options) {  
+  switch(colour){
+      case "green":
+          fliptags_like(itempos,options);// switch tags from checked to not checked and vice versa for this option
+          if (itempos.classList.contains('checked'))
+          {
+            options.setAttribute('data-rating', 1);
+          }
+          else {
+            options.setAttribute('data-rating', 0);
+          }
+          break;
+    }
 }

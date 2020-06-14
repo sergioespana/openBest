@@ -317,7 +317,7 @@ function createRating(root,name,dimension,scale,type,step,value,descr){
         break;
         //like
         case "like":
-            console.log("this one is still to be implemented");
+            var ratingmech = createlikeRating(container);
         break;
         //eBay
         case "eBay":
@@ -355,7 +355,6 @@ function createAllRatings(root,ratinglist,transposedInfo,BPid){
 }
 //function to draw one instance of a rating, this rating has the same interface as the comments from comment.js
 function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,ratingtext){
-    console.log(ratingid);
    // rating wrapper e.g. the wrapper for all the comments contents
    var rating_wrapper = document.createElement("DIV");  
    rating_wrapper.id = ratingid;
@@ -571,6 +570,7 @@ function createUserRatingDisplay(root,scores,dimension){
                     binstar.style.marginRight = 'auto';
                 }
             break;
+          
         }
         icon.appendChild(iconinstantiation);
         ratingCollapsible.appendChild(icon);
@@ -682,6 +682,11 @@ function createUserRatingDisplay(root,scores,dimension){
                 if(score == 1){createPositiveOption(ratingCollapsible);}
                 else if (score == 0){ createNeutralOption(ratingCollapsible);}
                 else if (score == -1){createNegativeOption(ratingCollapsible);}
+            break;
+            case 'like':
+                createLike(ratingCollapsible);
+
+            break;
 
         }
 
@@ -966,6 +971,9 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
         if (type == 'binstars'){
             score = 0;
         }
+        if (type == 'like'){
+            score = 0;
+        }
         
         dimensionScores.push([score,dimensionavg,dimensionname]);
         
@@ -1018,7 +1026,7 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
             amtlabel.style.width       = '10%';
         }
     }
-    else if (type == 'eBay' || type == 'dislikelike'){
+    else if (type == 'eBay' || type == 'dislikelike' || type == 'like'){
         label.style.width = '23%';
         label.style.marginLeft = '10%';
     }
@@ -1110,6 +1118,20 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
        negtext.innerText = roundScore(counterneg);
        wrapper.append(negtext);
     }
+    else if(type == 'like'){
+        if ((transposedScores[0])){
+            var scores = transposedScores[0].map(numStr => parseInt(numStr));
+           }
+           else {scores = [0];}
+        createLike(wrapper);
+        postext = document.createElement('p');
+        postext.style.marginTop    = 'auto';
+        postext.style.marginBottom = 'auto';
+        postext.innerText = lengte(scores);
+        postext.style.marginRight = '5px';
+           
+    }
+
     else if(type == 'eBay'){
         let counterpos  = 0;
         let counterneut = 0;
