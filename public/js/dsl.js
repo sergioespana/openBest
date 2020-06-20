@@ -24,6 +24,26 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
 })
 
+// Displaying the ratings dropdown when ratings is checked
+$('#ratings-checkbox').change(function(){
+    if($(this).is(':checked')) {
+        document.getElementById('rating-choice').style.display = 'inline-block';
+    } else {
+        document.getElementById('rating-choice').style.display = 'none';
+    }
+});
+
+// Displaying the input fields for scale and step size when Slider is selected
+$('#rating-choice').change(function(){
+    if($(this).children("option:selected").val() == 'Slider') {
+        document.getElementById('rating-scale').style.display = 'inline-block';
+        document.getElementById('rating-stepsize').style.display = 'inline-block';
+    } else {
+        document.getElementById('rating-scale').style.display = 'none';
+        document.getElementById('rating-stepsize').style.display = 'none';
+    }
+});
+
 
 function addConceptFunction(c, pc) {
 
@@ -216,8 +236,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     let bpGroupDesc = document.getElementById('bp-group-description').value;
     let probGroupTitle = document.getElementById('prob-group-title').value;
     let probGroupDesc = document.getElementById('prob-group-description').value;
-    let solGroupTitle = document.getElementById('sol-group-title').value;
-    let solGroupDesc = document.getElementById('sol-group-description').value;
 
     // The initial JSON model (as string). After this, variable data can be appended.
     JSONmodel += "\
@@ -236,8 +254,9 @@ document.getElementById("dsl-create").addEventListener("click", async function()
                     \"3description\": \"text\",\
                     \"4author\": [{\"name\" : \"Written by\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
                     \"problems\": [{\"name\" : \"Solves\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
-                    \"5categories\": [\"string\"\],\
-                    \"6date\": \"string\"\
+                    \"5solution\": \"text\"\,\
+                    \"6categories\": [\"string\"\],\
+                    \"7date\": \"string\"\
         "
 
 
@@ -245,64 +264,197 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     let commentsCheckbox = document.getElementById("comments-checkbox");
     // Adding ratings > this is a RECOMMENDED subcollection
     let ratingsCheckbox = document.getElementById("ratings-checkbox");
+    // Adding examples > this is a RECOMMENDED subcollection
+    let exampleCheckbox = document.getElementById("example-checkbox");
+    // Adding effort > this is a RECOMMENDED subcollection
+    let effortCheckbox = document.getElementById("effort-checkbox");
 
-    // Both are checked
-    if(commentsCheckbox.checked && ratingsCheckbox.checked){
-        let commentsRatingsString = "\
+    let checkedCheckboxes = 0;
+
+    let selectedRating = $("#rating-choice").children("option:selected").val();
+    let selectedScale;
+    let selectedStep;
+    if(selectedRating == 'Slider'){
+        selectedScale = $('#rating-scale').val();
+        selectedStep = $('#rating-stepsize').val();
+    }
+    else{
+        selectedScale = "5";
+        selectedStep = "1";
+    }
+
+    // Check how many recommended concepts are added
+    let checkboxes = document.getElementById("checkbox-div").querySelectorAll("input");
+    for(let i = 0; i<checkboxes.length; i++){
+        if(checkboxes[i].checked){
+            checkedCheckboxes++;
+        }
+    }
+
+    if(commentsCheckbox.checked){
+        let commentsString = "\
         ,\"comments\": \{\
             \"commentdocument\": \{\
-                \"01grouptitle\": \"comments title\",\
-                \"02groupdesc\": \"comments description\",\
-                \"1displayfeature\": false\
+                \"author\": \"string\",\
+                \"date\": \"string\",\
+                \"email\": \"string\",\
+                \"img\": \"string\",\
+                \"level\": \"int\",\
+                \"parent\": \"string\",\
+                \"text\": \"string\"\
             \}\
-        \},\
+        \}"
+
+        JSONmodel += commentsString;
+    }
+
+    if(ratingsCheckbox.checked){
+
+        // Adding a comma if previous recommended concepts have been added
+        if(commentsCheckbox.checked){
+            JSONmodel += ",";
+        }
+
+        let ratingsString = "\
         \"ratings\": \{\
             \"ratingdocument\": \{\
                 \"01grouptitle\": \"ratings title\",\
                 \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false\
+                \"1displayfeature\": false,\
+                \"2ratingtype\": [\""+selectedRating+"\"],\
+                \"3dimension\": [\"string\"],\
+                \"4dimension description\": [\"string\"],\
+                \"5scale\": [\""+selectedScale+"\"],\
+                \"6stepsize\": [\""+selectedStep+"\"]\
             \}\
-        \}\
-        \}\
-        \},"
-
-        JSONmodel += commentsRatingsString;
-    }
-    else if(ratingsCheckbox.checked && !(commentsCheckbox.checked)){
-        let ratingsString = "\
-        ,\"ratings\": \{\
-            \"ratingdocument\": \{\
-                \"01grouptitle\": \"ratings title\",\
-                \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false\
-            \}\
-        \}\
-        \}\
-        \},"
+        \}"
 
         JSONmodel += ratingsString;
     }
-    else if(!(ratingsCheckbox.checked) && commentsCheckbox.checked){
-        let commentsString = "\
-        ,\"comments\": \{\
-            \"commentdocument\": \{\
-                \"01grouptitle\": \"comments title\",\
-                \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false\
-            \}\
-        \}\
-        \}\
-        \},"
 
-        JSONmodel += commentsString;
+    if(exampleCheckbox.checked){
+
+        // Adding a comma if previous recommended concepts have been added
+        if(ratingsCheckbox.checked || commentsCheckbox.checked){
+            JSONmodel += ",";
+        }
+
+        let exampleString = "\
+        \"examples\": \{\
+            \"exampledocument\": \{\
+                \"01grouptitle\": \"Example\",\
+                \"02groupdesc\": \"Describe an example here.\",\
+                \"1displayfeature\": false,\
+                \"2title\": \"string\",\
+                \"3description\": \"text\"\
+            \}\
+        \}"
+
+        JSONmodel += exampleString;
     }
-    // If none of the subcollections are checked, we need to close bestpractices
-    else{
-        JSONmodel += "\
-        \}\
-        \}\
-        ,"
+
+    if(effortCheckbox.checked){
+
+        // Adding a comma if previous recommended concepts have been added
+        if(ratingsCheckbox.checked || commentsCheckbox.checked || exampleCheckbox.checked){
+            JSONmodel += ",";
+        }
+
+        let effortString = "\
+        \"efforts\": \{\
+            \"effortdocument\": \{\
+                \"01grouptitle\": \"Efforts\",\
+                \"02groupdesc\": \"Define the effort required for this best practice here.\",\
+                \"1displayfeature\": false,\
+                \"2name\": \"string\",\
+                \"3scale\": \"string\"\
+            \}\
+        \}"
+
+        JSONmodel += effortString;
     }
+
+    JSONmodel += "\
+    \}\
+    \}\
+    ,"
+    
+
+    // // Both are checked
+    // if(commentsCheckbox.checked && ratingsCheckbox.checked){
+    //     let commentsRatingsString = "\
+    //     ,\"comments\": \{\
+    //         \"commentdocument\": \{\
+    //             \"author\": \"string\",\
+    //             \"date\": \"string\",\
+    //             \"email\": \"string\",\
+    //             \"img\": \"string\",\
+    //             \"level\": \"int\",\
+    //             \"parent\": \"string\",\
+    //             \"text\": \"string\"\
+    //         \}\
+    //     \},\
+    //     \"ratings\": \{\
+    //         \"ratingdocument\": \{\
+    //             \"01grouptitle\": \"ratings title\",\
+    //             \"02groupdesc\": \"ratings description\",\
+    //             \"1displayfeature\": false,\
+    //             \"2ratingtype\": [\""+selectedRating+"\"],\
+    //             \"3dimension\": [\"string\"],\
+    //             \"4dimension description\": [\"string\"],\
+    //             \"5scale\": [\""+selectedScale+"\"],\
+    //             \"6stepsize\": [\""+selectedStep+"\"]\
+    //         \}\
+    //     \}\
+    //     \}\
+    //     \},"
+
+    //     JSONmodel += commentsRatingsString;
+    // }
+    // else if(ratingsCheckbox.checked && !(commentsCheckbox.checked)){
+    //     let ratingsString = "\
+    //     ,\"ratings\": \{\
+    //         \"ratingdocument\": \{\
+    //             \"01grouptitle\": \"ratings title\",\
+    //             \"02groupdesc\": \"ratings description\",\
+    //             \"1displayfeature\": false,\
+    //             \"2ratingtype\": [\""+selectedRating+"\"],\
+    //             \"3dimension\": [\"string\"],\
+    //             \"4dimension description\": [\"string\"],\
+    //             \"5scale\": [\""+selectedScale+"\"],\
+    //             \"6stepsize\": [\""+selectedStep+"\"]\
+    //         \}\
+    //     \}\
+    //     \}\
+    //     \},"
+
+    //     JSONmodel += ratingsString;
+    // }
+    // else if(!(ratingsCheckbox.checked) && commentsCheckbox.checked){
+    //     let commentsString = "\
+    //     ,\"comments\": \{\
+    //         \"commentdocument\": \{\
+    //             \"author\": \"string\",\
+    //             \"date\": \"string\",\
+    //             \"email\": \"string\",\
+    //             \"img\": \"string\",\
+    //             \"level\": \"int\",\
+    //             \"parent\": \"string\",\
+    //             \"text\": \"string\"\
+    //         \}\
+    //     \}\
+    //     \}\
+    //     \},"
+
+    //     JSONmodel += commentsString;
+    // }
+    // // If none of the subcollections are checked, we need to close bestpractices
+    // else{
+    //     JSONmodel += "\
+    //     \}\
+    //     \}\
+    //     ,"
+    // }
 
     let usersAuthorsString = "\
     \"users\": \{\
@@ -325,7 +477,7 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     JSONmodel += usersAuthorsString;
 
     // Adding problems > this is a FIXED subcollection
-    let problemSolutionString = "\
+    let problemString = "\
     \"problems\": \{\
         \"problemdocument\": \{\
             \"01grouptitle\": \""+probGroupTitle+"\",\
@@ -333,21 +485,12 @@ document.getElementById("dsl-create").addEventListener("click", async function()
             \"1displayfeature\": true,\
             \"2name\": \"string\",\
             \"3description\": \"text\",\
-            \"bestpractices\": [{\"name\" : \"Solved by\", \"self\": \"document reference\", \"related\": \"document reference\"}],\
-            \"solutions\": \{\
-                \"solutiondocument\": \{\
-                    \"01grouptitle\": \""+solGroupTitle+"\",\
-                    \"02groupdesc\": \""+solGroupDesc+"\",\
-                    \"1displayfeature\": true,\
-                    \"2name\": \"string\",\
-                    \"3description\": \"text\"\
-                \}\
-            \}\
+            \"bestpractices\": [{\"name\" : \"Solved by\", \"self\": \"document reference\", \"related\": \"document reference\"}]\
         \}\
     \}\
     "
 
-    JSONmodel += problemSolutionString;
+    JSONmodel += problemString;
 
     // Adding a new concept as a subcollection
 
@@ -360,19 +503,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         }
     });
 
-
-    // Calling the function on the first element
-    for(let c = 0; c < 1; c++){
-        // The last counter element in the array
-        let finalcounter = counterArray[counterArray.length - 1];
-
-        // Storing the counters that have been checked already
-        let checkedCounters = [];
-
-        JSONmodel += ",";
-        addNonNested(finalcounter, checkedCounters, counterArray[c], counterArray);
-    }
-
     // If no other concepts are added by the user
     if(counterArray.length == 0){
         JSONmodel += "\
@@ -382,6 +512,19 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         "
     
         console.log(JSONmodel);
+    }
+    else{
+        // Calling the function on the first element
+        for(let c = 0; c < 1; c++){
+            // The last counter element in the array
+            let finalcounter = counterArray[counterArray.length - 1];
+
+            // Storing the counters that have been checked already
+            let checkedCounters = [];
+
+            JSONmodel += ",";
+            addNonNested(finalcounter, checkedCounters, counterArray[c], counterArray);
+        }
     }
 
 })
@@ -680,7 +823,7 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
         // Otherwise, check if the previous element still has children to be added
         else{
             // Getting the previousCount for the previous element
-            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter').toString();
+            let previousPreviousCount = $(`[counter='${previousCount}']`).filter('div').attr('parent-counter');
 
             // Calling addConcepts for the previous element
             addConcepts(previousCount.toString(), subConceptCount, finalcounter, previousPreviousCount, checked, cArray)
