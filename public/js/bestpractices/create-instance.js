@@ -14,7 +14,7 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "domain2": {
+    "FinalDomain": {
         //document
         "domainstate": {
             //fields
@@ -35,26 +35,21 @@ var jsontest = {
                     "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
                                 {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
                     "problems": [{"name" : "Solves", "self": "document reference", "related": "document reference"}],
-                    "5categories":
+                    "5solution": "text",
+                    "6categories":
                         ["string"],
-                    "6date": "string",
-                    // "subcollectiontest": {
-                    //     "testdocument":{
-                    //         "01grouptitle": "Testing subcollections",
-                    //         "02groupdesc": "Enter basic test information here.",
-                    //         "1displayfeature": true,
-                    //         "2name": "string",
-                    //         "3description": "text",
-                    //         "4testfield": "string"
-                    //     }
-                    // },
+                    "7date": "string",
                     //collection
                     "comments": {
                         "commentdocument": {
                             "displayfeature": false,
-                            "comment": "string",
+                            "author": "string",
                             "date": "string",
-                            "user": "document reference"
+                            "email": "string",
+                            "img": "string",
+                            "level": "int",
+                            "parent": "string",
+                            "text": "string"
                         }
                     },
                     //collection
@@ -69,6 +64,24 @@ var jsontest = {
                             "4dimension description": ["string"],
                             "5scale": [5],
                             "6stepsize": [1]
+                        }
+                    },
+                    "example": {
+                        "exampledocument": {
+                            "01grouptitle": "Example",
+                            "02groupdesc": "Describe an example here.",
+                            "1displayfeature": true,
+                            "2name": "string",
+                            "3description": "text"
+                        }
+                    },
+                    "effort": {
+                        "effortdocument": {
+                            "01grouptitle": "Effort",
+                            "02groupdesc": "Define the effort required for this best practice here.",
+                            "1displayfeature": true,
+                            "2name": "string",
+                            "3scale": "string"
                         }
                     }
                 }
@@ -101,16 +114,7 @@ var jsontest = {
                     "1displayfeature": true,
                     "2name": "string",
                     "3description": "text",
-                    "bestpractices": [{"name" : "Solved by", "self": "document reference", "related": "document reference"}],
-                    "solutions": {
-                        "solutiondocument": {
-                            "01grouptitle": "Solution",
-                            "02groupdesc": "What is the prescribed solution to the problem?",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3description": "text"
-                        }
-                    }
+                    "bestpractices": [{"name" : "Solved by", "self": "document reference", "related": "document reference"}]
                 }
             }
         }
