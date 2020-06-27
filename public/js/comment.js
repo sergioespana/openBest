@@ -267,7 +267,6 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         // ask for confirmation that a user indeed wants to delete his comments
             if (confirm("Are you sure you want to delete this comment? please note that reactions to this comment will also be lost")== true){
                 removeallChildren(level,commentid,BP_id);
-                //removeComment(commentid,BP_id,comment_wrapper);
             }
         }); 
    }

@@ -7,7 +7,7 @@ function createLike(root){
 
 function createDislike(root){
   var likingOptionDown = document.createElement("i");
-  likingOptionDown.classList.add("far","fa-thumbs-down","neg",'liking-options','checked');
+  likingOptionDown.classList.add("far","fa-thumbs-down","neg",'liking-options','checked','fa-flip-horizontal');
   root.appendChild(likingOptionDown);
 }
 
@@ -29,7 +29,7 @@ function createLikeDislikeRating (root){
   likingOptionUp.classList.add("far", "fa-thumbs-up","pos");
 
   var likingOptionDown = document.createElement("i");
-  likingOptionDown.classList.add("far","fa-thumbs-down","neg");
+  likingOptionDown.classList.add("far","fa-thumbs-down","neg",'fa-flip-horizontal');
 
   DislikeLikeOptions.appendChild(likingOptionUp);
   DislikeLikeOptions.appendChild(likingOptionDown);

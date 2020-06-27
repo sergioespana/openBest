@@ -575,7 +575,6 @@ function createUserRatingDisplay(root,scores,dimension){
         icon.appendChild(iconinstantiation);
         ratingCollapsible.appendChild(icon);
 
-        
         for (i in scores){
             let score         = scores[i];
             let dimensionsub  = dimension[i];
