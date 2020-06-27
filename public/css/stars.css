@@ -1,0 +1,75 @@
+/* CSS for dynamic star mechanism (used to soilicit ratings) */
+.stars{
+  overflow: hidden;
+}
+
+.star{
+
+  font-size: 1.0rem;
+  vertical-align: middle;
+  padding: 0 0.25rem;
+  float: left;
+  }
+
+.star::before{
+  content: '\2605';
+  cursor: pointer;
+  float: left;
+  color: gray;
+}
+
+.star.readOnly::before{
+  cursor: default;
+}
+
+
+
+
+.star.rated::before{
+  content: '\2605';
+  color: goldenrod;
+}
+
+
+/* CSS for static star mechanism (used for star aggregation representation) */
+.score {
+  display: block;
+  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.score-wrap {
+  display: inline-block;
+  position: relative;
+  height: 19px;
+}
+
+.score .stars-active {
+  color: #EEBD01;
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.score .stars-inactive {
+  color: grey;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-text-stroke: initial;
+  /* overflow: hidden; */
+}
+
+.star_{
+  font-size: 1.0rem;
+  padding: 0 0.25rem;
+}
+.star_:hover{
+
+  cursor: context-menu;
+}
+
+

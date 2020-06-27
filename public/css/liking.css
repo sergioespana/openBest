@@ -1,0 +1,45 @@
+.liking-options{
+    color: black;
+    font-size: 1.6rem;
+    height : 2rem;
+    margin-top: auto;
+    margin-bottom: auto;
+
+}
+.pos{
+    float:left;
+    position: relative;
+}
+
+
+i.pos {
+    padding-top: 3px ;
+}
+
+i.neg {
+    padding-top: 3px;
+}
+
+p.pos{
+    margin-right: 5px;
+}
+
+i.pos:hover{
+    color: green;
+}
+
+i.pos.checked{
+    color: green;
+  }
+.neg{
+    float:left;
+    position: relative;
+}
+i.neg:hover{
+    color: red;
+}
+
+i.neg.checked{
+    color: red;
+  }
+

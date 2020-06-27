@@ -20,9 +20,10 @@ var checkedREL = [];
 function tableClick(e) {
     let clickedRow = e.target.parentElement;
     let BPid = clickedRow.getAttribute('doc-id');
-
     modal.style.display = "block";
     retrieveBPinfo(BPid);
+    startup(BPid);
+    startupRatings(BPid);
 }
 
 
@@ -332,6 +333,16 @@ async function retrieveSub(refDocId, refDocPath, div){
 
 span.onclick = function() {
     modal.style.display = "none";
+    //remove comment and rating elements
+    remove_comment_elements();
+    remove_top_searchbar();
+    remove_rating_elements();
+    //reset lists and counters
+    commentlist = [];
+    ratinglist  = [];
+    ratinginfo  = [];
+    amountOfComments = 0;
+    ///////////////////////////////////
 
     let categoryArea = document.getElementById("bp-categories");
     let authorArea = document.getElementById("bp-authors");
@@ -351,7 +362,7 @@ span.onclick = function() {
     while (coreContent.hasChildNodes()) {
         coreContent.removeChild(coreContent.firstChild);
     }
-    while (otherSections.hasChildNodes()) {  
-        otherSections.removeChild(otherSections.firstChild);
-    }
+    // while (otherSections.hasChildNodes()) {  
+    //     otherSections.removeChild(otherSections.firstChild);
+    // }
 }

@@ -1,0 +1,111 @@
+
+.sliding-unit {
+    display: inline-flex;
+    margin-top: 5px;
+}
+
+
+
+
+.selectedval{
+  /* float: right; */
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom : auto;
+  margin-top: auto;
+}
+
+.ratingwrapper{
+  border: 1px solid black;
+  padding: 5px;
+}
+
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    /* float: left; */
+    width: 60%; /* Full-width */
+    height: 20px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;    
+}
+.range.rangeslider{
+  margin-bottom: auto !important;
+  margin-top: auto;
+}
+  
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+  
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 15px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background:  rgb(69, 145, 72); /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 15px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background:  rgb(69, 145, 72); /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
+  input[type="range"] { 
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 20px;
+    width: 200px;
+    cursor: pointer;
+    border-radius: 0; 
+    border: 1px solid black;
+}
+input[type="range"]:focus{
+  outline: none;
+}
+
+::-webkit-slider-runnable-track {
+    background: #ddd;
+}
+
+::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; 
+    height: 20px;
+    background: #fff;
+    box-shadow: -100vw 0 0 100vw #4CAF50;
+}
+
+.sliderticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.sliderticks p {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 1px;
+  background: #D3D3D3;
+  height: 10px;
+  line-height: 40px;
+  margin: 0 0 20px 0;
+}
+/* input.rangeslider{
+  margin-bottom: 0px !important;
+} */
+
+

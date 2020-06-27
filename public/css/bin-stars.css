@@ -1,0 +1,69 @@
+.bin-star-unit{
+  overflow: hidden;
+  display: flex;
+}
+
+.pos-stars{
+    float:right;
+}
+
+.neg-stars{
+    float:left;
+}
+
+.divider_{
+    font-size: 30px;
+}
+
+.text_rating{
+  margin: 0px;
+  width: 25px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.nstar{
+  color: black;
+  font-size: 1.0rem;
+  padding: 0 0.25rem; /* space out the stars */
+}
+
+.nstar::before{
+  content: '\2606';
+  cursor: pointer;
+}
+
+.nstar.hover::before{
+  /* the :hover should come first */
+  content: '\2605';
+  color: red;
+}
+
+.nstar.rated::before{
+  /* the :hover should come first */
+  content: '\2605';
+  color: red;
+}
+
+.pstar{
+  color: black;
+  font-size: 1.0rem;
+  padding: 0 0.25rem; /* space out the stars */
+}
+
+.pstar::before{
+  content: '\2606';
+  cursor: pointer;
+}
+
+.pstar.hover::before{
+  /* the :hover should come first */
+  content: '\2605';
+  color: green;
+}
+
+.pstar.rated::before{
+  /* the :hover should come first */
+  color: green;
+  content: '\2605';
+}

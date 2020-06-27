@@ -20,8 +20,8 @@ var jsontest = {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Test Domain",
-            "administrator": "plomp1996@gmail.com",
+            "name": "Experiment Domain",
+            "administrator": "s.w.vanderpijl@students.uu.nl",
             //collection
             "bestpractices": {
                 //document
@@ -59,7 +59,7 @@ var jsontest = {
                             "02groupdesc": "Enter rating information here.",
                             "1displayfeature": true,
                             //These categories can be changed by user creating the model
-                            "2ratingtype": ["eBay"],
+                            "2ratingtype": ["stars"],
                             "3dimension": ["string"],
                             "4dimension description": ["string"],
                             "5scale": [5],

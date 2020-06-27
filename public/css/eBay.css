@@ -1,0 +1,35 @@
+.eBay-options{
+    font-size: 1.6rem;
+    display: flex;
+    color: gray;
+  }
+.eBay-options::before{
+    cursor: pointer;
+}
+
+.eBay-option{
+  padding-right: 0.1rem;
+}
+
+.neg:hover::before{
+color: red;
+}
+.neg.checked{
+  color : red;
+}
+
+.neut:hover::before{
+  color: orange;
+}
+.neut.checked{
+  color: orange;
+}
+
+
+.pos:hover::before{
+  color:green;
+}
+.pos.checked{
+  color:green;
+}
+

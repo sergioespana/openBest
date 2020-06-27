@@ -10,6 +10,25 @@
 
     <!-- regular stylesheet -->
     <link type="text/css" rel="stylesheet" href="css/styling.css" />
+    <link type="text/css" rel="stylesheet" href="css/slidingbar.css"/>
+
+
+      <!-- comment section -->
+      <link href="css/comment-section.css" rel="stylesheet">
+
+      <!-- Ebay -->
+      <link href="css/eBay.css" rel="stylesheet">
+
+      <!-- Dislikelike -->
+      <link href="css/liking.css" rel="stylesheet">
+
+      <!-- stars -->
+      <link href="css/stars.css" rel="stylesheet">
+
+      <!-- binstars -->
+      <link href="css/bin-stars.css" rel="stylesheet">
+
+
     <!-- template stylesheet -->
     <link href="css/template.css" rel="stylesheet">
 
@@ -202,8 +221,7 @@
                 <div class="col-sm-10" style="display: inline" id="bp-categories"></div>
               </div>
 
-              <div class="row general-info authors-info" id="bp-authors">
-              </div>
+              <div class="row general-info authors-info" id="bp-authors"></div>
               <div class="row general-info">
                 <div class="col-sm-2">
                   <p style="display: inline">Date: </p>
@@ -228,15 +246,67 @@
               <div id="bp-core-content">
               </div>
 
-              <div id="bp-other-sections">
-                <!-- Other sections of the best practice are loaded here -->
+             
+
+              <div class="card border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="buttonbar">
+                        <button class= "btn btn-light" style="margin-right: 10px;" onclick="makeinvisible('rating','comment')" selected>Comments</button>
+                        <button class= "btn btn-light" onclick="makeinvisible('comment','rating')">Ratings</button>
+                      </div>
+                     
+                      <div id = "rating" style="display: none;">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
+                          <p>Rating section</p>
+                        </div>
+                        <div id = "ratingsection"></div>
+                      </div>
+                      
+                      <div id = "comment">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
+                          <p>Comment section</p>
+                        </div>
+
+                        <button type="button" class="top collapsible">Rules and tips</button>
+                          <div class="collapsiblecontent">
+                            <button type="button" class="rules collapsible">Rules</button>
+                            <div class="sub collapsiblecontent">
+                              <p>In order for this discussion board to function properly we have instated some rules, the rules are as follows:</p>
+                              <p>1. Before creating a new thread or posting a comment in the comment section, a user should make sure that
+                                his specific topic or comment has not been posted on the board already.</p>
+                              <p>2. Be polite and constructive whilst providing comments</p>
+                              <p>3. Please be fittingly elaborate in your comment. Although comments should be concise and succinct, comments such as “I
+                                agree” are not sufficient.</p>
+                              <p>4.	Only post comments related to the topic. </p>
+                              <p>5. Do not dominate the conversation as this blocks knowledge construction.</p>
+                          </div>
+                      
+                            <button type="button" class="tips collapsible">Tips</button>
+                              <div class="sub collapsiblecontent">
+                                <p>In order for this discussion board to function properly and to get the best use out of the functionality we have some tips to give:</p>
+                                <p>1. When writing feedback be sure to be personal, frequent, immediate, balanced, specific and positive in commenting/reacting  </p>
+                                <p>2. When writing a top-level comment of a specific type be sure to label the comment accordingly </p>
+                                <p>3. When writing a question comment be sure to write out the question explicitly at the start of the comment </p>
+                              </div>
+                            </div>
+                   
+                        <div id = "searchbar"> </div>
+                        <!-- the inputbar for the comments is put here with the use of JavaScript -->
+                        <fieldset id = "commentsection">
+                        <!-- the commentsection is put here with the use of JavaScript -->
+                        </fieldset>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
           </div>
           </div>
         <!-- End of modal content -->
-        </div>
-
       </div>
+    </div>
     <!-- End of modal -->
   
   
@@ -264,6 +334,16 @@
     <script src="js/bestpractices/create-instance.js"></script>
     <script src="js/bestpractices/bp-retrieval.js"></script>
     <script src="js/bestpractices/bp-viewing.js"></script>
+   
+    <!-- ////////////////////////////////// -->
+    <script src="js/comment_retrieval.js"></script>
+    <script src="js/comment.js"></script>
+    <script src= "js/eBay.js"></script>
+    <script src="js/liking.js"></script>
+    <script src="js/stars.js"></script>
+    <script src="js/slider.js"></script> 
+    <script src="js/bin-stars.js"></script>
+    <script src="js/createRating.js"></script>
     
   </body>
 </html>
