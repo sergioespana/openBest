@@ -14,7 +14,7 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "FinalDomain": {
+    "experimentdomain": {
         //document
         "domainstate": {
             //fields
