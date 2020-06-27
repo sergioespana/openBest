@@ -63,9 +63,6 @@ function addConceptFunction(c, pc) {
         <label>Group description</label>\
         <input class=\"new-group-description-"+c+" form-control bg-light border-0 small\" type=\"value\" placeholder=\"e.g. Describe an example here\"></input>\
         <br>\
-            <input id=\"required-checkbox\" class=\"bg-light border-0 small\" type=\"checkbox\" name=\"required\" value=\"Required\"></input>\
-            <label for=\"required\">This is a required concept</label>\
-        <br>\
         <div class=\"row\">\
             <div class=\"col-md-6\">\
             <label>Attribute name</label>\
@@ -379,82 +376,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     \}\
     ,"
     
-
-    // // Both are checked
-    // if(commentsCheckbox.checked && ratingsCheckbox.checked){
-    //     let commentsRatingsString = "\
-    //     ,\"comments\": \{\
-    //         \"commentdocument\": \{\
-    //             \"author\": \"string\",\
-    //             \"date\": \"string\",\
-    //             \"email\": \"string\",\
-    //             \"img\": \"string\",\
-    //             \"level\": \"int\",\
-    //             \"parent\": \"string\",\
-    //             \"text\": \"string\"\
-    //         \}\
-    //     \},\
-    //     \"ratings\": \{\
-    //         \"ratingdocument\": \{\
-    //             \"01grouptitle\": \"ratings title\",\
-    //             \"02groupdesc\": \"ratings description\",\
-    //             \"1displayfeature\": false,\
-    //             \"2ratingtype\": [\""+selectedRating+"\"],\
-    //             \"3dimension\": [\"string\"],\
-    //             \"4dimension description\": [\"string\"],\
-    //             \"5scale\": [\""+selectedScale+"\"],\
-    //             \"6stepsize\": [\""+selectedStep+"\"]\
-    //         \}\
-    //     \}\
-    //     \}\
-    //     \},"
-
-    //     JSONmodel += commentsRatingsString;
-    // }
-    // else if(ratingsCheckbox.checked && !(commentsCheckbox.checked)){
-    //     let ratingsString = "\
-    //     ,\"ratings\": \{\
-    //         \"ratingdocument\": \{\
-    //             \"01grouptitle\": \"ratings title\",\
-    //             \"02groupdesc\": \"ratings description\",\
-    //             \"1displayfeature\": false,\
-    //             \"2ratingtype\": [\""+selectedRating+"\"],\
-    //             \"3dimension\": [\"string\"],\
-    //             \"4dimension description\": [\"string\"],\
-    //             \"5scale\": [\""+selectedScale+"\"],\
-    //             \"6stepsize\": [\""+selectedStep+"\"]\
-    //         \}\
-    //     \}\
-    //     \}\
-    //     \},"
-
-    //     JSONmodel += ratingsString;
-    // }
-    // else if(!(ratingsCheckbox.checked) && commentsCheckbox.checked){
-    //     let commentsString = "\
-    //     ,\"comments\": \{\
-    //         \"commentdocument\": \{\
-    //             \"author\": \"string\",\
-    //             \"date\": \"string\",\
-    //             \"email\": \"string\",\
-    //             \"img\": \"string\",\
-    //             \"level\": \"int\",\
-    //             \"parent\": \"string\",\
-    //             \"text\": \"string\"\
-    //         \}\
-    //     \}\
-    //     \}\
-    //     \},"
-
-    //     JSONmodel += commentsString;
-    // }
-    // // If none of the subcollections are checked, we need to close bestpractices
-    // else{
-    //     JSONmodel += "\
-    //     \}\
-    //     \}\
-    //     ,"
-    // }
 
     let usersAuthorsString = "\
     \"users\": \{\
