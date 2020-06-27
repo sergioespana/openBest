@@ -104,7 +104,11 @@ async function checkUser(callback) {
       snapshot.docs.forEach(doc => {
         // The path to the users group of the currently logged in user
         userPath = doc.ref.parent.path;
-        dName = userPath.split("/");
+
+        // Checking if one of the results matches the currently defined domain name in jsontest
+        if(Object.entries(jsontest)[0][0] == userPath.split("/")[0]){
+          dName = userPath.split("/");
+        }
       });
     })
 
