@@ -14,27 +14,28 @@ var fieldsArr = [];
 
 var jsontest = {
     //collection
-    "experimentdomain": {
+    "validationdomain": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Experiment Domain",
-            "administrator": "s.w.vanderpijl@students.uu.nl",
+            "name": "Validation Domain",
+            "administrator": "plomp1996@gmail.com",
             //collection
             "bestpractices": {
                 //document
                 "bpdocument": {
                     //fields
                     "01grouptitle": "Best practice",
-                    "02groupdesc": "Enter basic best practice information here.",
+                    "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "2title": "string",
                     "3description": "text",
                     "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
                                 {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
                     "problems": [{"name" : "Solves", "self": "document reference", "related": "document reference"}],
+                    "lessonslearned": [{"name" : "Learn from", "self": "document reference", "related": "document reference"}],
                     "5solution": "text",
                     "6categories":
                         ["string"],
@@ -56,7 +57,7 @@ var jsontest = {
                     "ratings":{
                         "ratingdocument": {
                             "01grouptitle": "Ratings",
-                            "02groupdesc": "Enter rating information here.",
+                            "02groupdesc": "Describe the dimension (category) on which this best practice can be rated.",
                             "1displayfeature": true,
                             //These categories can be changed by user creating the model
                             "2ratingtype": ["stars"],
@@ -115,6 +116,16 @@ var jsontest = {
                     "2name": "string",
                     "3description": "text",
                     "bestpractices": [{"name" : "Solved by", "self": "document reference", "related": "document reference"}]
+                }
+            },
+            "lessonslearned": {
+                "lessonsdocument": {
+                    "01grouptitle": "Lessons Learned",
+                    "02groupdesc": "What have we learned from previous attempts?",
+                    "1displayfeature": true,
+                    "2name": "string",
+                    "3description": "text",
+                    "problems": [{"name" : "Test", "self": "document reference", "related": "document reference"}]
                 }
             }
         }

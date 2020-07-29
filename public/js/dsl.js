@@ -239,7 +239,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     \{\""+domainName.replace(' ', '')+"\": \{\
         \"domainstate\": \{\
             \"displayfeature\": false\,\
-            \"model\": \"string\",\
             \"name\": \""+domainName+"\",\
             \"administrator\": \""+userEmail+"\",\
             \"bestpractices\": \{\
@@ -307,17 +306,17 @@ document.getElementById("dsl-create").addEventListener("click", async function()
 
     if(ratingsCheckbox.checked){
 
-        // Adding a comma if previous recommended concepts have been added
-        if(commentsCheckbox.checked){
-            JSONmodel += ",";
-        }
+        // // Adding a comma if previous recommended concepts have been added
+        // if(commentsCheckbox.checked){
+        //     JSONmodel += ",";
+        // }
 
         let ratingsString = "\
-        \"ratings\": \{\
+        ,\"ratings\": \{\
             \"ratingdocument\": \{\
-                \"01grouptitle\": \"ratings title\",\
-                \"02groupdesc\": \"ratings description\",\
-                \"1displayfeature\": false,\
+                \"01grouptitle\": \"Ratings\",\
+                \"02groupdesc\": \"Enter rating information here.\",\
+                \"1displayfeature\": true,\
                 \"2ratingtype\": [\""+selectedRating+"\"],\
                 \"3dimension\": [\"string\"],\
                 \"4dimension description\": [\"string\"],\
@@ -331,13 +330,13 @@ document.getElementById("dsl-create").addEventListener("click", async function()
 
     if(exampleCheckbox.checked){
 
-        // Adding a comma if previous recommended concepts have been added
-        if(ratingsCheckbox.checked || commentsCheckbox.checked){
-            JSONmodel += ",";
-        }
+        // // Adding a comma if previous recommended concepts have been added
+        // if(ratingsCheckbox.checked || commentsCheckbox.checked){
+        //     JSONmodel += ",";
+        // }
 
         let exampleString = "\
-        \"examples\": \{\
+        ,\"examples\": \{\
             \"exampledocument\": \{\
                 \"01grouptitle\": \"Example\",\
                 \"02groupdesc\": \"Describe an example here.\",\
@@ -352,13 +351,13 @@ document.getElementById("dsl-create").addEventListener("click", async function()
 
     if(effortCheckbox.checked){
 
-        // Adding a comma if previous recommended concepts have been added
-        if(ratingsCheckbox.checked || commentsCheckbox.checked || exampleCheckbox.checked){
-            JSONmodel += ",";
-        }
+        // // Adding a comma if previous recommended concepts have been added
+        // if(ratingsCheckbox.checked || commentsCheckbox.checked || exampleCheckbox.checked){
+        //     JSONmodel += ",";
+        // }
 
         let effortString = "\
-        \"efforts\": \{\
+        ,\"efforts\": \{\
             \"effortdocument\": \{\
                 \"01grouptitle\": \"Efforts\",\
                 \"02groupdesc\": \"Define the effort required for this best practice here.\",\
@@ -389,8 +388,6 @@ document.getElementById("dsl-create").addEventListener("click", async function()
     \"authors\": \{\
         \"authordocument\": \{\
             \"1displayfeature\": false,\
-            \"2contactinfo\": \"string\",\
-            \"3internal\": \"boolean\",\
             \"4name\": \"string\"\
         }\
     \},"
