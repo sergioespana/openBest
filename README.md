@@ -1,5 +1,7 @@
-# openBP
-OpenBP repository for the Sustainability and Business Ethics Improvement Cycle at Utrecht University
+# openBest
+A model-driven repository of best practices. It can be configured to store best practices for different domains; e.g. organisational sustainability improvement, refugee integration initiatives, information security, research.
+
+This project is steered by University of Utrecht. We welcome collaboration with organisations and individuals.
 
 ## Prerequisites
 
