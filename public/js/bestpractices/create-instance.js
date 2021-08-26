@@ -1,3 +1,4 @@
+  
 // ########################
 // Parses the JSON model uploaded by the user and instantiates the repository
 // ########################
@@ -11,17 +12,19 @@ var fieldsArr = [];
 
 
 // ############################################
+// The functions from this class would ideally be used in dsl.js. However, this also requires making sure that every page has access to the jsonmodel, instead of the static jsontest defined here.
 
+// This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest = {
     //collection
-    "validationdomain": {
+    "validationdomain7": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Validation Domain",
-            "administrator": "plomp1996@gmail.com",
+            "name": "Validation Domain7",
+            "administrator": "admin mail here",
             //collection
             "bestpractices": {
                 //document
@@ -34,12 +37,14 @@ var jsontest = {
                     "3description": "text",
                     "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
                                 {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
-                    "problems": [{"name" : "Solves", "self": "document reference", "related": "document reference"}],
-                    "lessonslearned": [{"name" : "Learn from", "self": "document reference", "related": "document reference"}],
                     "5solution": "text",
+                    "filtersolution": "string",
                     "6categories":
                         ["string"],
+                    "filtercategories" : "string",
                     "7date": "string",
+                    "timeframe": "string",
+                    "effort": "string",
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -53,20 +58,6 @@ var jsontest = {
                             "text": "string"
                         }
                     },
-                    //collection
-                    "ratings":{
-                        "ratingdocument": {
-                            "01grouptitle": "Ratings",
-                            "02groupdesc": "Describe the dimension (category) on which this best practice can be rated.",
-                            "1displayfeature": true,
-                            //These categories can be changed by user creating the model
-                            "2ratingtype": ["stars"],
-                            "3dimension": ["string"],
-                            "4dimension description": ["string"],
-                            "5scale": [5],
-                            "6stepsize": [1]
-                        }
-                    },
                     "example": {
                         "exampledocument": {
                             "01grouptitle": "Example",
@@ -76,15 +67,6 @@ var jsontest = {
                             "3description": "text"
                         }
                     },
-                    "effort": {
-                        "effortdocument": {
-                            "01grouptitle": "Effort",
-                            "02groupdesc": "Define the effort required for this best practice here.",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3scale": "string"
-                        }
-                    }
                 }
             },
             //collection
@@ -106,27 +88,6 @@ var jsontest = {
                     "3internal": "boolean",
                     "4name": "string"
                 }
-            },
-            //collection
-            "problems": {
-                "problemdocument": {
-                    "01grouptitle": "Problem",
-                    "02groupdesc": "What problem does this best practice solve?",
-                    "1displayfeature": true,
-                    "2name": "string",
-                    "3description": "text",
-                    "bestpractices": [{"name" : "Solved by", "self": "document reference", "related": "document reference"}]
-                }
-            },
-            "lessonslearned": {
-                "lessonsdocument": {
-                    "01grouptitle": "Lessons Learned",
-                    "02groupdesc": "What have we learned from previous attempts?",
-                    "1displayfeature": true,
-                    "2name": "string",
-                    "3description": "text",
-                    "problems": [{"name" : "Test", "self": "document reference", "related": "document reference"}]
-                }
             }
         }
     }
@@ -141,16 +102,19 @@ if(document.getElementById("create-instance-btn")){
         collectionPaths = [];
         documentPaths = [];
 
+        jsontest = JSONmodel;
+        console.log(jsontest);
+
         extractJSON(jsontest, 0, '');
         extractFields();
     })
 };
 
-
 // Instantiates the collectionPaths and documentPaths arrays
 function extractJSON(obj, int, prev) {
     // looping over the elements in the json file
     for (const i in obj) {
+        console.log("hi");
         // checking if the element is an array or object
         if(Array.isArray(obj[i]) || !(typeof obj[i] === 'object')){
             // keys in the document
@@ -270,3 +234,6 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
     await delay();
     callback();
 }
+
+
+

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBP</title>
+    <title>OpenBest</title>
 
     <!-- loading Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -11,6 +11,8 @@
     <!-- regular stylesheet -->
     <link type="text/css" rel="stylesheet" href="css/styling.css" />
     <link type="text/css" rel="stylesheet" href="css/slidingbar.css"/>
+    <!-- Modal style -->
+    <link href="css/filtermodal.css" rel="stylesheet">
 
 
       <!-- comment section -->
@@ -76,7 +78,7 @@
           <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-leaf"></i>
           </div>
-          <div class="sidebar-brand-text mx-3">OpenBP</div>
+          <div class="sidebar-brand-text mx-3">OpenBest</div>
         </a>
   
         <!-- Divider -->
@@ -170,6 +172,7 @@
                     <select class="custom-select" id="category-select">
                       <option value=""></option>
                     </select>
+                    <button id="FilterBtn" class ="button">Filters</button>
                   </div>
                 </div>
                 <div class="table-responsive">
@@ -310,7 +313,72 @@
         <!-- End of modal content -->
       </div>
     </div>
+    </div>
     <!-- End of modal -->
+
+
+    
+                          <!-- The Modal -->
+                            <div id="FilterModal" class="modal2">
+
+                              <!-- Modal content -->
+                              <div class="modal-content2">
+                                <span class="closefilter"><i class="fas fa-times"></i></span>
+                                <div class="col-sm-10 col-lg-6 col-centered">
+                                  <div id="bp-modal" class="bp-modal-body">
+                                    <h1 id="bp-title">Filters</h1>
+
+                                  
+                                      
+                                      <div id="emptydiv" style="display: inline"></div>
+                                      <div class="col-sm-10" style="display: inline" id="bp-categories"></div>
+                                    </div>
+                                    <div class="row general-info authors-info" id="bp-authors"></div>
+                                    <div id="bp-desc-card" class="card card-margin border-left-success shadow">
+                                      <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                          <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Selected Categories: </div>
+                                            <div style="padding-right: 12px" class=".checkboxes" id="some_div"><!--Description goes here--></div>
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Other attributes: </div>
+                                            <div id="filterbtns" class =".checkboxes" </div>
+                                          </div>
+                                          </div>
+              
+              
+
+              <div id="bp-other-sections">
+              </div>
+
+              <div id="bp-core-content">
+              </div>
+
+ 
+                    
+          </div>
+          </div>
+        <!-- End of modal content -->
+      </div>
+    </div>
+    <!-- End of modal -->
+  
+    <!-- The Modal 2 -->
+    <div id="optionmodal" class="modal2">
+
+      <!-- Modal content 2 -->
+      <div class="modal-content2">
+        <button onclick="minimize()" class="button">Close</button>
+        <div class="col-sm-10 col-lg-6 col-centered">
+          <div id="bp-modal" class="bp-modal-body">
+            <h1 id="bp-title"></h1>
+            <div id="selectionsection"</div>
+              
+
+
+        </div>
+        <!-- End of Main Content -->
+        <button onclick="apply()" class="button">Apply</button>
+      </div>
   
   
     <!-- Popper (for tooltips) -->
@@ -335,6 +403,7 @@
     <script src="js/app.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/bestpractices/create-instance.js"></script>
+    <script src="js/bestpractices/dsl.js"></script>
     <script src="js/bestpractices/bp-retrieval.js"></script>
     <script src="js/bestpractices/bp-viewing.js"></script>
    

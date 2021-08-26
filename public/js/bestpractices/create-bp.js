@@ -29,6 +29,8 @@ var complexDocRefs = [];
 // The type of rating used for this best practice
 var ratingType;
 
+var datatype2 = [];
+
 
 // ############################################
 
@@ -89,6 +91,10 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
 
                     //Iterating over the key-value pairs of the documents in which features should be displayed
                     for (let [key, value] of docdata) {
+                        if (key.includes("filter")) {
+                            console.log("Skipped + " + key);
+                        }
+                        else {
 
                         // Before features are instantiated, we need to be able to populate docref dropdowns
                         if(typeof(value[0]) == "object"){
@@ -102,13 +108,14 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
                             // Getting the docrefArray based on the path to the referenced subcollection
                             // Await the result of the async getDocRef function; otherwise there might be no data in docrefPath
                             docrefArray = await getDocRef(docrefPath);
-                        }
+                        } 
 
                         
                         // Calling instantiateFeatures with the docrefArray that corresponds to the current key
                         instantiateFeatures(key, value, coll, doc, docrefArray);
 
                     }
+                }
                 })
             })
             .catch(function(error) {
@@ -158,6 +165,25 @@ async function getDocRef(drp){
     return docrefArray;
 }
 
+// This function will return a unique array of every element that is already present in the DB for a given key.
+async function getExisting(key){
+
+    var existingArr = [];
+
+    let collection = db.collection(`${findPath(collectionPaths, 'bestpractices')}`);
+    let snapshot = await collection.get();
+  
+    snapshot.docs.forEach(doc => {    
+        existingArr.push(doc.data()[key]);     
+    });
+
+    return existingArr.filter(unique);
+}
+
+const unique = (value, index, self) => {
+    return self.indexOf(value) === index;
+  };
+
 
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray){
@@ -186,6 +212,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
         let textarea = document.createElement('textarea');
         let addOther = document.createElement('div');
         let addEx = document.createElement('div');
+        
 
         // Setting the title and description of the group of form elements
         if(key == '01grouptitle'){
@@ -197,7 +224,40 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
             let groupdesc = document.createElement('p');
             groupdesc.textContent = value;
             conceptDiv.appendChild(groupdesc);
-        }
+        } 
+
+        // This code can be used to create checkboxes with options gained from predefined / already existing values
+        else if (false) {
+            let keyText = key.replace(/[0-9]/g, '');
+            label.textContent = keyText.charAt(0).toUpperCase() + keyText.substring(1);
+            conceptDiv.append(label);
+            var divvie = document.createElement('div');
+            conceptDiv.append(divvie);
+            
+           datatype2 = await getExisting(key);
+
+            datatype2.forEach(attribute => { 
+                if(!(attribute == "string" || attribute == "" || attribute == undefined)) {
+                let optionButton = document.createElement("input");
+                optionButton.type = "checkbox";    
+                optionButton.name = "slct[]";      
+                optionButton.value = attribute;         
+                optionButton.style.padding = "20px";
+                optionButton.style.left =  "20px";
+                optionButton.style.bottom=  "20px";
+                optionButton.style.width = "20px";
+                optionButton.style.height = "20px";
+                optionButton.style.border = "solid white";
+                optionButton.style.borderWidth = "20px";
+
+                optionButton.value = attribute;
+                divvie.append(optionButton);
+                var description = document.createTextNode("  " + attribute + "  ");
+                divvie.append(description);
+                }
+        });
+        conceptDiv.append(document.createElement('div'));
+    }
         // Every other key-value pair
         else{
             // Removing numbers from the key + capitalize first letter
@@ -241,8 +301,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
             textarea.setAttribute('docname', doc.id);
             textarea.setAttribute('key', key);
 
-            // Assigning attribute types to the input fields
-            if(Array.isArray(value)){
+            if(Array.isArray(value)){ // Assigning attribute types to the input fields
                 if(typeof(value[0]) == "object"){
                     input.setAttribute('type', 'docref');
                 }
@@ -270,6 +329,33 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
                     addOther.style.marginBottom = '15px';
                     conceptDiv.appendChild(addOther);
                 }
+            
+               
+            // This code can be used to create a dropdown area using existing values / predefined from the database.
+            else if (false) {
+                conceptDiv.append(label);
+                let select = document.createElement('select');
+                select.setAttribute('class', 'form-control bg-light border-0 small');
+
+                var divvie = document.createElement('div');
+                conceptDiv.append(divvie);
+
+                var solutionArr = await getExisting(key);
+                solutionArr.filter(unique);
+
+                solutionArr.forEach(attribute => {
+                if(!(attribute == "text" || attribute == undefined)) {
+                let option = document.createElement('option');
+                option.setAttribute('value', attribute);
+                option.textContent = attribute;
+                select.add(option);
+                    }
+                })
+
+                divvie.appendChild(select);
+                
+                
+            }
                 // Larger text fields
                 else if(value == 'text'){
                     conceptDiv.appendChild(label);
@@ -520,7 +606,6 @@ $("#bp-entry-form").on('click', '.addOther', function(event){
 
 
 $("#bp-entry-form").on('click', '.addEx', async function(event){
-
     // The path to the subcollection to which the added dropdown points
     let docrefPath = findPath(collectionPaths, this.getAttribute('key').replace(/[0-9]/g, ''));
     // Getting the docrefArray
@@ -758,10 +843,33 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                         var entryKey = filledBPform.elements[i].getAttribute('key');
                         var entryType = filledBPform.elements[i].getAttribute('type');
 
-                        // Regular fields
-                        if(entryType === 'field'){
+                        console.log(entryKey);
+                        console.log(entryType);
+
+                        if(entryType == 'checkbox'){
+                            var inputs = document.querySelectorAll('slct[]');   
+                            for (var i = 0; i < inputs.length; i++) {   
+                            inputs[i].checked = true;
+                            console.log(inputs[i]);   
+                            }
                             JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
                         }
+
+                        // Regular fields
+                        if(entryType === 'field'){
+                            if(entryKey == '7date'){                      // automatically set the date, rather than taking user input
+                                let currentDate = new Date();
+                                let cDay = currentDate.getDate();
+                                let cMonth = currentDate.getMonth() + 1;
+                                let cYear = currentDate.getFullYear();
+                                if (cMonth < 10) cMonth = "0" + cMonth;
+                                if (cDay < 10) cDay = "0" + cDay;
+                                var today = cYear + "-" + cMonth + "-" + cDay;
+                                JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${today}`+'\"');
+                             } else{
+                                  JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
+                                }
+                            }
                         // Selected fields in selectbox OR regular fields for document references
                         else if(entryType == 'select' || filledBPform.elements[i].getAttribute('docref-docname')){
                             if(entryType == 'select'){
@@ -1062,7 +1170,6 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
             db.doc(colpath+'/ratingdocument').set({ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize});
         }
     }
-
 
     // Closing the modal
     modal.style.display = "none";

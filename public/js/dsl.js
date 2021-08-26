@@ -106,6 +106,12 @@ function addConceptFunction(c, pc) {
             </span>\
             <span class=\"text\">Add sub-concept</span>\
         </a>\
+        <a style=\"margin-top: 20px\" id=\"add-filter\" onclick=\"addFilter()\" class=\"btn btn-light btn-icon-split\" btn-counter=\""+c+"\" parent-counter=\""+pc+"\">\
+            <span class=\"text\">\
+            <i class=\"fas fa-plus\"></i>\
+            </span>\
+            <span class=\"text\">Select filter</span>\
+        </a>\
     </div>\
     " 
 }
@@ -152,6 +158,8 @@ $(".new-concept").on('click', 'a', function(event){
                 <select counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\"\>\
                     <option>String</option\>\
                     <option>Text</option\>\
+                    <option>Integer</option\>\
+                    <option>Exclusion</option\>\
                 </select\>\
                 <input counter=\""+btncounter+"\" id=\"array-checkbox\" class=\"attr-name bg-light border-0 small\" type=\"checkbox\" name=\"array\" value=\"Array\"></input\>\
                 <label for=\"array\">Multiple</label\>\
@@ -211,6 +219,64 @@ $(".new-concept").on('click', 'a', function(event){
         $(addConceptHTML).insertBefore($(this));
     }
 })
+
+// Need to properly convert the result to json and place the option correctly, rather than placing it behind the same div.
+function addFilter() { 
+    let btncounter = 1;  
+    let filterHTML = "\
+    <div style=\"margin-top: 20px\" class=\"row refAdd\"\>\
+        <div class=\"col-md-6\"\>\
+            <input counter=\""+btncounter+"\" rel-element=\"attribute\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"Filter title\"></input\>\
+        </div\>\
+        <div class=\"col-md-5\"\>\
+                <select counter=\""+btncounter+"\" class=\"form-control bg-light border-0 small\"\>\
+                    <option>Dropdown</option\>\
+                    <option>Checkboxes</option\>\
+                    <option>Single value slider</option\>\
+                    <option>Range Slider</option\>\
+                </select\>\
+        </div\>\
+        <div class=\"col-md-1\"\>\
+            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                <span class=\"icon text-gray-600\"\>\
+                    <i class=\"fas fa-times\"></i\>\
+                </span\>\
+            </a\>\
+        </div\>\
+    </div>"
+
+    $(filterHTML).insertBefore($(document.getElementById("add-filter")));
+  }
+
+// Selecting a filter, need to properly convert the result to json and place the option correctly, rather than placing it behind the same div.
+$(".add-filter").on('click', 'a', function(event){
+    console.log("this");
+
+    if($(this).attr('id') == 'add-filter'){
+    let btncounter = $(this).attr('btn-counter');
+
+    // When a sub-concept is added, the parentcounter attribute should be filled in
+    let filterHTML = "\
+    <div style=\"margin-top: 20px\" class=\"row refAdd\"\>\
+        <div class=\"col-md-6\"\>\
+            <input counter=\""+btncounter+"\" rel-element=\"attribute\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"Points to subcollection\"></input\>\
+        </div\>\
+        <div class=\"col-md-5\"\>\
+            <input counter=\""+btncounter+"\" rel-element=\"name\" class=\"form-control bg-light border-0 small\" type=\"value\" placeholder=\"Name of relationship\"></input>\
+        </div\>\
+        <div class=\"col-md-1\"\>\
+            <a class=\"attrDelete btn btn-light btn-icon-split\"\>\
+                <span class=\"icon text-gray-600\"\>\
+                    <i class=\"fas fa-times\"></i\>\
+                </span\>\
+            </a\>\
+        </div\>\
+    </div>"
+
+    $(filterHTML).insertBefore($(this));
+    }
+})
+
 
 
 // Removing an input row for an attribute
@@ -429,7 +495,9 @@ document.getElementById("dsl-create").addEventListener("click", async function()
         \}\
         "
     
+        JSONmodel = JSON.parse(JSONmodel);
         console.log(JSONmodel);
+        
     }
     else{
         // Calling the function on the first element
@@ -471,6 +539,7 @@ function addNonNested(fc, cc, c, ca){
             console.log("all elements have been checked, three brackets are added and model is logged")
 
             JSONmodel += "}}}";
+            JSONmodel = JSON.parse(JSONmodel);
             console.log(JSONmodel)
         }
         // If not, call addConcepts with the first element of the notChecked array
@@ -754,7 +823,6 @@ function addConcepts(c, subConceptCount, finalcounter, previousCount, checked, c
 $(".new-concept").on('click', '.deleteConcept', function(event){
     $(this).parent().parent().parent()[0].remove();
 });
-
 
 // Closing the modal
 dslspan.onclick = function() {
