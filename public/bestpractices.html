@@ -1,222 +1,225 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBest</title>
 
-    <!-- loading Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>OpenBest</title>
 
-    <!-- regular stylesheet -->
-    <link type="text/css" rel="stylesheet" href="css/styling.css" />
-    <link type="text/css" rel="stylesheet" href="css/slidingbar.css"/>
-    <!-- Modal style -->
-    <link href="css/filtermodal.css" rel="stylesheet">
+  <!-- loading Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+  <!-- regular stylesheet -->
+  <link type="text/css" rel="stylesheet" href="css/styling.css" />
+  <link type="text/css" rel="stylesheet" href="css/slidingbar.css" />
+  <!-- Modal style -->
+  <link href="css/filtermodal.css" rel="stylesheet">
 
-      <!-- comment section -->
-      <link href="css/comment-section.css" rel="stylesheet">
+  <!-- comment section -->
+  <link href="css/comment-section.css" rel="stylesheet">
 
-      <!-- Ebay -->
-      <link href="css/eBay.css" rel="stylesheet">
+  <!-- Ebay -->
+  <link href="css/eBay.css" rel="stylesheet">
 
-      <!-- Dislikelike -->
-      <link href="css/liking.css" rel="stylesheet">
+  <!-- Dislikelike -->
+  <link href="css/liking.css" rel="stylesheet">
 
-      <!-- stars -->
-      <link href="css/stars.css" rel="stylesheet">
+  <!-- stars -->
+  <link href="css/stars.css" rel="stylesheet">
 
-      <!-- binstars -->
-      <link href="css/bin-stars.css" rel="stylesheet">
+  <!-- binstars -->
+  <link href="css/bin-stars.css" rel="stylesheet">
 
+  <!-- template stylesheet -->
+  <link href="css/template.css" rel="stylesheet">
 
-    <!-- template stylesheet -->
-    <link href="css/template.css" rel="stylesheet">
+  <!-- Datatables -->
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sp-1.0.1/sl-1.3.1/datatables.min.css" />
 
-    <!-- Datatables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sp-1.0.1/sl-1.3.1/datatables.min.css"/>
+  <!-- font awesome for icons -->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-    <!-- font awesome for icons -->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <!-- custom fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Vollkorn&display=swap" rel="stylesheet">
 
-    <!-- custom fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Vollkorn&display=swap" rel="stylesheet">
+  <!-- update the version number as needed -->
+  <script src="/__/firebase/7.8.1/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script src="/__/firebase/7.8.1/firebase-auth.js"></script>
+  <script src="/__/firebase/7.8.1/firebase-database.js"></script>
+  <script src="/__/firebase/7.8.1/firebase-storage.js"></script>
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script src="/__/firebase/init.js"></script>
+  <!--  firsestore is not included in regular firebase scripts -->
+  <script src="/__/firebase/7.9.1/firebase-firestore.js"></script>
 
-    <!-- update the version number as needed -->
-    <script src="/__/firebase/7.8.1/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script src="/__/firebase/7.8.1/firebase-auth.js"></script>
-    <script src="/__/firebase/7.8.1/firebase-database.js"></script>
-    <script src="/__/firebase/7.8.1/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
-    <script src="/__/firebase/init.js"></script>
-    <!--  firsestore is not included in regular firebase scripts -->
-    <script src="/__/firebase/7.9.1/firebase-firestore.js"></script>
+  <!-- Required for Firebase callable functions -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-functions.js"></script>
 
-    <!-- Required for Firebase callable functions -->
-    <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-functions.js"></script>
+  <!--<script data-main="js/app" src="js/require.js"></script>-->
 
-    <!--<script data-main="js/app" src="js/require.js"></script>-->
+</head>
 
-  </head>
-  <body id="page-top">
+<body id="page-top">
 
-    <!-- Load screen -->
-    <div class="vertical bg-gradient-primary" id="loadscreen">
-      <div class="loader"></div>
-    </div>
+  <!-- Load screen -->
+  <div class="vertical bg-gradient-primary" id="loadscreen">
+    <div class="loader"></div>
+  </div>
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-  
-      <!-- Sidebar -->
-      <ul class="navbar-nav sidebar sidebar-dark" id="sideMenu">
-  
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-          <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-leaf"></i>
-          </div>
-          <div class="sidebar-brand-text mx-3">OpenBest</div>
-        </a>
-  
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-  
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-        </li>
+  <!-- Page Wrapper -->
+  <div id="wrapper">
 
-        <!-- Nav Item - Practices -->
-        <li id="menu-bp-item" class="nav-item active">
-          <a class="nav-link" href="bestpractices.html">
-            <i class="far fa-lightbulb"></i>
-            <span>Practices</span></a>
-        </li>
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-dark" id="sideMenu">
 
-        <!-- Nav Item - ToC -->
-        <li id="menu-toc-item" class="nav-item">
-          <a class="nav-link" href="toc.html">
-            <i class="fas fa-ruler-combined"></i>
-            <span>ToC</span></a>
-        </li>
-  
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-leaf"></i>
         </div>
-  
-      </ul>
-      <!-- End of Sidebar -->
-  
-      <!-- Content Wrapper -->
-      <div id="content-wrapper" class="d-flex flex-column">
-  
-        <!-- Main Content -->
-        <div id="content">
-  
-          <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-  
-            <!-- Sidebar Toggle (Topbar) -->
-            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-              <i class="fa fa-bars"></i>
-            </button>
-            
-            <div id="domain-name" class="sidebar-brand-text"></div>
-  
-            <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
-  
-              <!-- Nav Item - User Information -->
-              <li id="userinfo" class="nav-item dropdown no-arrow">
-                <a onclick="toggleMenu()" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span id="username" class="mr-2 d-none d-lg-inline text-gray-600 small">Gebruiker</span>
-                  <img id="profilepicture" class="img-profile rounded-circle" src="">
-                </a>
-              </li>
+        <div class="sidebar-brand-text mx-3">OpenBest</div>
+      </a>
 
-              <!-- Dropdown - User Information -->
-              <div id="dropdown-content" class="dropdown-menu dropdown-menu-right shadow" style="display:none">
-                <a class="dropdown-item" onclick="logOut()">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
-                </a>
-              </div>
-  
-            </ul>
-  
-          </nav>
-          <!-- End of Topbar -->
-  
-          <!-- Begin Page Content -->
-          <div class="container-fluid">
-  
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <h1>Best Practices</h1>
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Nav Item - Practices -->
+      <li id="menu-bp-item" class="nav-item active">
+        <a class="nav-link" href="bestpractices.html">
+          <i class="far fa-lightbulb"></i>
+          <span>Practices</span></a>
+      </li>
+
+      <!-- Nav Item - ToC -->
+      <li id="menu-toc-item" class="nav-item">
+        <a class="nav-link" href="toc.html">
+          <i class="fas fa-ruler-combined"></i>
+          <span>ToC</span></a>
+      </li>
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <div id="domain-name" class="sidebar-brand-text"></div>
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+            <!-- Nav Item - User Information -->
+            <li id="userinfo" class="nav-item dropdown no-arrow">
+              <a onclick="toggleMenu()" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span id="username" class="mr-2 d-none d-lg-inline text-gray-600 small">Gebruiker</span>
+                <img id="profilepicture" class="img-profile rounded-circle" src="">
+              </a>
+            </li>
+
+            <!-- Dropdown - User Information -->
+            <div id="dropdown-content" class="dropdown-menu dropdown-menu-right shadow" style="display:none">
+              <a class="dropdown-item" onclick="logOut()">
+                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                Logout
+              </a>
+            </div>
+          </ul>
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1>Best Practices</h1>
+          </div>
+
+          <!-- Begin BP table -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-success">Browse best practices</h6>
             </div>
 
-            <!-- Begin BP table -->
-            <div class="card shadow mb-4">
-              <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-success">Browse best practices</h6>
+            <div class="card-body">
+              <!--Internal button bar  -->
+              <div class="row select-row">
+                <table width="100%">
+                  <tr>
+                    <td width="40%"><select style="padding-right: 15px;" class="custom-select" id="category-select">
+                        <option value=""></option>
+                      </select></td>
+                    <td width="40%"><button style="margin-bottom: 15px;" id="FilterBtn" class="button">Filters</button>
+                    </td>
+                  </tr>
+                </table>
               </div>
-              <div class="card-body">
-                <div class="row select-row">
-                  <div class="col-sm-12 col-md-6">
-                    <select class="custom-select" id="category-select">
-                      <option value=""></option>
-                    </select>
-                    <button id="FilterBtn" class ="button">Filters</button>
-                  </div>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
+              <!--Internal button bar  -->
+
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <!--Here should be the table rows...-->
+
+                  <tfoot>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Date</th>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
             </div>
-
-
+          </div>
         </div>
         <!-- End of Main Content -->
-  
       </div>
       <!-- End of Content Wrapper -->
-  
     </div>
     <!-- End of Page Wrapper -->
 
     <!-- The Modal -->
     <div style="display:none" id="wrapper" class="bp-view-modal container-fluid">
       <div class="row">
-
         <!-- Modal content -->
         <div class="bp-modal-content">
           <span class="close"><i class="fas fa-times"></i></span>
           <div class="col-sm-10 col-lg-6 col-centered">
             <div id="bp-modal" class="bp-modal-body">
               <h1 id="bp-title">Best practice</h1>
-
               <div class="row general-info">
                 <div class="col-sm-2">
                   <p style="display: inline">Categories: </p>
@@ -225,19 +228,26 @@
               </div>
 
               <div class="row general-info authors-info" id="bp-authors"></div>
+
               <div class="row general-info">
                 <div class="col-sm-2">
                   <p style="display: inline">Date: </p>
                 </div>
                 <div class="col-sm-10" style="display: inline" id="bp-date"></div>
               </div>
-              
+              <!-- BP image -->
+              <div class="row general-info">
+                <div class="col-sm-10" style="display: inline" id="bp-image"></div>
+              </div>
+
               <div id="bp-desc-card" class="card card-margin border-left-success shadow">
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Description</div>
-                      <div style="padding-right: 12px" class="p" id="bp-description"><!--Description goes here--></div>
+                      <div style="padding-right: 12px" class="p" id="bp-description">
+                        <!--Description goes here-->
+                      </div>
                     </div>
                     <div class="col-auto">
                       <i class="far fa-file-alt fa-2x text-gray-300"></i>
@@ -252,170 +262,164 @@
               <div id="bp-core-content">
               </div>
 
-             
-
               <div class="card border-left-success shadow">
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="buttonbar">
-                        <button class= "btn btn-light" style="margin-right: 10px;" onclick="makeinvisible('rating','comment')" selected>Comments</button>
-                        <button class= "btn btn-light" onclick="makeinvisible('comment','rating')">Ratings</button>
+                        <button class="btn btn-light" style="margin-right: 10px;"
+                          onclick="makeinvisible('rating','comment')" selected>Comments</button>
+                        <button class="btn btn-light" onclick="makeinvisible('comment','rating')">Ratings</button>
                       </div>
-                     
-                      <div id = "rating" style="display: none;">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
+
+                      <div id="rating" style="display: none;">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                           <p>Rating section</p>
                         </div>
-                        <div id = "ratingsection"></div>
+                        <div id="ratingsection"></div>
                       </div>
-                      
-                      <div id = "comment">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
+
+                      <div id="comment">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                           <p>Comment section</p>
                         </div>
 
                         <button type="button" class="top collapsible">Rules and tips</button>
-                          <div class="collapsiblecontent">
-                            <button type="button" class="rules collapsible">Rules</button>
-                            <div class="sub collapsiblecontent">
-                              <p>In order for this discussion board to function properly we have instated some rules, the rules are as follows:</p>
-                              <p>1. Before creating a new thread or posting a comment in the comment section, a user should make sure that
-                                his specific topic or comment has not been posted on the board already.</p>
-                              <p>2. Be polite and constructive whilst providing comments</p>
-                              <p>3. Please be fittingly elaborate in your comment. Although comments should be concise and succinct, comments such as “I
-                                agree” are not sufficient.</p>
-                              <p>4.	Only post comments related to the topic. </p>
-                              <p>5. Do not dominate the conversation as this blocks knowledge construction.</p>
+                        <div class="collapsiblecontent">
+                          <button type="button" class="rules collapsible">Rules</button>
+                          <div class="sub collapsiblecontent">
+                            <p>In order for this discussion board to function properly we have instated some rules, the
+                              rules are as follows:</p>
+                            <p>1. Before creating a new thread or posting a comment in the comment section, a user
+                              should make sure that
+                              his specific topic or comment has not been posted on the board already.</p>
+                            <p>2. Be polite and constructive whilst providing comments</p>
+                            <p>3. Please be fittingly elaborate in your comment. Although comments should be concise and
+                              succinct, comments such as “I
+                              agree” are not sufficient.</p>
+                            <p>4. Only post comments related to the topic. </p>
+                            <p>5. Do not dominate the conversation as this blocks knowledge construction.</p>
                           </div>
-                      
-                            <button type="button" class="tips collapsible">Tips</button>
-                              <div class="sub collapsiblecontent">
-                                <p>In order for this discussion board to function properly and to get the best use out of the functionality we have some tips to give:</p>
-                                <p>1. When writing feedback be sure to be personal, frequent, immediate, balanced, specific and positive in commenting/reacting  </p>
-                                <p>2. When writing a top-level comment of a specific type be sure to label the comment accordingly </p>
-                                <p>3. When writing a question comment be sure to write out the question explicitly at the start of the comment </p>
-                              </div>
-                            </div>
-                   
-                        <div id = "searchbar"> </div>
+
+                          <button type="button" class="tips collapsible">Tips</button>
+                          <div class="sub collapsiblecontent">
+                            <p>In order for this discussion board to function properly and to get the best use out of
+                              the functionality we have some tips to give:</p>
+                            <p>1. When writing feedback be sure to be personal, frequent, immediate, balanced, specific
+                              and positive in commenting/reacting </p>
+                            <p>2. When writing a top-level comment of a specific type be sure to label the comment
+                              accordingly </p>
+                            <p>3. When writing a question comment be sure to write out the question explicitly at the
+                              start of the comment </p>
+                          </div>
+                        </div>
+
+                        <div id="searchbar"> </div>
                         <!-- the inputbar for the comments is put here with the use of JavaScript -->
-                        <fieldset id = "commentsection">
-                        <!-- the commentsection is put here with the use of JavaScript -->
+                        <fieldset id="commentsection">
+                          <!-- the commentsection is put here with the use of JavaScript -->
                         </fieldset>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          </div>
-        <!-- End of modal content -->
+          <!-- End of modal content -->
+        </div>
       </div>
-    </div>
     </div>
     <!-- End of modal -->
 
 
+    <!-- The Modal -->
+    <div id="FilterModal" class="modal2">
     
-                          <!-- The Modal -->
-                            <div id="FilterModal" class="modal2">
-
-                              <!-- Modal content -->
-                              <div class="modal-content2">
-                                <span class="closefilter"><i class="fas fa-times"></i></span>
-                                <div class="col-sm-10 col-lg-6 col-centered">
-                                  <div id="bp-modal" class="bp-modal-body">
-                                    <h1 id="bp-title">Filters</h1>
-
-                                  
-                                      
-                                      <div id="emptydiv" style="display: inline"></div>
-                                      <div class="col-sm-10" style="display: inline" id="bp-categories"></div>
-                                    </div>
-                                    <div class="row general-info authors-info" id="bp-authors"></div>
-                                    <div id="bp-desc-card" class="card card-margin border-left-success shadow">
-                                      <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                          <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Selected Categories: </div>
-                                            <div style="padding-right: 12px" class=".checkboxes" id="some_div"><!--Description goes here--></div>
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Other attributes: </div>
-                                            <div id="filterbtns" class =".checkboxes" </div>
-                                          </div>
-                                          </div>
-              
-              
-
-              <div id="bp-other-sections">
-              </div>
-
-              <div id="bp-core-content">
-              </div>
-
- 
-                    
-          </div>
-          </div>
-        <!-- End of modal content -->
-      </div>
-    </div>
-    <!-- End of modal -->
-  
-    <!-- The Modal 2 -->
-    <div id="optionmodal" class="modal2">
-
-      <!-- Modal content 2 -->
+      <!-- Modal content -->
       <div class="modal-content2">
-        <button onclick="minimize()" class="button">Close</button>
+        <span class="closefilter"><i class="fas fa-times"></i></span>
         <div class="col-sm-10 col-lg-6 col-centered">
           <div id="bp-modal" class="bp-modal-body">
-            <h1 id="bp-title"></h1>
-            <div id="selectionsection"</div>
-              
-
-
+            <h1 id="bp-title">Filters</h1>
+            <div id="emptydiv" style="display: inline"></div>
+            <div class="col-sm-10" style="display: inline" id="bp-categories"></div>
+          </div>
+          <div id="bp-desc-card" class="card card-margin border-left-success shadow">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Selected Categories: </div>
+                  <div style="padding-right: 12px" class=".checkboxes" id="some_div">
+                    <!--Description goes here-->
+                   </div>
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Other attributes: </div>
+                  <div id="filterbtns" class=".checkboxes" </div>
+                  </div>
+                </div>
+                <div id="bp-other-sections"></div>
+                <div id="bp-core-content"></div>
+              </div>
+            </div>
+            <!-- End of modal content -->
+          </div>
         </div>
-        <!-- End of Main Content -->
-        <button onclick="apply()" class="button">Apply</button>
-      </div>
-  
-  
-    <!-- Popper (for tooltips) -->
-    <script src="vendor/popper.min.js"></script>
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  
-    <!-- Template scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+        <!-- End of modal -->
 
-    <!-- DataTables -->
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
+        <!-- The Modal 2 -->
+        <!-- <div id="optionmodal" class="modal2"> -->
 
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>  
+          <!-- Modal content 2 -->
+          <!-- <div class="modal-content2">
+            <button onclick="minimize()" class="button">Close</button>
+            <div class="col-sm-10 col-lg-6 col-centered">
+              <div id="bp-modal" class="bp-modal-body">
+                <h1 id="bp-title"></h1>
+                <div id="selectionsection" </div>
+                  <button onclick="apply()" class="button">Apply</button>
+                </div> -->
+
+                <!-- End of Main Content -->
+                
+          </div>
 
 
-    <!-- Custom scripts -->
-    <script src="js/auth.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/bestpractices/create-instance.js"></script>
-    <script src="js/bestpractices/dsl.js"></script>
-    <script src="js/bestpractices/bp-retrieval.js"></script>
-    <script src="js/bestpractices/bp-viewing.js"></script>
-   
-    <!-- ////////////////////////////////// -->
-    <script src="js/comment_retrieval.js"></script>
-    <script src="js/comment.js"></script>
-    <script src= "js/eBay.js"></script>
-    <script src="js/liking.js"></script>
-    <script src="js/stars.js"></script>
-    <script src="js/slider.js"></script> 
-    <script src="js/bin-stars.js"></script>
-    <script src="js/createRating.js"></script>
-    
-  </body>
+              <!-- Popper (for tooltips) -->
+              <script src="vendor/popper.min.js"></script>
+              <!-- Bootstrap core JavaScript-->
+              <script src="vendor/jquery/jquery.min.js"></script>
+              <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+              <!-- Template scripts for all pages-->
+              <script src="js/sb-admin-2.min.js"></script>
+
+              <!-- DataTables -->
+              <script type="text/javascript"
+                src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
+
+              <!-- Page level plugins -->
+              <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+              <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+              <!-- Custom scripts -->
+              <script src="js/auth.js"></script>
+              <script src="js/app.js"></script>
+              <script src="js/storage.js"></script>
+              <script src="js/bestpractices/create-instance.js"></script>
+              <script src="js/bestpractices/dsl.js"></script>
+              <script src="js/bestpractices/bp-retrieval.js"></script>
+              <script src="js/bestpractices/bp-viewing.js"></script>
+
+              <!-- ////////////////////////////////// -->
+              <script src="js/comment_retrieval.js"></script>
+              <script src="js/comment.js"></script>
+              <script src="js/eBay.js"></script>
+              <script src="js/liking.js"></script>
+              <script src="js/stars.js"></script>
+              <script src="js/slider.js"></script>
+              <script src="js/bin-stars.js"></script>
+              <script src="js/createRating.js"></script>
+
+</body>
+
 </html>

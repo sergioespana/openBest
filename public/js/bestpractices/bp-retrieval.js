@@ -62,10 +62,10 @@ $(document).ready(function() {
 function initTable() {
 
   // Clean slate of data every time this function is called
-  data = [];
+  data     = [];
   indexArr = [];
   keyArray = [];
-  docIDs = [];
+  docIDs   = [];
 
   // extractJSON instantiates the collection paths
   extractJSON(jsontest, 0, '');
@@ -103,7 +103,7 @@ function initTable() {
                   }
                 }
               }
-            } );
+            });
 
           });
 
@@ -142,7 +142,7 @@ async function getDocData(callback) {
               keyArrayWithNum.push(key);
               normalkey = JSON.stringify(key).replace(/[ˆ0-9]+/g, '');
               normalkey = normalkey.replace(/['"]+/g, '');
-              
+          
               snapshot.docs.forEach(doc => {
               datatype.push(doc.data()[key]);  
               });
@@ -159,80 +159,61 @@ async function getDocData(callback) {
                     var description = document.createTextNode("  " + attribute + "   ");
                     var checkbox = document.createElement("input");
                     
-      
-                    checkbox.type = "checkbox";    // make the element a checkbox
-                    checkbox.name = "slct[]";      // give it a name we can check on the server side
-                    checkbox.value = attribute;         // make its value "pair"
-                    checkbox.style.padding = "20px";
+                    checkbox.type                  = "checkbox";  // make the element a checkbox
+                    checkbox.name                  = "slct[]";    // give it a name we can check on the server side
+                    checkbox.value                 = attribute;   // make its value "pair"
+                    checkbox.style.padding         = "20px";
                     checkbox.style.backgroundColor = "red";
-      
+                    checkbox.style.left            = "20px";
+                    checkbox.style.bottom          = "20px";
+                    checkbox.style.width           = "20px";
+                    checkbox.style.height          = "20px";
+                    checkbox.style.border          = "solid white";
+                    checkbox.style.borderWidth     = "20px";
+                    label.style.padding            = "5px";
                     
-                    checkbox.style.left =  "20px";
-                    checkbox.style.bottom=  "20px";
-                    checkbox.style.width = "20px";
-                    checkbox.style.height = "20px";
-                    checkbox.style.border = "solid white";
-                    checkbox.style.borderWidth = "20px";
-                    label.style.padding = "5px";
-                    
-                    
-                    
-      
                     label.appendChild(checkbox);   // add the box to the element
                     label.appendChild(description);// add the description to the element
-                    //label.title = "test";
+                    
       
                     // add the label element to your div
                     }
+                    //alex
                     if(normalkey == "effort"){
-                      if(alreadyeffortFrame) return;
-
-                    
-                    var slider = document.createElement("input");
-                    slider.type = "range";
-                    slider.max = "10";
-                    slider.min = "1";
-                    label.appendChild(slider);   // add the box to the element
-                    alreadyeffortFrame = true;
-                    
-                      
+                      if(alreadyeffortFrame) {return;}
+                      var slider = document.createElement("input");
+                      slider.type = "range";
+                      slider.max = "10";
+                      slider.min = "1";
+                      label.appendChild(slider);   // add the box to the element
+                      alreadyeffortFrame = true;  
                     }
+                    //alex
                     if(normalkey == "timeframe"){
                       if(alreadytimeframe) return;
                     var slider = document.createElement("input");
                     slider.type = "range";
                     slider.max = "10";
                     slider.min = "1";
-                    label.appendChild(slider);   // add the box to the element
-                                   
+                    label.appendChild(slider);   // add the box to the element          
                     alreadytimeframe = true;
                     }
                   }
-                  // if(normalkey == "timeframe"){
-                  //   alreadytimeframe = true;
-                  //   console.log("c");
-                  // }
+             
                   });
                   if(!(normalkey == "categories" || normalkey == "date" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems" )){   
                   var div = document.createElement('div');
                   div.id = 'container';
                   div.innerHTML = normalkey;
-                  //div.className = 'border pad';
                   div.style.fontFamily =    "Arial, Helvetica, sans-serif";
                   div.style.fontSize =  "20px";
                   div.style.fontWeight =    "bold";
                   
                   selection.appendChild(div);
                   selection.appendChild(label); 
-
-                  
-                  
                   }
-                  
-                
-                    
+                                      
               }
-            
               datatype = [];
             }
 
@@ -241,37 +222,64 @@ async function getDocData(callback) {
               // Using splice ensures that title is pushed to index 0, description to index 1, etc
               if(keyArray[x] == '"title"'){
                 indexArr.splice(0, 0, x);
+                //console.log(keyArray[x], "title", x);
               }
               else if(keyArray[x] == '"description"'){
                 indexArr.splice(1, 0, x);
+                //console.log(keyArray[x], "description", x);
               }
               else if(keyArray[x] == '"date"'){
                 indexArr.splice(2, 0, x);
+                //console.log(keyArray[x], "date", x);
               }
-              else if(keyArray[x] == '"categories"'){
-                indexArr.splice(3, 0, x);
-                catKeyName = keyArrayWithNum[x];
-              }
+              // Alex...
+              // else if(keyArray[x] == '"categories"'){
+              //   indexArr.splice(3, 0, x);
+              //   catKeyName = keyArrayWithNum[x];
+              // }
+              // else if(keyArray[x] == '"effort"'){
+              //   indexArr.splice(3, 0, x);
+              //   console.log(keyArray[x], "effort", x);
+              // }
+              // else if(keyArray[x] == '"timeframe"'){
+              //   indexArr.splice(4, 0, x);
+              //   console.log(keyArray[x], "timeframe", x);
+              // }
             }
-
+           
             // indexArr at index 0 stores the index of the title key in the original keyArr
-            title = indexArr[0];
+            title       = indexArr[0];
+            //console.log(indexArr[0], "title");
             description = indexArr[1];
-            date = indexArr[2];
-            categories = indexArr[3];
+            //console.log(indexArr[1], "description");
+            date        = indexArr[2];
+            //console.log(indexArr[2], "date");
+            // effort      = indexArr[3];
+            // console.log(indexArr[3], "effort");
+            // timeframe   = indexArr[4];
+            // console.log(indexArr[4], "timeframe");
+            // alex.. categories  = indexArr[3];
 
             // Getting the title, description and date for the documents
-            let docdata = [`${doc.data()[Object.keys(doc.data())[title]]}`, `${doc.data()[Object.keys(doc.data())[description]]}`, `${doc.data()[Object.keys(doc.data())[date]]}`];
+            let docdata = [
+              `${doc.data()[Object.keys(doc.data())[title]]}`, 
+              `${doc.data()[Object.keys(doc.data())[description]]}`, 
+              `${doc.data()[Object.keys(doc.data())[date]]}`,
+              // `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
+              // `${doc.data()[Object.keys(doc.data())[effort]]}`
+          ];
 
             // Pushing docdata to data array to populate the table
             data.push(docdata);
 
-            // Populating the category array
-            snapshot.docs.forEach(doc => {   
-              
-              catArray.push(doc.data()["6categories"]);;
-            });
 
+            for (let key in doc.data())
+            // Populating the category array           
+              if (key.replace(/[ˆ0-9]+/g, '') == "categories"){
+              snapshot.docs.forEach(doc => {   
+                catArray.push(doc.data()[key]);
+              });
+          }
           });
       });
     
@@ -314,14 +322,12 @@ function populateCat() {
   
       // add the label element to your div
       document.getElementById('some_div').appendChild(label);
-      
-      }
 
+      }
 
     let category = document.createElement('option');
     category.setAttribute('value', categoryElement);
     category.textContent = categoryElement;
-
     categorySelect.appendChild(category);
 
   });
@@ -360,7 +366,6 @@ $("#category-select").change(function() {
 
             // DataTable needs to be destroyed before reinitializing
             $('#dataTable').DataTable().destroy();
-
             $('#dataTable').DataTable( {
               data: data,
               // createdRow is a function that adds data to the rows created
@@ -375,9 +380,7 @@ $("#category-select").change(function() {
                   }
                 }
               }
-            } );
-            
-
+            });
         });
   }
   catArray = [];

@@ -2,32 +2,32 @@ var db = firebase.firestore();
 //function which calls all essential functions in this file
 //it gets the ratings and their ratinginfo from the database and draws the aggregates and a ratinginput
 async function startupRatings(Bpid){ 
- 
-[ratinglist,ratinginfo] = await getratings(BPid);
-//transpose the ratings so that every item in the array contains scores belonging to one dimension
-let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
-//transpose the ratinginfo so that every item in the array contains all info on one rating dimension
-let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
-//set up rating section skeleton
-[topOfratingSegment,ratinginputlocation,individualratinglocation] = setUpRatingSection(transposedInfo,document.getElementById('ratingsection'));
-//create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
-createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
-//create rating input based on ratingdocument
-createRatingInput(ratinginputlocation,Bpid,transposedInfo,individualratinglocation);
-//create rating aggregations based on scores and ratingdocument
-if (lengte(transposedInfo) > 1){
-createRatingAggregation(transposedScores,transposedInfo);
+    [ratinglist,ratinginfo] = await getratings(BPid);
+    //transpose the ratings so that every item in the array contains scores belonging to one dimension
+    let transposedScores    = await Promise.resolve(transposeScores(ratinglist));
+    //transpose the ratinginfo so that every item in the array contains all info on one rating dimension
+    let transposedInfo      = await Promise.resolve(transposeInfo(ratinginfo));
+    //set up rating section skeleton
+    [topOfratingSegment,ratinginputlocation,individualratinglocation] = setUpRatingSection(transposedInfo,document.getElementById('ratingsection'));
+    //create total rating aggregation to be placed on top of the rating section to allow for quick identification of the score
+    createTotalAggregation(topOfratingSegment,transposedScores,transposedInfo);
+    //create rating input based on ratingdocument
+    createRatingInput(ratinginputlocation,Bpid,transposedInfo,individualratinglocation);
+    //create rating aggregations based on scores and ratingdocument
+    if (transposedInfo.length > 1){
+        createRatingAggregation(transposedScores,transposedInfo);
+    }
+    //draw all individual ratings
+    createAllRatings(individualratinglocation,ratinglist,transposedInfo,Bpid);
 }
-//draw all individual ratings
-createAllRatings(individualratinglocation,ratinglist,transposedInfo,Bpid);
-}
+
 function setUpRatingSection(transposedInfo,root){
     var ratingAggregationTop = document.createElement('div');
     ratingAggregationTop.id  = "ratingaggregation";
     root.appendChild(ratingAggregationTop);
 
     //if there is more than one rating dimension
-    if (lengte(transposedInfo) > 1){
+    if (transposedInfo.length > 1){
  
         var ratingCollapsible = document.createElement('button');
         ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
@@ -204,11 +204,6 @@ async function getratings(BPid) {
         }
         // get rating information on the dimensions
         else {
-            // rating_type             = doc.data().ratingtype;
-            // rating_scale            = doc.data().Scale;
-            // rating_dimensions       = doc.data().dimensions;
-            // rating_dimensions_descr = doc.data().Dimension_descr;
-            // rating_stepsize         = doc.data().stepsize;
             rating_type             = doc.data().ratingtype;
             rating_scale            = doc.data().scale;
             rating_dimensions       = doc.data().dimension;
@@ -221,13 +216,13 @@ async function getratings(BPid) {
 }
 //function for creating ther fitting aggregation per dimension (links to ratingaggregationswitch)
 async function createRatingAggregation(scorelist,ratingdimensions){
-    for (var i=0; i < (lengte(ratingdimensions)); i++){
+    for (var i=0; i < ratingdimensions.length; i++){
         let ratingdimension       = await ratingdimensions[i]
         let ratingdimension_type  = await ratingdimension[0];
         let ratingdimension_name  = await ratingdimension[1];
         let ratingdimension_scale = await ratingdimension[2];
         let ratingdimension_step  = await ratingdimension[4];
-        if (lengte(scorelist) > 0 ){
+        if (scorelist.length > 0 ){
             var scores = await scorelist[i].map(numStr => parseInt(numStr));}
         else {
             var scores = []}
@@ -353,6 +348,7 @@ function createAllRatings(root,ratinglist,transposedInfo,BPid){
         drawRating(name,date,score,img,id,BPid, issame(email),root,transposedInfo,text);
     }
 }
+
 //function to draw one instance of a rating, this rating has the same interface as the comments from comment.js
 function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,ratingtext){
    // rating wrapper e.g. the wrapper for all the comments contents
@@ -452,7 +448,7 @@ function drawRating(name,date,text,img,ratingid,BP_id,issame,root,dimensioninfo,
 }
 //function to get occurences of ratings 
 function organizelist(arr,max,stepsize,type) {
-    var a = [], b = [], prev,pos = [],neg = [];
+    var a = [], b = [], prev, pos = [], neg = [];
     arr.sort();
     for ( var i = 0; i < arr.length; i++ ) {
         if ( arr[i] !== prev ) {
@@ -465,7 +461,6 @@ function organizelist(arr,max,stepsize,type) {
                 else if(arr[i] <0){
                     neg.push(arr[i]);
                 }
-
             }
         } else {
             b[b.length-1]++;
@@ -494,7 +489,7 @@ function organizelist(arr,max,stepsize,type) {
         return  [incompleteList.sort(Comparator),max,Math.round(arrAvg(arr)*10)/10];
     }
     else{
-        return  [incompleteList.sort(Comparator),max,Math.round(arrAvg(arr)*10)/10,Math.round(arrAvg(pos)*10)/10,lengte(pos),Math.round(arrAvg(neg)*10)/10,lengte(neg)];   
+        return  [incompleteList.sort(Comparator),max,Math.round(arrAvg(arr)*10)/10,Math.round(arrAvg(pos)*10)/10,pos.length,Math.round(arrAvg(neg)*10)/10,neg.length];   
     }
 }
 //function for displaying the readOnly mechanisms in the individual user reviews
@@ -514,7 +509,7 @@ function createUserRatingDisplay(root,scores,dimension){
     dimname.style.marginTop = 'auto';
 
    
-    if (lengte(scores)> 1){
+    if (scores.length > 1){
         var ratingCollapsible = document.createElement('button');
         ratingCollapsible.classList.add('btn','btn-light','btn-icon-split');
         ratingCollapsible.style.justifyContent = 'left';
@@ -692,7 +687,7 @@ function createUserRatingDisplay(root,scores,dimension){
     }
 }
 function displayAggregation(root,listofscores,dimension,scale,step,type){
-    if (lengte(listofscores) > 0){
+    if (listofscores.length > 0){
 
         if (type == 'binstars'){
             var [scorelist,max,avg,pAVG,pAmt,nAvg,nAmt] = organizelist(listofscores,scale,step,"binstar");
@@ -762,13 +757,13 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         detailwrapper.style.display = "none";
     
         ratingdecr = document.createElement('p');
-        ratingdecr.innerText = avg + " average based on " + lengte(listofscores) + " ratings";
+        ratingdecr.innerText = avg + " average based on " + listofscores.length + " ratings";
         ratingdecr.style.marginBottom = '0px';
         ratingdecr.style.marginTop    = '10px';
         ratingdecr.classList.add('toptext');
     
         detailwrapper.appendChild(ratingdecr);
-        if (lengte(scorelist) > 0){
+        if (scorelist.length > 0){
         var topbar = document.createElement('div');
         topbar.style.display = "flex";
         topbar.style.marginBottom = "10px";
@@ -807,7 +802,7 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
             barwrapper.style.width = '75%';
             barwrapper.style.border = '1px solid black';
             var bar        = document.createElement("div");
-            var percent = (score[1]/lengte(listofscores))*100;// calculate the percentage of the occurences of a certain score compared to the amount of scores.
+            var percent = (score[1]/listofscores.length)*100;// calculate the percentage of the occurences of a certain score compared to the amount of scores.
     
             bar.style.width = percent + '%';
             bar.style.height = '100%';
@@ -830,7 +825,7 @@ function displayAggregation(root,listofscores,dimension,scale,step,type){
         return detailwrapper;
 
 }
-// supporting function for getting an array from all numbers between lowEnd and highEnd
+// supporting function for getting an array from all integers between lowEnd and highEnd
 function numbersBetweenAandB(lowEnd,highEnd){
     var list = [];
     for (var i = lowEnd; i <= highEnd; i++) {
@@ -848,6 +843,7 @@ function numbersBetweenAandBwithFactorC(lowEnd,highEnd,factor){
     }
     return list;
 }
+
 // supporting function for transposing the array of arrays of the ratinginfo
 // [['sustainability','savings','fun'] , [1,2,3]] -> [['sustainability',1],['savings',2],['fun',3]]
 function transposeInfo(list){
@@ -858,7 +854,7 @@ function transposeInfo(list){
     let stepsize    = list[3];
     let descr       = list[4];
     
-    for (i of numbersBetweenAandB(0,lengte(types)-1)){
+    for (i of numbersBetweenAandB(0,types.length-1)){
         let listitem = [types[i],ratingdim[i],ratingscale[i],'input',stepsize[i],1,descr[i]];
         returnlist.push(listitem);
     }
@@ -872,7 +868,7 @@ function transposeScores(list){
     //extract all ratings
     for (rating of list){
         intermediatescorelist.push(rating[2]);
-        scorelength = lengte(rating[2]);
+        scorelength = rating[2].length;
     }
     //transpose the ratings to group the ratings by dimension
     for (i of numbersBetweenAandB(0,scorelength-1)){
@@ -951,35 +947,46 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     //extract the dimension info per dimension
     //calculate % with the use of dimensionmax and avgdimension
 
-
     for (i in transposedInfo){
         dimension         = transposedInfo[i];
         type              = dimension[0];
         let dimensionname = dimension[1];
         let dimensionmax  = dimension[2];
         let dimensionavg  = dimensionAvglist[i];
-        if (type == 'slider' || type == 'stars'){
-            score    = (dimensionavg/dimensionmax)*100;
-        }
-        if (type == 'dislikelike'){
-            score   = dimensionavg;
-        }
-        if (type == 'eBay'){
-            score = dimensionavg;
-        }
-        if (type == 'binstars'){
-            score = 0;
-        }
-        if (type == 'like'){
-            score = 0;
-        }
-        
-        dimensionScores.push([score,dimensionavg,dimensionname]);
-        
+        switch(type){
+            case 'slider':
+                score = (dimensionavg/dimensionmax)*100;
+                break;
+            case 'stars':
+                score = (dimensionavg/dimensionmax)*100;
+                break;
+            case 'dislikelike':
+                score = dimensionavg;
+                break;
+            case 'eBay':
+                score = dimensionavg;
+                break;
+            case 'binstars':
+                score = 0;
+                break;
+            case 'like':
+                score = 0;
+                break;
+        }         
+        dimensionScores.push([score,dimensionavg,dimensionname]); 
     }
-    var scores = dimensionScores.map(function(x) {
-        return x[0];
-    });
+    //get scores from the dimensionScores
+    var scores = dimensionScores.map(function(x) {return x[0];});
+
+    // make sure to give a score, otherwhise arrAvg = undefined
+    if (transposedScores[0]){
+        if (transposedScores[0].length > 0){ 
+        score = arrAvg(scores);
+        }
+    }
+    else { 
+        score = 0;
+    }
 
     var wrapper                 = document.createElement('div');
     wrapper.style.display       = 'flex';
@@ -992,7 +999,6 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     label.style.marginBottom    = 'auto';
     label.style.marginTop       = 'auto';
  
-
     var avglabel                = document.createElement('p');
     avglabel.style.marginBottom = 'auto';
     avglabel.style.marginTop    = 'auto';
@@ -1006,149 +1012,147 @@ function createTotalAggregation(root,transposedScores,transposedInfo){
     amtlabel.style.marginTop    = 'auto';
     amtlabel.style.width        = '20%';
     amtlabel.style.textAlign    = 'center';
-
-    if (type == 'binstars' || type == 'slider' || type == 'stars'){
-        label.style.marginLeft  = '10%';
-        label.style.marginRight = 'auto';
-
-        if (type == 'binstars'){
-            label.style.width = '22%';
-        }
-        if (type == 'stars'){
-           label.style.width       = '23%';
-           label.style.marginRight = '0px';
-        }
-        if (type == 'slider'){
+    
+    //Mechanism dependent styling and elements
+    switch(type){
+        case 'slider':
+            label.style.marginLeft     = '10%';
+            label.style.marginRight    = 'auto';
             label.style.marginRight    = '8%';
             avglabel.style.width       = '10%';
             avglabel.style.marginRight = 'auto';
             amtlabel.style.width       = '10%';
-        }
-    }
-    else if (type == 'eBay' || type == 'dislikelike' || type == 'like'){
-        label.style.width = '23%';
-        label.style.marginLeft = '10%';
-    }
-    else{
-    label.style.width = '30%';
-    label.style.textAlign = 'center';}
-    // make sure to give a score, otherwhise arrAvg = undefined
-    if (lengte(transposedScores[0]) > 0){ 
-        score = arrAvg(scores);
-    }
-    else { 
-        score = 0;
-    }
-    if (type == 'slider'){
-        bar = createbarrating(wrapper,0,100,1,score,"readOnly");
-        bar.style.marginRight = 'auto';
-        avglabel.innerText = Math.round(score) + ' / ' + 100;
-        wrapper.appendChild(avglabel);
-    }
-    else if(type == 'stars'){
-        starRatingResult(wrapper,Math.round(score),5);
-        avglabel.innerText = Math.round(score/100*5*10)/10 + ' / ' + 5;
-        wrapper.appendChild(avglabel);
-    }
-    else if(type == 'binstars'){
-      totallength = lengte(transposedScores);
-      neglist  = [];
-      poslist  = [];
-      neutlist = [];
 
-      let max  = 0;
-      let pAVG = 0;      
-      let nAvg = 0;
-      let pAmt = 0;
-      let nAmt = 0;
+            bar = createbarrating(wrapper,0,100,1,score,"readOnly");
+            bar.style.marginRight = 'auto';
+            avglabel.innerText = Math.round(score) + ' / ' + 100;
+            wrapper.appendChild(avglabel);
+            break;
+        case 'stars':
+            label.style.marginLeft  = '10%';
+            label.style.marginRight = 'auto';
+            label.style.width       = '23%';
+            label.style.marginRight = '0px';
 
-      if (lengte(transposedScores) > 0){   
-        for (i of transpose(transposedScores)){
-            avgScore = arrAvg(i.map(Number));
-                if (avgScore > 0)      {poslist.push(avgScore);}
-                else if (avgScore < 0) {neglist.push(avgScore);}
-                else if (avgScore == 0){neutlist.push(avgScore);}
-        }
-        max  = 5;
-        pAVG = Math.round(arrAvg(poslist)*10)/10;
-        nAvg = Math.round(arrAvg(neglist)*10)/10;
-        pAmt = lengte(poslist);
-        nAmt = lengte(neglist);
-    }
-    else {
-        max = 5;
-        pAVG = 0;
-        pAmt = 0;
-        nAvg = 0;
-        nAmt = 0;
-    }
-    if (!pAVG){pAVG = 0;}
-    if (!pAmt){pAmt = 0;}
-    if (!nAvg){nAvg = 0;}
-    if (!nAmt){nAmt = 0;}
-   
-    let tAvg = arrAvg( neglist.concat(poslist));
-    mech = createBinaryStarRating(wrapper,max,max,"readOnlyAgg", nAvg, pAVG,pAmt,nAmt,tAvg);
-    mech.style.marginRight = 'auto';
-    }
-    else if(type == 'dislikelike'){
-       let counterpos = 0;
-       let counterneg = 0;
-       if ((transposedScores[0])){
-        var scores = transposedScores[0].map(numStr => parseInt(numStr));
-       }
-       else scores = [0];
-       for (score of scores){
-           if (score < 0){  counterneg  += 1;}
-           else if (score > 0){  counterpos  += 1;}
-       }
-      
-       createLike(wrapper);
-       postext = document.createElement('p');
-       postext.style.marginTop    = 'auto';
-       postext.style.marginBottom = 'auto';
-       postext.innerText = roundScore(counterpos);
-       postext.style.marginRight = '5px';
-       wrapper.append(postext);
-       createDislike(wrapper);
-       negtext = document.createElement('p');
-       negtext.style.marginTop    = 'auto';
-       negtext.style.marginBottom = 'auto';
-       negtext.innerText = roundScore(counterneg);
-       wrapper.append(negtext);
-    }
-    else if(type == 'like'){
-        if ((transposedScores[0])){
+            starRatingResult(wrapper,Math.round(score),5);
+            avglabel.innerText = Math.round(score/100*5*10)/10 + ' / ' + 5;
+            wrapper.appendChild(avglabel);
+            break;
+        case 'dislikelike':
+            label.style.width = '23%';
+            label.style.marginLeft = '10%';
+
+            counterpos = 0;
+            counterneg = 0;
+            if ((transposedScores[0])){
+                var scores = transposedScores[0].map(numStr => parseInt(numStr));
+            }
+            else scores = [0];
+            for (score of scores){
+                if (score < 0){  counterneg  += 1;}
+                else if (score > 0){  counterpos  += 1;}
+            }
+            
+            createLike(wrapper);
+            postext = document.createElement('p');
+            postext.style.marginTop    = 'auto';
+            postext.style.marginBottom = 'auto';
+            postext.innerText = roundScore(counterpos);
+            postext.style.marginRight = '5px';
+            wrapper.append(postext);
+            createDislike(wrapper);
+            negtext = document.createElement('p');
+            negtext.style.marginTop    = 'auto';
+            negtext.style.marginBottom = 'auto';
+            negtext.innerText = roundScore(counterneg);
+            wrapper.append(negtext);
+            break;
+        case 'eBay':
+            label.style.width = '23%';
+            label.style.marginLeft = '10%';
+
+            counterpos  = 0;
+            counterneut = 0;
+            counterneg  = 0;
+            if (transposedScores[0].length){
             var scores = transposedScores[0].map(numStr => parseInt(numStr));
-           }
-           else {scores = [0];}
-        createLike(wrapper);
-        postext = document.createElement('p');
-        postext.style.marginTop    = 'auto';
-        postext.style.marginBottom = 'auto';
-        postext.innerText = lengte(scores);
-        postext.style.marginRight = '5px';
-           
-    }
+            }
+            else {score = []}
+            for (score of scores){
+                if      (score == 0){ counterneut += 1;}
+                else if (score < 0){  counterneg  += 1;}
+                else if (score > 0){  counterpos  += 1;}
+            }
+            createEbayRating(wrapper,'readOnly',roundScore(counterneg),roundScore(counterneut),roundScore(counterpos));
+            break;
+        case 'binstars':
+            label.style.marginLeft  = '10%';
+            label.style.marginRight = 'auto';
+            label.style.width = '22%';
 
-    else if(type == 'eBay'){
-        let counterpos  = 0;
-        let counterneut = 0;
-        let counterneg  = 0;
-        if (lengte(transposedScores[0])){
-        var scores = transposedScores[0].map(numStr => parseInt(numStr));
-        }
-        else {score = []}
-        for (score of scores){
-            if      (score == 0){ counterneut += 1;}
-            else if (score < 0){  counterneg  += 1;}
-            else if (score > 0){  counterpos  += 1;}
-        }
-        createEbayRating(wrapper,'readOnly',roundScore(counterneg),roundScore(counterneut),roundScore(counterpos));
-    }
+            totallength = transposedScores.length;
+            neglist  = [];
+            poslist  = [];
+            neutlist = [];
+      
+            let max  = 0;
+            let pAVG = 0;      
+            let nAvg = 0;
+            let pAmt = 0;
+            let nAmt = 0;
+      
+            if (transposedScores.length > 0){   
+              for (i of transpose(transposedScores)){
+                  avgScore = arrAvg(i.map(Number));
+                      if (avgScore > 0)      {poslist.push(avgScore);}
+                      else if (avgScore < 0) {neglist.push(avgScore);}
+                      else if (avgScore == 0){neutlist.push(avgScore);}
+              }
+              max  = 5;
+              pAVG = Math.round(arrAvg(poslist)*10)/10;
+              nAvg = Math.round(arrAvg(neglist)*10)/10;
+              pAmt = poslist.length;
+              nAmt = neglist.length;
+            }
+            else {
+                max = 5;
+                pAVG = 0;
+                pAmt = 0;
+                nAvg = 0;
+                nAmt = 0;
+            }
+            if (!pAVG){pAVG = 0;}
+            if (!pAmt){pAmt = 0;}
+            if (!nAvg){nAvg = 0;}
+            if (!nAmt){nAmt = 0;}
+            
+            let tAvg = arrAvg( neglist.concat(poslist));
+            mech = createBinaryStarRating(wrapper,max,max,"readOnlyAgg", nAvg, pAVG,pAmt,nAmt,tAvg);
+            mech.style.marginRight = 'auto';
+            break;
+        case 'like':
+            label.style.width = '23%';
+            label.style.marginLeft = '10%';
+
+            if ((transposedScores[0])){
+                var scores = transposedScores[0].map(numStr => parseInt(numStr));
+               }
+               else {scores = [0];}
+            createLike(wrapper);
+            postext = document.createElement('p');
+            postext.style.marginTop    = 'auto';
+            postext.style.marginBottom = 'auto';
+            postext.innerText = scores.length;
+            postext.style.marginRight = '5px';    
+            break;
+    }         
+    
+    // this never happened right?
+    // else{
+    // label.style.width = '30%';
+    // label.style.textAlign = 'center';}
     wrapper.appendChild(amtlabel);
     root.appendChild(wrapper);
-
 }
 //supporting function to round of scores to 1k or 1m
 function roundScore(score){
@@ -1179,4 +1183,10 @@ async function getRatingOfCurrentUser(){
         console.log("Error getting documents: ", error);
     });;
     return (ratingid);
+}
+
+//function for toggling visibility
+function makeinvisible(id1,id2){
+    document.getElementById(id1).style.display = "none";
+    document.getElementById(id2).style.display = "block";
 }

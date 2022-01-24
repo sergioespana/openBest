@@ -61,9 +61,9 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
         // Once the JSON string has been altered, fire this callback
 
         // Emptying these arrays prevents information from the initial JSON model to be present
-        fieldsArr = [];
+        fieldsArr       = [];
         collectionPaths = [];
-        documentPaths = [];
+        documentPaths   = [];
 
 
         // WRITING THE DOCUMENT TO THE DB BEFORE ANY INFO IS FILLED IN
@@ -843,9 +843,6 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                         var entryKey = filledBPform.elements[i].getAttribute('key');
                         var entryType = filledBPform.elements[i].getAttribute('type');
 
-                        console.log(entryKey);
-                        console.log(entryType);
-
                         if(entryType == 'checkbox'){
                             var inputs = document.querySelectorAll('slct[]');   
                             for (var i = 0; i < inputs.length; i++) {   
@@ -854,10 +851,9 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                             }
                             JSONarray.push('\"'+`${entryKey}`+'\": \"'+`${filledBPform.elements[i].value}`+'\"');
                         }
-
                         // Regular fields
                         if(entryType === 'field'){
-                            if(entryKey == '7date'){                      // automatically set the date, rather than taking user input
+                            if(entryKey.replace(/[ˆ0-9]+/g, '') == 'date'){                      // automatically set the date, rather than taking user input
                                 let currentDate = new Date();
                                 let cDay = currentDate.getDate();
                                 let cMonth = currentDate.getMonth() + 1;

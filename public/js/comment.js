@@ -1,3 +1,4 @@
+//initially no BP is opened so BPid is null
 var BPid = null;
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -5,7 +6,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function startup(BPID){
-    //get amount of comments for the toptext
+   //Set BPid to the BP id of the selected BP
+    BPid = BPID;
+   //get amount of comments for the toptext
    create_meta_info();
    // get comment section location
    let comment_input_location = document.getElementById("searchbar");
@@ -16,31 +19,34 @@ function startup(BPID){
    // create comment input bar
    create_comment_input(comment_input_location,"false");
    // get all comments from the database and draw them in the comment section
-   BPid = BPID;
-   getcomments(BPid);
+   fetchcomments(BPid)
 }
+
 //function to collapse the rules container
 function collapsible(){
     var coll = document.getElementsByClassName("collapsible");
     var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("rActive");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("rActive");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") 
+            {
+                content.style.display = "none";
+            } 
+            else 
+            {
+                content.style.display = "block";
+            }
+        });
     }
-  });
 }
-}
+
 function create_meta_info(){
     var root = document.getElementById("searchbar");
-    var comment_counter   = document.createElement("p");
+    var comment_counter       = document.createElement("p");
     comment_counter.classList.add("comment_counter");
-    comment_counter.id = "comment_counter";
+    comment_counter.id        = "comment_counter";
     comment_counter.innerText =  amountOfComments + " comments";    
     root.appendChild(comment_counter);
 }
@@ -66,7 +72,7 @@ function create_comment_input(elem, isSubComment,commentid){
     if (isSubComment == "true" && isdrawn == "false" || isSubComment == "false"){ 
 
         var newdiv = document.createElement("DIV"); 
-        newdiv.classList.add("newcomment",commentid);
+        newdiv.classList.add("newcomment", commentid);
 
         var comment_input = document.createElement("SPAN");
         comment_input.classList.add("textarea");
@@ -88,6 +94,7 @@ function create_comment_input(elem, isSubComment,commentid){
         }
     }
 }
+
 //function to create dropdown menu for selecting the type of comment
 //not in use at the moment
 function LabelOptions(){
@@ -156,42 +163,53 @@ function getcurrentDateTime(){
 }
 function masterCancel(buttonbar,text){
     text.innerText = "";
-   removeElement(buttonbar);
-    text.setAttribute("hasbeendrawn","false");
-    
+    removeElement(buttonbar);
+    text.setAttribute("hasbeendrawn","false"); 
 }
 function masterSubmit(buttonbar,text){
     var message = text.innerText;
-    if(lengte(message) >= 1){
-    masterCancel(buttonbar,text);
-    pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),"main",0,"none"); //write comment to db and afterwards draw it locally
+    if(message.length >= 1){
+        masterCancel(buttonbar,text);
+        let comment = new Object;
+        comment.author = getUserName(); 
+        comment.date   = getcurrentDateTime();
+        comment.text   = message;
+        comment.img    = getUserImage(); 
+        comment.email  = getUserEmail();
+        comment.level  = 0;
+        comment.parent = "none";
+        comment.BPid   = BPid;
+        comment.thread = "main";
+        comment.issame = issame(getUserEmail());
+        //note that comment id is not yet included, this is because the comment has not yet been initiated in the db.
+        pushcomment(comment); //write comment to db and afterwards draw it locally
     }
 }
-function checklength(newsubmitbutton,text){
-  var label = text.innerText;  
-  if (lengte(label) >= 1){
-    newsubmitbutton.style.background = "rgb(81, 146, 75)";
-  }
-  else{
-    newsubmitbutton.style.background = "buttonface";
-  }
-}               
-function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,parent,haschildren,isdrawn,amountofchildren){
 
+function checklength(newsubmitbutton,text){
+    var label = text.innerText;  
+    if (label.length >= 1){
+        newsubmitbutton.style.background = "rgb(81, 146, 75)";
+    }
+    else{
+        newsubmitbutton.style.background = "buttonface";
+    }
+}               
+function draw_comment(comment,haschildren,amountofchildren,isdrawn){
    // comment wrapper e.g. the wrapper for all the comments contents
    var comment_wrapper = document.createElement("DIV");
    //determine the width of the comment based on its level (indent)
-   movement = level * 10 + "px";
+   movement = comment.level * 10 + "px";
    comment_wrapper.style.marginLeft = movement;
    comment_wrapper.style.width = 'calc(100% - '+ movement +')';
    comment_wrapper.style.display = isdrawn;
    comment_wrapper.setAttribute("amountofchildren",amountofchildren);
    
-   comment_wrapper.id = commentid;
+   comment_wrapper.id = comment.id;
    comment_wrapper.classList.add("comment_wrapper");
    comment_wrapper.setAttribute("SubInputisDrawn","false");
    comment_wrapper.setAttribute("SubCommentDrawn","false");
-   comment_wrapper.setAttribute("level",level);
+   comment_wrapper.setAttribute("level",comment.level);
    /////////////////////////////////////////////////////////////////
 
    //picture wrapper
@@ -220,28 +238,28 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
 
    //picture
    var picture = document.createElement("img");
-   picture.src = img;
    picture.classList.add("picture");
+   picture.src = comment.img;
    picture_wrapper.appendChild(picture);//plak de afbeelding in de picture wrapping
 
    //author name
    var name_text = document.createElement("p");
    name_text.classList.add("name");
-   name_text.innerText = name;
+   name_text.innerText = comment.author;
 
    //comment date, e.g. 5 minutes ago...
    var date_posted_text = document.createElement("p");
    date_posted_text.classList.add("date_poster");
-   date_posted_text.innerText = date;
+   date_posted_text.innerText = comment.date;
       
    //the comment text itself
    var comment_text = document.createElement("p");
-   comment_text.innerText = text;
    comment_text.classList.add("comment_text","line-clamp","line-clamp-2");
+   comment_text.innerText = comment.text;
    comment_text.setAttribute("hasbeendrawn", "false");
 
    //allow a user to flag a comment if comment in not from current logged in user
-    if (issame == "false"){
+    if (comment.issame == "false"){
     //flagging component
         var flag_comment = document.createElement("i");
         flag_comment.classList.add("far","fa-flag","flag_button","dropbtn");
@@ -251,12 +269,12 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
     }
 
     //if current user is the same as the comment writer he can remove or edit the comment
-    if (issame == "true"){
+    if (comment.issame == "true"){
         //editing component
         var edit_comment = document.createElement("i");
         edit_comment.classList.add("far","fa-edit","edit_button");
         //on click toggle editable content, if comment_text is editable place focus on the comment_text and show the entire comment.
-        edit_comment.addEventListener("click", function (){ editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
+        edit_comment.addEventListener("click", function (){editComment(see_more,comment_text,confirm_edit,cancel_edit,edit_comment);})
         toolbar_wrapper.appendChild(edit_comment);
 
         //remove comment component
@@ -266,7 +284,7 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
         remove_comment.addEventListener("click", function(){
         // ask for confirmation that a user indeed wants to delete his comments
             if (confirm("Are you sure you want to delete this comment? please note that reactions to this comment will also be lost")== true){
-                removeallChildren(level,commentid,BP_id);
+                removeallChildren(comment.level,comment.id,comment.BPid);
             }
         }); 
    }
@@ -289,12 +307,12 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    comment_wrapper.appendChild(content_wrapper); 
    
    //statement to determine where to draw a comment
-   if(thread == "main"){
+   if(comment.thread == "main"){
         var root = document.getElementById("commentsection");
         root.appendChild(comment_wrapper);
    }
    else{
-        var root = thread;
+        var root = document.getElementById(comment.parent);
         insertAfter(comment_wrapper,root);
    }
 
@@ -312,45 +330,45 @@ function draw_comment(name,date,text,img,commentid,BP_id,issame,thread,level,par
    confirm_edit.classList.add("confirm_edit","option","bottomoption");
    confirm_edit.innerText     = "Confirm edit";
    confirm_edit.style.display = "none";
-   confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BP_id,commentid,edit_comment);})
+   confirm_edit.addEventListener("click",function (){confirmEditing(cancel_edit,confirm_edit,comment_text,comment.text,comment.BPid,comment.id,edit_comment);})
    bottomtoolbar_wrapper.appendChild(confirm_edit);
 
    var cancel_edit           = document.createElement("p");
    cancel_edit.innerText     = "Cancel edit";
    cancel_edit.style.display = "none";
    cancel_edit.classList.add("cancel_edit","option","bottomoption");
-   cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,text,edit_comment);})
+   cancel_edit.addEventListener("click", function() {cancelEditing(cancel_edit,confirm_edit,see_more,comment_text,comment.text,edit_comment);})
    bottomtoolbar_wrapper.appendChild(cancel_edit);
-
    content_wrapper.appendChild(bottomtoolbar_wrapper);
 
-   //clamping and see more button and functionality
+    // clamping and see more button and functionality
     window.onresize = function(event) {
         displayMore(comment_text,see_more);
     };
 
    //react button and functionality
-    if (level < 3){  //if thread nesting is below 5 then the commenters can comment on a nested comment.
+    if (comment.level < 3){  //if thread nesting is below 3 then the commenters can comment on a nested comment.
         var react_button = document.createElement("p");
         react_button.classList.add("react_button","option");
         react_button.innerText = "React";
         content_wrapper.appendChild(react_button);
-        react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",commentid)});
+        react_button.addEventListener("click",function(){create_comment_input(comment_wrapper,"true",comment.id)});
     }
    //see answers button and functionality
    var see_answers = document.createElement("p");
    see_answers.classList.add("see_answers","option");
-   see_answers.id        = "answers" + commentid;
+   see_answers.id        = "answers" + comment.id;
    see_answers.innerText = "See reactions"
-   see_answers.addEventListener("click",function(){getallChildren(level,commentid,see_answers,amountofchildren);});
+   see_answers.addEventListener("click",function(){getallChildren(comment.level,comment.id,see_answers,amountofchildren);});
    content_wrapper.appendChild(see_answers);
    //only display the "see more" button if a comment has children
     if (haschildren == true){
         see_answers.style.display = "block";
     }
    else{
-       see_answers.style.display = "none";
+        see_answers.style.display = "none";
     }
+   
 }
 function editComment(see_more,comment_text,confirm,cancel,edit){  
     comment_text.toggleAttribute("contentEditable");
@@ -379,7 +397,7 @@ function editComment(see_more,comment_text,confirm,cancel,edit){
         edit.classList.remove("selected");
     }
 }
-function confirmEditing(cancel_edit,confirm_edit,see_more,comment_text,text,BPid,messageid,edit){
+function confirmEditing(cancel_edit,confirm_edit,comment_text,text,BPid,messageid,edit){
    //hide the cancel and confirm buttons
     cancel_edit.style.display  = "none";
     confirm_edit.style.display = "none";
@@ -414,7 +432,6 @@ function changeflag(element){
 }
 //function to check overflow of text to enable the see_more button if needed
 function showReadMoreButton(element){
-    //if (element.offsetHeight < element.scrollHeight){
       if  (element.scrollHeight > element.clientHeight || element.offsetHeight < element.scrollHeight){
          return "true";
      } 
@@ -431,19 +448,19 @@ function subCancel(text,elem){
 }
 function getallChildren(level,commentid,see_answers,amountofchildren,reason){
    var isdrawn =  document.getElementById(commentid).getAttribute("subCommentDrawn");
-    for (item of getLevelList(level+1)){
-        if(item[9] == commentid){
+    for (comment of getLevelList(level+1)){
+        if(comment.parent == commentid){
             if (isdrawn == "false" && reason != "removechildren"){
                 see_answers.innerText = "Hide reactions";
-                if (document.getElementById(item[4])){
-                    document.getElementById(item[4]).style.display = "flex";
+                if (document.getElementById(comment.id)){
+                    document.getElementById(comment.id).style.display = "flex";
                 }
             }
             else{
                 see_answers.innerText = "See reactions";
-                if (document.getElementById(item[4])){
-                    document.getElementById(item[4]).style.display = "none";
-                    getallChildren(level+1,item[4],see_answers,amountofchildren,"removechildren");
+                if (document.getElementById(comment.id)){
+                    document.getElementById(comment.id).style.display = "none";
+                    getallChildren(level+1,comment.id,see_answers,amountofchildren,"removechildren");
                 }        
             }
         }
@@ -464,11 +481,23 @@ function removeallChildren(level,commentid,BP_id){
          }
      }
 }
-function subSubmit(text,elem,commentid){
+function subSubmit(text,parentelem,commentid){
     var message = text.innerText;
-    if(lengte(message) >= 1){
-        subCancel(text,elem);
-        pushcomment(BPid,getcurrentDateTime(),getUserName(),getUserImage(),message,getUserEmail(),elem,updateLevel(elem),commentid); //write comment to db and afterwards draw it locally
+    if(message.length >= 1){
+        subCancel(text,parentelem);
+        let comment = new Object;
+        comment.author = getUserName(); 
+        comment.date   = getcurrentDateTime();
+        comment.text   = message;
+        comment.img    = getUserImage(); 
+        comment.email  = getUserEmail();
+        comment.level  = updateLevel(parentelem);
+        comment.parent = commentid
+        comment.BPid   = BPid;
+        comment.thread = parentelem;
+        comment.issame = issame(getUserEmail());
+         //note that comment id is not yet included, this is because the comment has not yet been initiated in the db.
+        pushcomment(comment); //write comment to db and afterwards draw it locally
     }
 }
 function updateLevel(elem){
@@ -537,16 +566,4 @@ function displayMore(comment_text,see_more){
     }
       
 }
-//function for toggling visibility
-function makeinvisible(id1,id2){
-    document.getElementById(id1).style.display = "none";
-    document.getElementById(id2).style.display = "block";
-}
-// function for calculating the length of a list, the prebuild length method did not work in some cases..
-function lengte (l1){
-    var lengte = 0;
-    for (_ in l1){
-        lengte += 1;
-    }
-    return lengte;
-}
+

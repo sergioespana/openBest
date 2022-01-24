@@ -116,16 +116,12 @@ function addConceptFunction(c, pc) {
     " 
 }
 
-
-
-
 // displaying the modal
 if(dslbtn){
     dslbtn.onclick = function() {
     dslmodal.style.display = "block";
     }
 }
-
 
 document.getElementById("add-concept").addEventListener("click", function(){
 
@@ -139,7 +135,6 @@ document.getElementById("add-concept").addEventListener("click", function(){
     // Counter is increased for every added concept
     counter++;
 })
-
 
 // Adding an attribute
 $(".new-concept").on('click', 'a', function(event){

@@ -10,21 +10,20 @@ var collectionPaths = [];
 var documentPaths = [];
 var fieldsArr = [];
 
-
 // ############################################
 // The functions from this class would ideally be used in dsl.js. However, this also requires making sure that every page has access to the jsonmodel, instead of the static jsontest defined here.
 
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest = {
     //collection
-    "validationdomain7": {
+    "Economy for the common good": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Validation Domain7",
-            "administrator": "admin mail here",
+            "name": "Economy for the Common Good (ECG) (Test environment)",
+            "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
                 //document
@@ -32,43 +31,73 @@ var jsontest = {
                     //fields
                     "01grouptitle": "Best practice",
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
-                    "1displayfeature": true,
-                    "2title": "string",
-                    "3description": "text",
-                    "4author": [{"name" : "Written by", "self": "document reference", "related": "document reference"},
-                                {"name" : "Reviewed by", "self": "document reference", "related": "document reference"}],
-                    "5solution": "text",
-                    "filtersolution": "string",
-                    "6categories":
-                        ["string"],
-                    "filtercategories" : "string",
-                    "7date": "string",
-                    "timeframe": "string",
-                    "effort": "string",
-                    //collection
-                    "comments": {
-                        "commentdocument": {
-                            "displayfeature": false,
-                            "author": "string",
-                            "date": "string",
-                            "email": "string",
-                            "img": "string",
-                            "level": "int",
-                            "parent": "string",
-                            "text": "string"
-                        }
-                    },
-                    "example": {
-                        "exampledocument": {
-                            "01grouptitle": "Example",
-                            "02groupdesc": "Describe an example here.",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3description": "text"
-                        }
-                    },
-                }
-            },
+                        "1displayfeature": true,
+                        "2title": "string",
+                        "3categories": ["string"],
+                        "4ECGTheme": [{
+                                        "name" : "Adresses", 
+                                        "self": "document reference",
+                                        "related": "document reference"
+                                    }],
+                        
+                        "5image":"string",
+                        "6author": [{
+                                        "name" : "Written by", 
+                                        "self": "document reference", 
+                                        "related": "document reference"
+                                    },
+                                    {
+                                        "name" : "Reviewed by", 
+                                        "self": "document reference", 
+                                        "related": "document reference"
+                                    }],
+                        "7filtersolution": "string",
+                        "8filtercategories" : "string",
+                        "9date": "string",
+                        "10effort": "string",
+                        "11timeframe":"int",
+                        "12audience":"string",
+                        "13description": "text",
+                        "14solution": "text",
+                        "15problem":"string",
+                        
+                        //collection
+                        "comments": {
+                            "commentdocument": {
+                                "displayfeature": false,
+                                "author": "string",
+                                "date": "string",
+                                "email": "string",
+                                "img": "string",
+                                "level": "int",
+                                "parent": "string",
+                                "text": "string"
+                            }
+                        },
+                        //collection
+                        "ratings":{
+                            "ratingdocument":{
+                                "01grouptitle": "Ratings",
+                                "02groupdesc": "Describe the dimension (category) on which the best practice can be rated",
+                                "2ratingtype":["stars"],
+                                "3dimension":["string"],
+                                "4dimension description":["string"],
+                                "5scale":[5],
+                                "6stepsize":[1]
+                            }
+                        },
+                        
+                        "example": {
+                            "exampledocument": {
+                                "01grouptitle": "Example",
+                                "02groupdesc": "Describe an example here.",
+                                "1displayfeature": true,
+                                "2name": "string",
+                                "3description": "text"
+                            }
+                        },
+                    }
+                },
             //collection
             // must ALWAYS be called users and have an email field
             "users": {
@@ -88,6 +117,14 @@ var jsontest = {
                     "3internal": "boolean",
                     "4name": "string"
                 }
+            },
+             //collection
+             "ECGThemes": {
+                //document
+                "ECGThemedocument": {
+                    "1displayfeature": false,
+                    "2name": "string"
+                }
             }
         }
     }
@@ -101,8 +138,8 @@ if(document.getElementById("create-instance-btn")){
         // This function is called for each BP that is created, so we need updated collectionpaths each time
         collectionPaths = [];
         documentPaths = [];
-
-        jsontest = JSONmodel;
+        // remove this after dev
+        //jsontest = JSONmodel;
         console.log(jsontest);
 
         extractJSON(jsontest, 0, '');
@@ -114,7 +151,6 @@ if(document.getElementById("create-instance-btn")){
 function extractJSON(obj, int, prev) {
     // looping over the elements in the json file
     for (const i in obj) {
-        console.log("hi");
         // checking if the element is an array or object
         if(Array.isArray(obj[i]) || !(typeof obj[i] === 'object')){
             // keys in the document
@@ -213,7 +249,9 @@ function writeDB(coll, doci, docp) {
 }
 
 function delay() {
+    console.log('done');
     return new Promise(resolve => setTimeout(resolve, 800));
+   
 }
 
 

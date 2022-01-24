@@ -83,7 +83,6 @@ function removetags_like(item){
   }
 }
 
-
 function createlikeRating (root){
 
   var LikeWrapper = document.createElement("DIV");

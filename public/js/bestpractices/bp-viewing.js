@@ -9,13 +9,11 @@ var modal = document.getElementsByClassName("bp-view-modal")[0];
 var span = document.getElementsByClassName("close")[0];
 
 // Arrays that store the checked docrefs to prevent recursive checks
-var checkedDR = [];
-var checkedSC = [];
+var checkedDR  = [];
+var checkedSC  = [];
 var checkedREL = [];
 
 // ############################################
-
-
 
 function tableClick(e) {
     let clickedRow = e.target.parentElement;
@@ -23,7 +21,7 @@ function tableClick(e) {
     modal.style.display = "block";
     retrieveBPinfo(BPid);
     startup(BPid);
-    startupRatings(BPid);
+   // startupRatings(BPid);
 }
 
 
@@ -40,17 +38,21 @@ async function retrieveBPinfo(BPid) {
     let bpDoc = await db.collection(`${bpPath}`).where(firebase.firestore.FieldPath.documentId(), "==", `${BPid}`).get();
     for(doc of bpDoc.docs){
                 
-        let BPtitle = document.getElementById("bp-title");
+        let BPtitle       = document.getElementById("bp-title");
         // indexArr is instantiated in bp-retrieval when dataTable is initially loaded
-        let title = indexArr[0];
+        let title         = indexArr[0];
         BPtitle.innerText = `${doc.data()[Object.keys(doc.data())[title]]}`;
 
-        let BPdescription = document.getElementById("bp-description");
-        let description = indexArr[1];
+        let BPdescription       = document.getElementById("bp-description");
+        let description         = indexArr[1];
         BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
         let categoryArea = document.getElementById("bp-categories");
-        let dateArea = document.getElementById("bp-date");
+        let dateArea     = document.getElementById("bp-date");
+         //ADDED//
+        let imageArea    = document.getElementById("bp-image");
+        imageArea.style.marginLeft = "auto";
+        imageArea.style.marginRight = "auto";
 
         // Iterating over the document data and displaying general info
         for(let [key, value] of Object.entries(doc.data())){
@@ -119,8 +121,8 @@ async function retrieveBPinfo(BPid) {
                 // Populating the general info section (authors, date, categories)
                 value.forEach(element => {
                 let categoryButton = document.createElement('a');
-                categoryButton.innerHTML = "<span class=\"text\">"+`${element}`+"</span\>"
-                categoryButton.setAttribute('class', 'btn btn-light btn-icon-split')
+                categoryButton.innerHTML = "<span class=\"text\">"+`${element}`+"</span\>";
+                categoryButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 categoryArea.appendChild(categoryButton);
                 });
             }
@@ -129,17 +131,26 @@ async function retrieveBPinfo(BPid) {
             if(key.replace(/[ˆ0-9]+/g, '') == 'date'){
                 // Populating the general info section (authors, date, categories)
                 let dateButton = document.createElement('a');
-                dateButton.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-calendar-alt\"></i></span\><span class=\"text\">"+`${value}`+"</span\>"
-                dateButton.setAttribute('class', 'btn btn-light btn-icon-split')
+                dateButton.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-calendar-alt\"></i></span\><span class=\"text\">"+`${value}`+"</span\>";
+                dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 dateArea.appendChild(dateButton);
             }
+    //ADDED//
+              // Displaying image
+              if(key.replace(/[ˆ0-9]+/g, '') == 'image'){
+                // Populating the general info section 
+                let picture = document.createElement("img");
+                picture.src = value;
+                picture.style.width = 'calc(100%)';
+                imageArea.appendChild(picture);
+               
+            }  
         }
     }
 
     // The div in which BP content should be placed
     let bpCore = document.getElementById("bp-core-content");
-
-    // Retrieve the document info for this best practice
+     
     retrieveDocInfo(bpPath, BPid, bpCore);
 }
 
@@ -155,13 +166,12 @@ async function retrieveDocInfo(docPath, docId, div){
         let keyText = key.replace(/[0-9]/g, '');
 
         // The values for the following keys are irrelevant because they are always present in each BP and therefore queried elsewhere
-        if(keyText != 'title' && keyText != 'author' & keyText != 'categories' && keyText != 'date' && keyText != 'created'){
+        if(keyText != 'title' && keyText != 'author' && keyText != 'categories' && keyText != 'date' && keyText != 'created' && keyText != 'image' && keyText != "ECGTheme"){
             if((docPath.split('/')[docPath.split('/').length - 1]) != "bestpractices"){
                 // String or text
                 if(typeof(value) != 'object'){
                     // Title
                     if(keyText == 'name' || keyText == 'title'){
-
                         let colTitle = document.createElement('h6');
                         colTitle.setAttribute('class', 'text-gray-400 font-weight-bold text-uppercase');
                         colTitle.style.fontSize = '12px';
@@ -199,11 +209,36 @@ async function retrieveDocInfo(docPath, docId, div){
             // Description should not be displayed again for the best practice document
             else if(keyText!= 'description'){
                 if(typeof(value) != 'object'){
+                    
+                    let l1 = document.createElement('div');
+                    l1.setAttribute("class", "card border-left-success shadow");
+                    l1.style.marginTop = '15px';
+
+                    let l2 = document.createElement('div');
+                    l2.setAttribute("class", "card-body");
+
+                    let l3 = document.createElement('div');
+                    l3.setAttribute("class", "row no-gutters align-items-center");
+
+                    let l4 = document.createElement('div');
+                    l4.setAttribute("class", "col mr-2");
+                    
+                    //title
+                    let h = document.createElement('div');
+                    h.innerHTML = keyText;
+                    h.setAttribute('class',"text-xs font-weight-bold text-success text-uppercase mb-1");
+                    l4.appendChild(h);
+
                     // Adding the attribute value as regular text
                     let p = document.createElement('p');
                     p.innerText = value;
                     p.style.marginTop = '15px';
-                    div.appendChild(p);
+                    l4.appendChild(p);
+
+                    l3.appendChild(l4);
+                    l2.appendChild(l3);
+                    l1.appendChild(l2);
+                    div.appendChild(l1);              
                 }
             }
         }
@@ -219,7 +254,7 @@ async function retrieveDocInfo(docPath, docId, div){
             let keyText = key.replace(/[0-9]/g, '');
 
             // The values for the following keys are irrelevant because they are always present in each BP and therefore queries later on
-            if(keyText != 'title' && keyText != 'author' && keyText != 'description' && keyText != 'categories' && keyText != 'date' && keyText != 'created'){
+            if(keyText != 'title' && keyText != 'author' && keyText != 'description' && keyText != 'categories' && keyText != 'date' && keyText != 'created' && keyText !='image' && keyText != "ECGTheme"){
 
                 // Arrays of docrefs 
                 // The docref should not point back to a collection that has already been checked, to prevent recursive additions
@@ -266,6 +301,7 @@ async function retrieveDocInfo(docPath, docId, div){
                         // Adding a div for this relationship, adding its contents, and checking for subconcepts
                         let docRefDiv = document.createElement('div');
                         docRefDiv.setAttribute('docref', toCheck[ref].path);
+                        docRefDiv.style.marginTop = '15px';
                         docRefDiv.style.marginBottom = '15px';
 
                         let relTitle = document.createElement('h6');
@@ -344,10 +380,11 @@ span.onclick = function() {
     amountOfComments = 0;
     ///////////////////////////////////
 
-    let categoryArea = document.getElementById("bp-categories");
-    let authorArea = document.getElementById("bp-authors");
-    let dateArea = document.getElementById("bp-date");
-    let coreContent = document.getElementById("bp-core-content");
+    let categoryArea  = document.getElementById("bp-categories");
+    let authorArea    = document.getElementById("bp-authors");
+    let dateArea      = document.getElementById("bp-date");
+    let imageArea     = document.getElementById("bp-image");
+    let coreContent   = document.getElementById("bp-core-content");
     let otherSections = document.getElementById("bp-other-sections");
     // Removing previously existing categories, authors and dates
     while (categoryArea.hasChildNodes()) {  
@@ -356,13 +393,17 @@ span.onclick = function() {
     while (authorArea.hasChildNodes()) {  
         authorArea.removeChild(authorArea.firstChild);
     }
+    while (imageArea.hasChildNodes()) {  
+        imageArea.removeChild(imageArea.firstChild);
+    }
     while (dateArea.hasChildNodes()) {  
         dateArea.removeChild(dateArea.firstChild);
     }
     while (coreContent.hasChildNodes()) {
         coreContent.removeChild(coreContent.firstChild);
     }
-    // while (otherSections.hasChildNodes()) {  
-    //     otherSections.removeChild(otherSections.firstChild);
-    // }
+    while (otherSections.hasChildNodes()) {
+        otherSections.removeChild(otherSections.firstChild);
+    }
+   
 }
