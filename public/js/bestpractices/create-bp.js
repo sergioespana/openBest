@@ -80,7 +80,6 @@ document.getElementById("create-BP-btn").addEventListener("click", function(){
             // Documents that match the current uniqueDocID OR are rating documents are the documents for which features need to be displayed
             .where(firebase.firestore.FieldPath.documentId(), "in", [uniqueDocID.toString(), "ratingdocument"])
             .get().then(snapshot => {
-
                 snapshot.docs.forEach(async doc => {
     
                     // Getting the fields of the document
@@ -207,11 +206,11 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
                             
         let grouptitle = document.createElement('div');
-        let label = document.createElement('label');
-        let input = document.createElement('input');
-        let textarea = document.createElement('textarea');
-        let addOther = document.createElement('div');
-        let addEx = document.createElement('div');
+        let label      = document.createElement('label');
+        let input      = document.createElement('input');
+        let textarea   = document.createElement('textarea');
+        let addOther   = document.createElement('div');
+        let addEx      = document.createElement('div');
         
 
         // Setting the title and description of the group of form elements
@@ -1011,7 +1010,7 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                 for(var key = 0; key < keyRef.length; key++){
 
                     // Getting the form that is responsible for this input
-                    let keyName = keyRef[key];
+                    let keyName      = keyRef[key];
                     let inputFeature = Array.from(filledBPform.elements).filter(function(formfeature) {
                         return (formfeature.getAttribute('key') == keyName)
                     });
@@ -1022,8 +1021,8 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                     let drdn = docRefDocName[key];
                     
                     // Information on the docrefs to be stored in the array of maps
-                    let name = relNames[key];
-                    let self = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
+                    let name    = relNames[key];
+                    let self    = db.doc(`${entryColPath}`+"/"+`${entryDocName}`);
                     let related = db.doc(docRef[key]);
 
                     // If there is an input feature (i.e. not a complex concept)

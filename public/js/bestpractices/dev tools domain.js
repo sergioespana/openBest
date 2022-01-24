@@ -28,59 +28,59 @@ myTable_.id = "ExcelTable";
 place.append(myTable_);
 
 async function addelements(){
-    await addAuthors();
-    await addECGthemes();
+    //await addAuthors();
+    //await addECGthemes();
     await addBPs();
 }
 
 var bestpractices = [];
 
-    function UploadProcess() {
-        //Reference the FileUpload element.
-        var fileUpload = document.getElementById("fileUpload");
-        //Validate whether File is valid Excel file.
-        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
-        if (regex.test(fileUpload.value.toLowerCase())) {
-            if (typeof (FileReader) != "undefined") {
-                var reader = new FileReader();
-                //For Browsers other than IE.
-                if (reader.readAsBinaryString) {
-                    reader.onload = function (e) {
-                        bestpractices = GetTableFromExcel(e.target.result);
-                        console.log(bestpractices);
-                    };
-                    reader.readAsBinaryString(fileUpload.files[0]);
-                } else {
-                    //For IE Browser.
-                    reader.onload = function (e) {
-                        var data = "";
-                        var bytes = new Uint8Array(e.target.result);
-                        for (var i = 0; i < bytes.byteLength; i++) {
-                            data += String.fromCharCode(bytes[i]);
-                        }
-                       bestpractices = GetTableFromExcel(data);
-                       console.log(bestpractices);
-                    };
-                    reader.readAsArrayBuffer(fileUpload.files[0]);
-                }
+function UploadProcess() {
+    //Reference the FileUpload element.
+    var fileUpload = document.getElementById("fileUpload");
+    //Validate whether File is valid Excel file.
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+    if (regex.test(fileUpload.value.toLowerCase())) {
+        if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            //For Browsers other than IE.
+            if (reader.readAsBinaryString) {
+                reader.onload = function (e) {
+                    bestpractices = GetTableFromExcel(e.target.result);
+                    console.log(bestpractices);
+                };
+                reader.readAsBinaryString(fileUpload.files[0]);
             } else {
-                alert("This browser does not support HTML5.");
+                //For IE Browser.
+                reader.onload = function (e) {
+                    var data = "";
+                    var bytes = new Uint8Array(e.target.result);
+                    for (var i = 0; i < bytes.byteLength; i++) {
+                        data += String.fromCharCode(bytes[i]);
+                    }
+                    bestpractices = GetTableFromExcel(data);
+                    console.log(bestpractices);
+                };
+                reader.readAsArrayBuffer(fileUpload.files[0]);
             }
         } else {
-            alert("Please upload a valid Excel file.");
+            alert("This browser does not support HTML5.");
         }
-    };
-    
-    function GetTableFromExcel(data) {
-        //Read the Excel File data in binary
-        var workbook = XLSX.read(data, {
-            type: 'binary'
-        });
-        //get the name of First Sheet.
-        var Sheet = workbook.SheetNames[0];
-        //Read all rows from First Sheet into an JSON array.
-        return excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);    
-    };
+    } else {
+        alert("Please upload a valid Excel file.");
+    }
+};
+
+function GetTableFromExcel(data) {
+    //Read the Excel File data in binary
+    var workbook = XLSX.read(data, {
+        type: 'binary'
+    });
+    //get the name of First Sheet.
+    var Sheet = workbook.SheetNames[0];
+    //Read all rows from First Sheet into an JSON array.
+    return excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);    
+};
 
 
 async function addAuthors(){
@@ -139,36 +139,63 @@ async function addECGthemes(){
 
 async function addAuthor(authorname){
     let doelstring =  "Economy for the common good/domainstate/" + 'authors' + '/';
+    let author     = null;
     //write author to db
       await db.collection(doelstring).add({ 
                 name: authorname,
                 relationship: []
         }).then(docRef => {
             console.log('author is added under ID ', docRef.id);
-            return(docRef.id);
+            author = docRef.id;
+           
         })
+        return(author);
     
 }
 
 async function findAuthor(authorname) {
     let doelstring =  "Economy for the common good/domainstate/" + 'authors' + '/';
-    await db.collection(doelstring)
-        // Getting all document in the best practices collection that have a category called Workers
-        .where("name", "array-contains", authorname)
-        .get().then(docRef => {
-               console.log('author is found under ID', docRef.id);
-               return(docRef.id);
+    let author     = null ;
+    await db.collection(doelstring).where("name", '==' , authorname).get().then(docRef => {
+            if (docRef.docs.length >= 1)
+            {
+               author = docRef.docs[0].id;
+            }
+            else {
+                author = 'none found';         
+            }
         })
+        return author
+}
 
+async function updateAuthor(authorid, bpid){
+    let doelstring =  "Economy for the common good/domainstate/" + 'authors' + '/';
+    await db.collection(doelstring).doc(authorid).update({
+        relationship: [{name = 'Written by', related = ('Economy for the common good/domainstate/bestpractices/' + bpid), self = ('Economy for the common good/domainstate/authors/' + authorid)}]
+    })
+}
+async function updateBP(authorid, bpid){
+    let doelstring =  "Economy for the common good/domainstate/" + 'bestpractices' + '/';
+    await db.collection(doelstring).doc(bpid).update({
+        author: [{name = 'Written by', related = ('Economy for the common good/domainstate/authors/' + authorid), self = ('Economy for the common good/domainstate/bestpractices/' + bpid)}]
+    })
 }
 
 async function addBPs(){
     let doelstring =  "Economy for the common good/domainstate/" + 'bestpractices' + '/';
     for (Bp of bestpractices){
-        if (findAuthor(Bp.author)){ authorid = findAuthor(Bp.author)}
-        else {authorid = addAuthor(Bp.author)}
+        let author = await(findAuthor(Bp.Written));
+        if (author != 'none found'){
+            authorid = author;
+            console.log('author found');
+        }
 
-        //write author to db
+        if (author == 'none found') {
+           authorid = await(addAuthor(Bp.Written));
+            console.log('author added', authorid);    
+       }
+   
+  
         await db.collection(doelstring).add({ 
                 effort: Bp.Effort,
                 timeframe: Bp.Timeframe,
@@ -185,7 +212,7 @@ async function addBPs(){
                     }],
                 image: Bp.Image,
                 author: [{
-                   name: 'this',
+                   name: Bp.Written,
                    related:  authorid,
                    self: 'path2self'
                 }],
@@ -194,6 +221,10 @@ async function addBPs(){
 
         }).then(docRef => {
             console.log('BP is added under ID ', docRef.id);
+            updateAuthor(authorid, docRef.id);
+            updateBP(authorid,docRef.id);
+            console.log('done', docRef.id);
+
         })
     }
     
