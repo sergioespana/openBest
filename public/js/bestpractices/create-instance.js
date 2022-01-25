@@ -32,16 +32,16 @@ var jsontest = {
                     "01grouptitle": "Best practice",
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                         "1displayfeature": true,
-                        "2title": "string",
-                        "3categories": ["string"],
-                        "4ECGTheme": [{
+                        "10title": "string",
+                        "11categories": ["string"],
+                        "12ECGTheme": [{
                                         "name" : "Adresses", 
                                         "self": "document reference",
                                         "related": "document reference"
                                     }],
                         
-                        "5image":"string",
-                        "6author": [{
+                        "13image":"string",
+                        "14author": [{
                                         "name" : "Written by", 
                                         "self": "document reference", 
                                         "related": "document reference"
@@ -51,15 +51,16 @@ var jsontest = {
                                         "self": "document reference", 
                                         "related": "document reference"
                                     }],
-                        "7filtersolution": "string",
-                        "8filtercategories" : "string",
-                        "9date": "string",
-                        "10effort": "string",
-                        "11timeframe":"int",
-                        "12audience":"string",
-                        "13description": "text",
-                        "14solution": "text",
-                        "15problem":"string",
+                        "15filtersolution": "string",
+                        "16filtercategories" : "string",
+                        "17date": "string",
+                        "18effort": "string",
+                        "19timeframe":"int",
+                        "20problem":"string",
+                        "21audience":"string",
+                        "22description": "text",
+                        "23solution": "text",
+                        
                         
                         //collection
                         "comments": {

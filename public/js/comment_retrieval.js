@@ -109,7 +109,7 @@ function recursive (level,parent){
         for (comment of comments){
             if (level == 0 || comment.parent == parent) {
                 if(level == 0){display = "flex"}
-                if(level >0){display = "none"}
+                if(level > 0){display = "none"}
                 draw_comment(comment,checkChildren(comment.id,level),amountOfChildren(comment.id,level),display);
                 higherCounter();
                 recursive(level+1,comment.id);

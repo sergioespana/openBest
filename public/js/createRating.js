@@ -190,7 +190,7 @@ async function getratings(BPid) {
      // Getting a reference to all documents in the comment sub-collection for a best practice
     let documents = await db.collection(doelstring).get();
     // Each document that matches the query is cycled through
-    documents.docs.forEach((doc) => {
+    await documents.docs.forEach((doc) => {
         // for every rating get de relevant info     
         if (doc.id != "ratingdocument"){
             rating_date   = getTimeDifference(now,doc.data().date);

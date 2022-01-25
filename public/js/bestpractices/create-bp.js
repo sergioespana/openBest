@@ -367,7 +367,6 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray){
                 }
             }
 
-
             // DOCUMENT REFERENCE dropdowns are created and populated here
             else{     
                 
@@ -825,7 +824,6 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
             let docRefDocName = [];
             // relNames stores the names for each relationship to be stored
             let relNames = [];
-
         
             // STEP 1.1
             // Extracting all information from the filled in form and writing that info to arrays
@@ -839,8 +837,8 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                     if(filledBPform.elements[i].getAttribute('colpath') == colpathArray[cps] && filledBPform.elements[i].getAttribute('docname') == docNameArray[cps]){
                         var entryColPath = filledBPform.elements[i].getAttribute('colpath');
                         var entryDocName = filledBPform.elements[i].getAttribute('docname');
-                        var entryKey = filledBPform.elements[i].getAttribute('key');
-                        var entryType = filledBPform.elements[i].getAttribute('type');
+                        var entryKey     = filledBPform.elements[i].getAttribute('key');
+                        var entryType    = filledBPform.elements[i].getAttribute('type');
 
                         if(entryType == 'checkbox'){
                             var inputs = document.querySelectorAll('slct[]');   
