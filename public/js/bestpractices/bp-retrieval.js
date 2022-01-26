@@ -157,8 +157,8 @@ async function getDocData(callback) {
                     if(!(normalkey == "categories" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems" || normalkey == "effort" || normalkey == "timeframe" || normalkey == "date")){
                       
                     var description = document.createTextNode("  " + attribute + "   ");
-                    var checkbox = document.createElement("input");
-                    
+                    var checkbox    = document.createElement("input");
+              
                     checkbox.type                  = "checkbox";  // make the element a checkbox
                     checkbox.name                  = "slct[]";    // give it a name we can check on the server side
                     checkbox.value                 = attribute;   // make its value "pair"
@@ -224,17 +224,23 @@ async function getDocData(callback) {
                 indexArr.splice(0, 0, x);
                 //console.log(keyArray[x], "title", x);
               }
+
+
+
+              else if(keyArray[x] == '"categories"'){
+                  indexArr.splice(1, 0, x);
+              }
               else if(keyArray[x] == '"description"'){
-                indexArr.splice(1, 0, x);
+                indexArr.splice(2, 0, x);
                 //console.log(keyArray[x], "description", x);
               }
               else if(keyArray[x] == '"date"'){
-                indexArr.splice(2, 0, x);
+                indexArr.splice(3, 0, x);
                 //console.log(keyArray[x], "date", x);
               }
 
               else if(keyArray[x] == '"problem"'){
-                indexArr.splice(3, 0, x);
+                indexArr.splice(4, 0, x);
               }
               // Alex...
               // else if(keyArray[x] == '"categories"'){
@@ -253,26 +259,27 @@ async function getDocData(callback) {
            
             // indexArr at index 0 stores the index of the title key in the original keyArr
             title       = indexArr[0];
-            //console.log(indexArr[0], "title");
-            description = indexArr[1];
-            //console.log(indexArr[1], "description");
-            date        = indexArr[2];
-            //console.log(indexArr[2], "date");
-            // effort      = indexArr[3];
-            // console.log(indexArr[3], "effort");
-            // timeframe   = indexArr[4];
-            // console.log(indexArr[4], "timeframe");
-            // alex.. categories  = indexArr[3];
+            category    = indexArr[1];
+            description = indexArr[2]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
+            date        = indexArr[3];
+            problem     = indexArr[4];
 
+
+
+            //ORDERING OF THE TABLE COLUMNS
             // Getting the title, description and date for the documents
             let docdata = [
               `${doc.data()[Object.keys(doc.data())[title]]}`, 
-              `${doc.data()[Object.keys(doc.data())[description]]}`, 
+             
               `${doc.data()[Object.keys(doc.data())[date]]}`,
+              `${doc.data()[Object.keys(doc.data())[category]]}`,
+              `${doc.data()[Object.keys(doc.data())[problem]]}`,
+              `${doc.data()[Object.keys(doc.data())[description]].substring(0, 200) + '.....'}`
+            
               // `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
               // `${doc.data()[Object.keys(doc.data())[effort]]}`
           ];
-
+            
             // Pushing docdata to data array to populate the table
             data.push(docdata);
 

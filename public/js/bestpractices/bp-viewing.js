@@ -44,7 +44,7 @@ async function retrieveBPinfo(BPid) {
         BPtitle.innerText = `${doc.data()[Object.keys(doc.data())[title]]}`;
 
         let BPdescription       = document.getElementById("bp-description");
-        let description         = indexArr[1];
+        let description         = indexArr[2];
         BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
         let categoryArea = document.getElementById("bp-categories");

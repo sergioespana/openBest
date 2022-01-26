@@ -69,11 +69,11 @@ tbody.appendChild(row_1);
 // Creating and adding data to third row of the table
 let row_2 = document.createElement('tr');
 let row_2_data_1 = document.createElement('td');
-row_2_data_1.appendChild(popbutton3);
+row_2_data_1.appendChild(fileselec);
 let row_2_data_2 = document.createElement('td');
-row_2_data_2.appendChild(fileselec);
+row_2_data_2.appendChild(probutton);
 let row_2_data_3 = document.createElement('td');
-row_2_data_3.appendChild(probutton);
+row_2_data_3.appendChild(popbutton3);
 
 row_2.appendChild(row_2_data_1);
 row_2.appendChild(row_2_data_2);
@@ -164,7 +164,7 @@ async function addAuthors(){
                 name: authorname,
                 relationship: []
         }).then(docRef => {
-            console.log('author is added under ID ', docRef.id);
+            console.log('author', authorname,' is added under ID ', docRef.id);
         })
     }
 }
