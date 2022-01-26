@@ -52,13 +52,13 @@ var jsontest = {
                                         "related": "document reference"
                                     }],
                         "15filtersolution": "string",
-                        "16filtercategories" : "string",
+                        "16filtercategories": "string",
                         "17date": "string",
                         "18effort": "string",
                         "19timeframe":"int",
                         "20problem":"string",
                         "21audience":"string",
-                        "22description": "text",
+                        "22description":"text",
                         "23solution": "text",
                         
                         

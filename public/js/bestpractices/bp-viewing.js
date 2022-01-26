@@ -21,9 +21,7 @@ function tableClick(e) {
     modal.style.display = "block";
     retrieveBPinfo(BPid);
     startup(BPid);
-    console.log('kom ik hier?!');
     startupRatings(BPid);
-    console.log('kom ik hier?!123');
 }
 
 

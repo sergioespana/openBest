@@ -232,6 +232,10 @@ async function getDocData(callback) {
                 indexArr.splice(2, 0, x);
                 //console.log(keyArray[x], "date", x);
               }
+
+              else if(keyArray[x] == '"problem"'){
+                indexArr.splice(3, 0, x);
+              }
               // Alex...
               // else if(keyArray[x] == '"categories"'){
               //   indexArr.splice(3, 0, x);

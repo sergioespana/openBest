@@ -1,9 +1,7 @@
 // Create firestore (database) object
 var db = firebase.firestore();
 
-
 const bpList = document.querySelector('#test-list');
-
 
 // Display the BPs in a list
 function renderBPlist(doc) {
@@ -27,16 +25,13 @@ function renderBPlist(doc) {
 
 // Query test
 function queryTest() {
-
     //Getting all best practices that have the Workers category
-
     db.collection("sustainability/sustainability-state/bestpractices")
         .where("categories", "array-contains", "Workers")
         .get().then((snapshot) => {
             snapshot.docs.forEach(doc => {
                 // Logging the titles of matching BPs
                 console.log(doc.data().title)
-
                 // Displaying all BP info in a list
                 renderBPlist(doc);
             })

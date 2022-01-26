@@ -4,7 +4,6 @@ const auth = firebase.auth();
 // Current user logged in
 var user = firebase.auth().currentUser;
 
-
 auth.onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
