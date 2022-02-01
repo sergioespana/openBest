@@ -56,9 +56,9 @@ var jsontest = {
                         "17date": "string",
                         "18effort": "string",
                         "19timeframe":"int",
-                        "20problem":"string",
-                        "21audience":"string",
-                        "22description":"text",
+                        "20audience":"string",
+                        "21description":"text",
+                        "22problem":"string",
                         "23solution": "text",
                         
                         

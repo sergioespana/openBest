@@ -510,7 +510,6 @@ function insertAfter(newNode, referenceNode) {
 }
 function getUserEmail(){
     var user = firebase.auth().currentUser;
-    var photoUrl;
         if (user != null) {
             email = user.email;
             return(email);

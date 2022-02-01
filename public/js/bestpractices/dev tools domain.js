@@ -4,54 +4,42 @@
 // "Economy for the common good/domainstate"
 
 
-var db               = firebase.firestore();
+var db = firebase.firestore();
 
 let place = document.getElementById("popbut");
 
 let tbl = document.createElement('table');
 let thead = document.createElement('thead');
 thead.innerText = "Dev Tools";
-thead.style.textAlign = "center";
 let tbody = document.createElement('tbody');
 
 tbl.appendChild(thead);
 tbl.appendChild(tbody);
 
-
 var popbutton1   = document.createElement("INPUT"); 
 popbutton1.type  = "button";
 popbutton1.value = "Populate Authors";
-popbutton1.style.margin = "auto";
-popbutton1.style.display = "block";
 popbutton1.addEventListener("click", async function(){await addAuthors()});
 
 
 var popbutton2   = document.createElement("INPUT"); 
 popbutton2.type  = "button";
 popbutton2.value = "Populate ECG Themes";
-popbutton2.style.margin = "auto";
-popbutton2.style.display = "block";
 popbutton2.addEventListener("click", async function(){await addECGthemes()});
 
 
 var popbutton3   = document.createElement("INPUT"); 
 popbutton3.type  = "button";
 popbutton3.value = "Populate best practices";
-popbutton3.style.margin = "auto";
-popbutton3.style.display = "block";
 popbutton3.addEventListener("click", async function(){await addBPs();});
 
 var fileselec   = document.createElement("INPUT"); 
 fileselec.type = "file";
 fileselec.id = "fileUpload";
-fileselec.style.margin = "auto";
-fileselec.style.display = "block";
 
 var probutton   = document.createElement("INPUT"); 
 probutton.type  = "button";
 probutton.value = "upload";
-probutton.style.marginRight = "auto";
-probutton.style.display = "block";
 probutton.addEventListener("click", function(){UploadProcess()});
 
 
@@ -79,6 +67,8 @@ row_2.appendChild(row_2_data_1);
 row_2.appendChild(row_2_data_2);
 row_2.appendChild(row_2_data_3);
 tbody.appendChild(row_2);
+
+
 
 place.append(tbl)
 
@@ -342,8 +332,9 @@ async function addBPs(){
                 '19timeframe': Bp.Timeframe,
                 '20audience': Bp.Audience,
                 '21description': Bp.Description,
-                '22solution': Bp.Solution,
-                '23problem': Bp.Problem,
+                '22problem': Bp.Problem,
+                '23solution': Bp.Solution,
+               
                  created: "true",
 
         }).then(docRef => {
@@ -396,7 +387,6 @@ async function createExampleDocs(path){
         "3description": "text"
     }
     await db.collection(path + 'example').doc('exampledocument').set(data);
-
 }
 
 
