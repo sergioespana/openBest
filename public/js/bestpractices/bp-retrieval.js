@@ -181,11 +181,11 @@ function initTable() {
           // "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
       
           // dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
-          //   dom: '<"top"Bfrt<"clear">>rt<"bottom"lpP<"clear">>',
-          // buttons: [
-          //    'copy', 'excel', 'pdf'
-          //  ]
-          dom: 'Pfrtip'
+          dom: '<"top"flrt<"clear">>rt<"bottom"Bp<"clear">>',
+          buttons: [
+             'copy', 'excel', 'pdf'
+           ]
+        
         })
 
         $('a.toggle-vis').on('click', function (e) {

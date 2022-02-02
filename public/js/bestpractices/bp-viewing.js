@@ -16,8 +16,8 @@ var checkedREL = [];
 // ############################################
 
 function tableClick(e) {
-    let clickedRow = e.target.parentElement;
-    let BPid = clickedRow.getAttribute('doc-id');
+    let clickedRow      = e.target.parentElement;
+    let BPid            = clickedRow.getAttribute('doc-id');
     modal.style.display = "block";
     retrieveBPinfo(BPid);
     startup(BPid);
@@ -81,7 +81,6 @@ async function retrieveBPinfo(BPid) {
                                 authorName.style.marginRight = "5px";
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">"+value+"</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
-
                                 $(addDiv).append(authorName);
                             }
                         }
@@ -108,7 +107,6 @@ async function retrieveBPinfo(BPid) {
                                 authorName.style.marginRight = "5px";
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">"+value+"</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
-
                                 $(authorNameDiv).append(authorName);
                             }
                         }
@@ -204,7 +202,7 @@ async function retrieveDocInfo(docPath, docId, div){
                         let colTitle = document.createElement('h6');
                         colTitle.setAttribute('class', 'text-gray-400 font-weight-bold text-uppercase');
                         colTitle.style.fontSize = '12px';
-                        colTitle.innerText = (docPath.split('/')[docPath.split('/').length - 1]);
+                        colTitle.innerText      = (docPath.split('/')[docPath.split('/').length - 1]);
                         div.appendChild(colTitle);
 
                         // This document is in a subcollection
@@ -213,25 +211,25 @@ async function retrieveDocInfo(docPath, docId, div){
                             let sectionTitle = document.createElement('h6');
                             sectionTitle.setAttribute('class', 'text-gray-600 font-weight-bold text-uppercase');
                             sectionTitle.style.fontSize = '1rem';
-                            sectionTitle.innerText = value;
-                            div.style.marginTop = '15px'
+                            sectionTitle.innerText      = value;
+                            div.style.marginTop         = '15px'
                             div.appendChild(sectionTitle);
                         }
                         else{
                             //Create the title for this section
                             let sectionTitle = document.createElement('h6');
                             sectionTitle.setAttribute('class', 'text-success font-weight-bold text-uppercase');
-                            sectionTitle.style.fontSize = '1rem';
+                            sectionTitle.style.fontSize  = '1rem';
                             sectionTitle.style.marginTop = '15px';
-                            sectionTitle.innerText = value;
+                            sectionTitle.innerText       = value;
                             div.appendChild(sectionTitle);
                         }
                     }
                     // Regular text
                     else{
                         // Adding the attribute value as regular text
-                        let p = document.createElement('p');
-                        p.innerText = value;
+                        let p             = document.createElement('p');
+                        p.innerText       = value;
                         p.style.marginTop = '15px';
                         div.appendChild(p);
                     }
@@ -301,8 +299,8 @@ async function retrieveDocInfo(docPath, docId, div){
                     for(let docref = 0; docref < value.length; docref++){
                         // The subcollection of this ref
                         let refElements = (value[docref].related.path).split('/');
-                        let refDocId = refElements[refElements.length - 1];
-                        let refColPath = (value[docref].related.path).replace('/'+refDocId, '');
+                        let refDocId    = refElements[refElements.length - 1];
+                        let refColPath  = (value[docref].related.path).replace('/'+refDocId, '');
 
                         // We only want to check relationships that have not been checked with subcollections that have not been checked
                         if(!(checkedREL.includes(value[docref].related)) && !(checkedSC.includes(refColPath))){
@@ -324,8 +322,8 @@ async function retrieveDocInfo(docPath, docId, div){
 
                         // The subcollection of this ref
                         let refElements = (toCheck[ref].path).split('/');
-                        let refDocId = refElements[refElements.length - 1];
-                        let refColPath = (toCheck[ref].path).replace('/'+refDocId, '');
+                        let refDocId    = refElements[refElements.length - 1];
+                        let refColPath  = (toCheck[ref].path).replace('/'+refDocId, '');
 
                         checkedSC.push(refColPath);
 
@@ -338,12 +336,7 @@ async function retrieveDocInfo(docPath, docId, div){
                         relTitle.setAttribute('class', 'text-gray-400 font-weight-bold text-uppercase');
                         relTitle.style.fontSize = '12px';
                         relTitle.innerText      = value[ref].name;
-                        // let colTitle = document.createElement('h6');
-                        // colTitle.setAttribute('class', 'text-gray-400 font-weight-bold text-uppercase');
-                        // colTitle.style.fontSize = '12px';
-                        // colTitle.innerText = refElements[refElements.length - 2];
                         $(docRefDiv).append(relTitle);
-                        // $(docRefDiv).append(colTitle);
                         $(contentDiv).append(docRefDiv);
                         retrieveDocInfo(refColPath, refDocId, docRefDiv)
                     }
