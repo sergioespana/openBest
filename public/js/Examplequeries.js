@@ -23,7 +23,7 @@ function queryTest() {
                 var user = doc.data().user
                 getUser(user);
             })
-    })
+        })
 
     db.collection("sustainability/sustainability-state/bestpractices")
         // Getting all document in the best practices collection that have a category called Workers

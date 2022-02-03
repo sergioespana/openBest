@@ -19,19 +19,19 @@ var domainInstantiated;
 
 
 function toggleMenu() {
-    var x = document.getElementById("dropdown-content");
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-    }
+  var x = document.getElementById("dropdown-content");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
 }
 
 // Finding the domain for the currently logged in user
-$(document).ready(function() {
+$(document).ready(function () {
   domainName = document.getElementById("domain-name");
 
-  firebase.auth().onAuthStateChanged(function(user) {
+  firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
       userEmail = user.email;
       userName = user.displayName;
@@ -39,58 +39,58 @@ $(document).ready(function() {
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
 
-      checkUser(function() {
+      checkUser(function () {
 
         // Checking if this person is the administrator
-        if(dName){
+        if (dName) {
           db.collection(`${dName[0]}`).doc(`${dName[1]}`)
-            .onSnapshot(function(doc) {
+            .onSnapshot(function (doc) {
               // Setting the domain name
               domainName.innerHTML = doc.data().name;
 
-              if(doc.data().administrator == userEmail){
+              if (doc.data().administrator == userEmail) {
                 let admincard = document.getElementById("administrator-card");
                 let usercard = document.getElementById("user-card");
 
-                if(admincard){
+                if (admincard) {
                   admincard.style.display = "inline-block";
                   usercard.setAttribute('class', 'col-lg-6 mb-4');
                 }
               }
             });
 
-            // If dName is null, then the user belongs to no domain
-            // Otherwise, display the user actions
-            if(dName && usercard){
-              domainInstantiated = true;
-              usercard.style.display = "inline-block";
-            }
-            if(dName){
-              let menuItemBP = document.getElementById("menu-bp-item");
-              let menuItemToc = document.getElementById("menu-toc-item");
-              menuItemBP.style.display = "inline";
-              menuItemToc.style.display = "inline";
-            }
+          // If dName is null, then the user belongs to no domain
+          // Otherwise, display the user actions
+          if (dName && usercard) {
+            domainInstantiated = true;
+            usercard.style.display = "inline-block";
+          }
+          if (dName) {
+            let menuItemBP = document.getElementById("menu-bp-item");
+            let menuItemToc = document.getElementById("menu-toc-item");
+            menuItemBP.style.display = "inline";
+            menuItemToc.style.display = "inline";
+          }
+        }
+
+        // If the user belongs to no domain
+        if (!(dName)) {
+          domainInstantiated = false;
+          if (admincard || admintext) {
+            admincard.style.display = "inline-block";
+            admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
           }
 
-          // If the user belongs to no domain
-          if(!(dName)){
-            domainInstantiated = false;
-            if(admincard || admintext){
-              admincard.style.display = "inline-block";
-              admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
-            }
-
-            // If the user belongs to no domain, refer to the index page
-            if(window.location.pathname == '/bestpractices.html' || window.location.pathname == '/toc.html'){
-              window.location.replace("/index.html");
-            }
+          // If the user belongs to no domain, refer to the index page
+          if (window.location.pathname == '/bestpractices.html' || window.location.pathname == '/toc.html') {
+            window.location.replace("/index.html");
           }
+        }
       });
-      
+
     }
   });
-  
+
 });
 
 
@@ -106,7 +106,7 @@ async function checkUser(callback) {
         userPath = doc.ref.parent.path;
 
         // Checking if one of the results matches the currently defined domain name in jsontest
-        if(Object.entries(jsontest)[0][0] == userPath.split("/")[0]){
+        if (Object.entries(jsontest)[0][0] == userPath.split("/")[0]) {
           dName = userPath.split("/");
         }
       });
@@ -124,8 +124,8 @@ function delay() {
 
 // Finds the collectionpath that corresponds to a wildcard filter
 function findPath(array, filter) {
-  var result = array.filter(function(item){
-    return typeof item == 'string' && item.indexOf(filter) > -1;            
+  var result = array.filter(function (item) {
+    return typeof item == 'string' && item.indexOf(filter) > -1;
   });
   // The first item is 
   return result[0];

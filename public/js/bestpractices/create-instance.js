@@ -1,4 +1,4 @@
-  
+
 // ########################
 // Parses the JSON model uploaded by the user and instantiates the repository
 // ########################
@@ -31,74 +31,74 @@ var jsontest = {
                     //fields
                     "01grouptitle": "Best practice",
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
-                        "1displayfeature": true,
-                        "10title": "string",
-                        "11categories": ["string"],
-                        "12ECGTheme": [{
-                                        "name" : "Adresses", 
-                                        "self": "document reference",
-                                        "related": "document reference"
-                                    }],
-                        
-                        "13image":"string",
-                        "14author": [{
-                                        "name" : "Written by", 
-                                        "self": "document reference", 
-                                        "related": "document reference"
-                                    },
-                                    {
-                                        "name" : "Reviewed by", 
-                                        "self": "document reference", 
-                                        "related": "document reference"
-                                    }],
-                        "15filtersolution": "string",
-                        "16filtercategories": "string",
-                        "17date": "string",
-                        "18effort": "string",
-                        "19timeframe":"int",
-                        "20audience":"string",
-                        "21description":"text",
-                        "22problem":"string",
-                        "23solution": "text",
-                        
-                        
-                        //collection
-                        "comments": {
-                            "commentdocument": {
-                                "displayfeature": false,
-                                "author": "string",
-                                "date": "string",
-                                "email": "string",
-                                "img": "string",
-                                "level": "int",
-                                "parent": "string",
-                                "text": "string"
-                            }
-                        },
-                        //collection
-                        "ratings":{
-                            "ratingdocument":{
-                                "01grouptitle": "Ratings",
-                                "02groupdesc": "Describe the dimension (category) on which the best practice can be rated",
-                                "2ratingtype":["stars"],
-                                "3dimension":["string"],
-                                "4dimension description":["string"],
-                                "5scale":[5],
-                                "6stepsize":[1]
-                            }
-                        },
-                        
-                        "example": {
-                            "exampledocument": {
-                                "01grouptitle": "Example",
-                                "02groupdesc": "Describe an example here.",
-                                "1displayfeature": true,
-                                "2name": "string",
-                                "3description": "text"
-                            }
-                        },
-                    }
-                },
+                    "1displayfeature": true,
+                    "10title": "string",
+                    "11categories": ["string"],
+                    "12ECGTheme": [{
+                        "name": "Adresses",
+                        "self": "document reference",
+                        "related": "document reference"
+                    }],
+
+                    "13image": "string",
+                    "14author": [{
+                        "name": "Written by",
+                        "self": "document reference",
+                        "related": "document reference"
+                    },
+                    {
+                        "name": "Reviewed by",
+                        "self": "document reference",
+                        "related": "document reference"
+                    }],
+                    "15filtersolution": "string",
+                    "16filtercategories": "string",
+                    "17date": "string",
+                    "18effort": "string",
+                    "19timeframe": "int",
+                    "20audience": "string",
+                    "21description": "text",
+                    "22problem": "string",
+                    "23solution": "text",
+
+
+                    //collection
+                    "comments": {
+                        "commentdocument": {
+                            "displayfeature": false,
+                            "author": "string",
+                            "date": "string",
+                            "email": "string",
+                            "img": "string",
+                            "level": "int",
+                            "parent": "string",
+                            "text": "string"
+                        }
+                    },
+                    //collection
+                    "ratings": {
+                        "ratingdocument": {
+                            "01grouptitle": "Ratings",
+                            "02groupdesc": "Describe the dimension (category) on which the best practice can be rated",
+                            "2ratingtype": ["stars"],
+                            "3dimension": ["string"],
+                            "4dimension description": ["string"],
+                            "5scale": [5],
+                            "6stepsize": [1]
+                        }
+                    },
+
+                    "example": {
+                        "exampledocument": {
+                            "01grouptitle": "Example",
+                            "02groupdesc": "Describe an example here.",
+                            "1displayfeature": true,
+                            "2name": "string",
+                            "3description": "text"
+                        }
+                    },
+                }
+            },
             //collection
             // must ALWAYS be called users and have an email field
             "users": {
@@ -119,8 +119,8 @@ var jsontest = {
                     "4name": "string"
                 }
             },
-             //collection
-             "ECGThemes": {
+            //collection
+            "ECGThemes": {
                 //document
                 "ECGThemedocument": {
                     "1displayfeature": false,
@@ -133,8 +133,8 @@ var jsontest = {
 
 
 // Create a DB instance
-if(document.getElementById("create-instance-btn")){
-    document.getElementById("create-instance-btn").addEventListener("click", function(){
+if (document.getElementById("create-instance-btn")) {
+    document.getElementById("create-instance-btn").addEventListener("click", function () {
         // Emptying the collectionpaths and documentpaths
         // This function is called for each BP that is created, so we need updated collectionpaths each time
         collectionPaths = [];
@@ -142,7 +142,6 @@ if(document.getElementById("create-instance-btn")){
         // remove this after dev
         //jsontest = JSONmodel;
         console.log(jsontest);
-
         extractJSON(jsontest, 0, '');
         extractFields();
     })
@@ -153,38 +152,38 @@ function extractJSON(obj, int, prev) {
     // looping over the elements in the json file
     for (const i in obj) {
         // checking if the element is an array or object
-        if(Array.isArray(obj[i]) || !(typeof obj[i] === 'object')){
+        if (Array.isArray(obj[i]) || !(typeof obj[i] === 'object')) {
             // keys in the document
         }
         else {
             // an even position indicates a collection
-            if(int%2 == 0){
+            if (int % 2 == 0) {
                 // the first element should not have a / in front
-                if(int == 0){
+                if (int == 0) {
                     var path = i;
                     collectionPaths.push(path);
                 }
-                else{
+                else {
                     var path = prev + '/' + i;
                     collectionPaths.push(path);
                 }
             }
             // uneven position indicates document
-            else{
+            else {
                 var path = prev + '/' + i;
                 fieldsArr.push(obj[i]);
                 documentPaths.push(path);
             }
             // looping again for the next element
-            extractJSON(obj[i], int+1, path);
-        } 
+            extractJSON(obj[i], int + 1, path);
+        }
     }
 }
 
 
 function extractFields() {
     // For every entry in fieldsArr (key-value pair in the JSON model), we want to get the key-value pairs and corresponding collection path
-    for(var x = 0; x < fieldsArr.length; x++){
+    for (var x = 0; x < fieldsArr.length; x++) {
         // All fields related to this collection 
         var fields = Object.entries(fieldsArr[x]);
         // Array of the remaining fields (non-nested objects)
@@ -196,20 +195,20 @@ function extractFields() {
         // For every key-value pair
         for (let [key, value] of fields) {
             // We don't want nested objects
-            if(!(typeof value === 'object')) {
-                var fieldsObject = ("\""+`${key}`+"\""+": "+"\""+`${value}`+"\"");
+            if (!(typeof value === 'object')) {
+                var fieldsObject = ("\"" + `${key}` + "\"" + ": " + "\"" + `${value}` + "\"");
                 remaining.push(fieldsObject);
             }
             // If the key-value pair indicates an array (which is an object type)
-            else if(Array.isArray(value)){
+            else if (Array.isArray(value)) {
                 // If this array stores a map object (docref)
-                if(typeof(value) == "object"){
-                    let arrObject = ("\""+`${key}`+"\""+": "+`${JSON.stringify(value)}`);
+                if (typeof (value) == "object") {
+                    let arrObject = ("\"" + `${key}` + "\"" + ": " + `${JSON.stringify(value)}`);
                     remaining.push(arrObject);
                 }
                 // Other arrays
-                else{
-                    let arrObject = ("\""+`${key}`+"\""+": "+"[\""+`${value}`+"\"]");
+                else {
+                    let arrObject = ("\"" + `${key}` + "\"" + ": " + "[\"" + `${value}` + "\"]");
                     remaining.push(arrObject);
                 }
             }
@@ -217,14 +216,14 @@ function extractFields() {
 
         // Creating the document set info
         remaining.forEach(element => {
-            if(remaining[0] === element){
-                docInfo += ("{"+element+",");
+            if (remaining[0] === element) {
+                docInfo += ("{" + element + ",");
             }
-            else if (remaining[remaining.length - 1] === element){
-                docInfo += (element+"}");
+            else if (remaining[remaining.length - 1] === element) {
+                docInfo += (element + "}");
             }
             else {
-                docInfo += (element+",");
+                docInfo += (element + ",");
             }
         });
 
@@ -242,8 +241,8 @@ function writeDB(coll, doci, docp) {
     let docName = x[x.length - 1];
 
     // Page refreshed after write to DB if the domain has not been instantiated before
-    writeCallback(coll, docName, JSONinfo, function() {
-        if(domainInstantiated == false){
+    writeCallback(coll, docName, JSONinfo, function () {
+        if (domainInstantiated == false) {
             location.reload();
         }
     })
@@ -252,7 +251,7 @@ function writeDB(coll, doci, docp) {
 function delay() {
     console.log('done');
     return new Promise(resolve => setTimeout(resolve, 800));
-   
+
 }
 
 
@@ -266,8 +265,8 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
     let userPath = findPath(collectionPaths, 'user');
 
     // Only writing this info when the domain hasn't been instantiated yet
-    if(domainInstantiated == false){
-        db.collection(userPath).doc('d-user').set({'email': userEmail, 'name': userName, 'role': 'administrator'});
+    if (domainInstantiated == false) {
+        db.collection(userPath).doc('d-user').set({ 'email': userEmail, 'name': userName, 'role': 'administrator' });
     }
 
     await delay();

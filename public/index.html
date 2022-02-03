@@ -1,222 +1,229 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBest</title>
 
-    <!-- loading Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>OpenBest</title>
 
-    <!-- regular stylesheet -->
-    <link type="text/css" rel="stylesheet" href="css/styling.css" />
-    <!-- template stylesheet -->
-    <link href="css/template.css" rel="stylesheet">
-    <!-- slidingbar -->
-    <link href="css/slidingbar.css" rel= "stylesheet">
+  <!-- loading Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <!-- stars -->
-    <link href="css/stars.css" rel= "stylesheet">
+  <!-- regular stylesheet -->
+  <link type="text/css" rel="stylesheet" href="css/styling.css" />
+  <!-- template stylesheet -->
+  <link href="css/template.css" rel="stylesheet">
+  <!-- slidingbar -->
+  <link href="css/slidingbar.css" rel="stylesheet">
 
-    <!-- Ebay -->
-    <link href="css/eBay.css" rel= "stylesheet">
+  <!-- stars -->
+  <link href="css/stars.css" rel="stylesheet">
 
-    <!-- Binary stars -->
-    <link href="css/bin-stars.css" rel= "stylesheet">
+  <!-- Ebay -->
+  <link href="css/eBay.css" rel="stylesheet">
 
-    <!-- liking -->
+  <!-- Binary stars -->
+  <link href="css/bin-stars.css" rel="stylesheet">
 
-    <link href="css/liking.css" rel="stylesheet">
+  <!-- liking -->
+  <link href="css/liking.css" rel="stylesheet">
 
-    <!-- comment section -->
-    <link href="css/comment-section.css" rel="stylesheet">
+  <!-- comment section -->
+  <link href="css/comment-section.css" rel="stylesheet">
 
-    <!-- font awesome for icons -->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <!-- font awesome for icons -->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-    <!-- custom fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Vollkorn&display=swap" rel="stylesheet">
+  <!-- custom fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Vollkorn&display=swap" rel="stylesheet">
 
-    <!-- update the version number as needed -->
-    <script src="/__/firebase/7.8.1/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script src="/__/firebase/7.8.1/firebase-auth.js"></script>
-    <script src="/__/firebase/7.8.1/firebase-database.js"></script>
-    <script src="/__/firebase/7.8.1/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
-    <script src="/__/firebase/init.js"></script>
-    <!--  firsestore is not included in regular firebase scripts -->
-    <script src="/__/firebase/7.9.1/firebase-firestore.js"></script>
+  <!-- update the version number as needed -->
+  <script src="/__/firebase/7.8.1/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script src="/__/firebase/7.8.1/firebase-auth.js"></script>
+  <script src="/__/firebase/7.8.1/firebase-database.js"></script>
+  <script src="/__/firebase/7.8.1/firebase-storage.js"></script>
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script src="/__/firebase/init.js"></script>
+  <!--  firsestore is not included in regular firebase scripts -->
+  <script src="/__/firebase/7.9.1/firebase-firestore.js"></script>
 
-  </head>
-  <body id="page-top">
+</head>
 
-    <!-- Load screen -->
-    <div class="vertical bg-gradient-primary" id="loadscreen">
-      <div class="loader"></div>
-    </div>
+<body id="page-top">
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-  
-      <!-- Sidebar -->
-      <ul class="navbar-nav sidebar sidebar-dark" id="sideMenu">
-  
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-          <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-leaf"></i>
-          </div>
-          <div class="sidebar-brand-text mx-3">OpenBest</div>
-        </a>
-  
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-  
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-          <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-        </li>
+  <!-- Load screen -->
+  <div class="vertical bg-gradient-primary" id="loadscreen">
+    <div class="loader"></div>
+  </div>
 
-        <!-- Nav Item - Practices -->
-        <li id="menu-bp-item" class="nav-item">
-          <a class="nav-link" href="bestpractices.html">
-            <i class="far fa-lightbulb"></i>
-            <span>Practices</span></a>
-        </li>
+  <!-- Page Wrapper -->
+  <div id="wrapper">
 
-        <!-- Nav Item - ToC -->
-        <li id = "menu-toc-item" class="nav-item">
-          <a class="nav-link" href="toc.html">
-            <i class="fas fa-ruler-combined"></i>
-            <span>ToC</span></a>
-        </li>
-  
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-dark" id="sideMenu">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-leaf"></i>
         </div>
-  
-      </ul>
-      <!-- End of Sidebar -->
-  
-      <!-- Content Wrapper -->
-      <div id="content-wrapper" class="d-flex flex-column">
-  
-        <!-- Main Content -->
-        <div id="content">
-  
-          <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-  
-            <!-- Sidebar Toggle (Topbar) -->
-            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-              <i class="fa fa-bars"></i>
-            </button>
-  
-            <div id="domain-name" class="sidebar-brand-text"></div>
-  
-            <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
-  
-              <!-- Nav Item - User Information -->
-              <li id="userinfo" class="nav-item dropdown no-arrow">
-                <a onclick="toggleMenu()" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span id="username" class="mr-2 d-none d-lg-inline text-gray-600 small">Gebruiker</span>
-                  <img id="profilepicture" class="img-profile rounded-circle" src="">
-                </a>
-              </li>
+        <div class="sidebar-brand-text mx-3">OpenBest</div>
+      </a>
 
-              <!-- Dropdown - User Information -->
-              <div id="dropdown-content" class="dropdown-menu dropdown-menu-right shadow" style="display:none">
-                <a class="dropdown-item" onclick="logOut()">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
-                </a>
-              </div>
-  
-            </ul>
-  
-          </nav>
-          <!-- End of Topbar -->
-  
-          <!-- Begin Page Content -->
-          <div class="container-fluid" id = "test">
-  
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1>Welcome</h1>
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active">
+        <a class="nav-link" href="index.html">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Nav Item - Practices -->
+      <li id="menu-bp-item" class="nav-item">
+        <a class="nav-link" href="bestpractices.html">
+          <i class="far fa-lightbulb"></i>
+          <span>Practices</span></a>
+      </li>
+
+      <!-- Nav Item - ToC -->
+      <li id="menu-toc-item" class="nav-item">
+        <a class="nav-link" href="toc.html">
+          <i class="fas fa-ruler-combined"></i>
+          <span>ToC</span></a>
+      </li>
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <div id="domain-name" class="sidebar-brand-text"></div>
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+            <!-- Nav Item - User Information -->
+            <li id="userinfo" class="nav-item dropdown no-arrow">
+              <a onclick="toggleMenu()" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span id="username" class="mr-2 d-none d-lg-inline text-gray-600 small">Gebruiker</span>
+                <img id="profilepicture" class="img-profile rounded-circle" src="">
+              </a>
+            </li>
+
+            <!-- Dropdown - User Information -->
+            <div id="dropdown-content" class="dropdown-menu dropdown-menu-right shadow" style="display:none">
+              <a class="dropdown-item" onclick="logOut()">
+                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                Logout
+              </a>
             </div>
 
-            <p>
-              Welcome to the OpenBest platform. Please refer to the actions for your role below.
-            </p>
-            <!-- POPBUT FOR DEVV -->
-          <div id = 'popbut'></div>
-            <div class="row userCards">
-              <div id="user-card" class="col-lg-12 mb-4">
-                <div class="card shadow mb-4">
-                  <div class="card-header py-3">
-                    <h6 class="text-success font-weight-bold text-uppercase">User</h6>
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="text-center">
-                          <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;" src="resources/images/bp-drawing.svg" alt="">
-                        </div>
+          </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid" id="test">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1>Welcome</h1>
+          </div>
+
+          <p>
+            Welcome to the OpenBest platform. Please refer to the actions for your role below.
+          </p>
+          <!-- POPBUT FOR DEVV -->
+          <div id='popbut'></div>
+          <div class="row userCards">
+            <div id="user-card" class="col-lg-12 mb-4">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="text-success font-weight-bold text-uppercase">User</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;"
+                          src="resources/images/bp-drawing.svg" alt="">
                       </div>
-                      <div class="col-lg-6">
-                        <p>As a user, you are able to create store best practices by clicking on the button below.</p>
-                        <a id="create-BP-btn" class="btn btn-light btn-icon-split">
-                          <span class="icon text-gray-600">
-                            <i class="fas fa-arrow-right"></i>
-                          </span>
-                          <span class="text">Create BP</span>
-                        </a>
-                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <p>As a user, you are able to create store best practices by clicking on the button below.</p>
+                      <a id="create-BP-btn" class="btn btn-light btn-icon-split">
+                        <span class="icon text-gray-600">
+                          <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span class="text">Create BP</span>
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div id="administrator-card" class="col-lg-6 mb-4">
-                <div class="card shadow mb-4">
-                  <div class="card-header py-3">
-                    <h6 class="text-success font-weight-bold text-uppercase">Administrator</h6>
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="text-center">
-                          <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;" src="resources/images/administrator.svg" alt="">
-                        </div>
+            <div id="administrator-card" class="col-lg-6 mb-4">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="text-success font-weight-bold text-uppercase">Administrator</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;"
+                          src="resources/images/administrator.svg" alt="">
                       </div>
-                      <div class="col-lg-6">
-                        <div class="row">
-                          <p id="admin-text">As an adminstrator, you can review and update the domain model using the buttons below.</p>
-                        </div>
-                        <a style="display: block" id="create-instance-btn" class="btn btn-light btn-icon-split">
-                          <span class="text">Create domain</span>
-                        </a>
-                        <a style="margin-top: 10px; display: block" id="create-model-btn" class="btn btn-light btn-icon-split">
-                          <span class="text">Create model</span>
-                        </a>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="row">
+                        <p id="admin-text">As an adminstrator, you can review and update the domain model using the
+                          buttons below.</p>
                       </div>
+                      <a style="display: block" id="create-instance-btn" class="btn btn-light btn-icon-split">
+                        <span class="text">Create domain</span>
+                      </a>
+                      <a style="margin-top: 10px; display: block" id="create-model-btn"
+                        class="btn btn-light btn-icon-split">
+                        <span class="text">Create model</span>
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-  
+          </div>
+
         </div>
         <!-- End of Main Content -->
-  
+
       </div>
       <!-- End of Content Wrapper -->
-  
+
     </div>
     <!-- End of Page Wrapper -->
 
@@ -230,22 +237,24 @@
           <div class="col-sm-10 col-lg-6 col-centered">
             <div class="bp-modal-body">
               <h1>Best practice entry</h1>
-              
-                <div class="card card-margin border-left-success shadow">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Store your best practice</div>
-                        <div style="padding-right: 12px" class="p">Use this form to store a best practice. If you have any questions about the contents of this form, contact your domain administrator!</div>
+
+              <div class="card card-margin border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Store your best practice
                       </div>
-                      <div class="col-auto">
-                        <i class="far fa-edit fa-2x text-gray-300"></i>
-                      </div>
+                      <div style="padding-right: 12px" class="p">Use this form to store a best practice. If you have any
+                        questions about the contents of this form, contact your domain administrator!</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-edit fa-2x text-gray-300"></i>
                     </div>
                   </div>
                 </div>
-               
-              <hr class="form-divider"> 
+              </div>
+
+              <hr class="form-divider">
 
               <form id="bp-entry-form" class="needs-validation" novalidate>
                 <!-- Items for BP entry will be displayed here -->
@@ -257,9 +266,9 @@
                 </span>
                 <span class="text">Store BP</span>
               </a>
+            </div>
           </div>
-          </div>
-        <!-- End of modal content -->
+          <!-- End of modal content -->
         </div>
 
       </div>
@@ -276,38 +285,46 @@
             <div class="model-modal-body">
 
               <h1 style="margin-bottom: 30px">Create a model</h1>
-              
+
               <!-- Form to create the JSON model -->
               <form id="dsl-create-form">
 
-              <!-- General info -->
-              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
-                <div style="margin-top: 20px" class="font-weight-bold text-success text-uppercase">General info</div>
-                <br>
-                <label>Name of the domain</label>
-                <input id="input-domain-name" class="form-control bg-light border-0 small" type="value" placeholder="e.g. My Domain"></input>
-              </div>
+                <!-- General info -->
+                <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                  <div style="margin-top: 20px" class="font-weight-bold text-success text-uppercase">General info</div>
+                  <br>
+                  <label>Name of the domain</label>
+                  <input id="input-domain-name" class="form-control bg-light border-0 small" type="value"
+                    placeholder="e.g. My Domain"></input>
+                </div>
 
-              <!-- Best practice info -->
-              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
-                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Best practices</div>
-                <br>
-                <label>Group title</label>
-                <input id="bp-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Best Practice"></input>
-                <br>
-                <label>Group description</label>
-                <input id="bp-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Enter best practice info here"></input>
-                <br>
+                <!-- Best practice info -->
+                <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                  <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Best practices
+                  </div>
+                  <br>
+                  <label>Group title</label>
+                  <input id="bp-group-title" class="form-control bg-light border-0 small" type="value"
+                    placeholder="e.g. Best Practice"></input>
+                  <br>
+                  <label>Group description</label>
+                  <input id="bp-group-description" class="form-control bg-light border-0 small" type="value"
+                    placeholder="e.g. Enter best practice info here"></input>
+                  <br>
                   <label style="display: block">Want to add these recommended subcollections?</label>
                   <br>
-                  <div id = "checkbox-div">
-                    <input id="comments-checkbox" class="bg-light border-0 small" type="checkbox" name="comments" value="Comments"></input>
+                  <div id="checkbox-div">
+                    <input id="comments-checkbox" class="bg-light border-0 small" type="checkbox" name="comments"
+                      value="Comments"></input>
                     <label for="comments">Comments</label>
-                    <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings" value="Ratings"></input>
+                    <input id="ratings-checkbox" class="bg-light border-0 small" type="checkbox" name="ratings"
+                      value="Ratings"></input>
                     <label id="comments-checkbox" for="ratings">Ratings</label>
-                    <input id="example-checkbox" class="bg-light border-0 small" type="checkbox" name="example" value="Example"></input>
+                    <input id="example-checkbox" class="bg-light border-0 small" type="checkbox" name="example"
+                      value="Example"></input>
                     <label id="example-checkbox" for="example">Example</label>
-                    <input id="effort-checkbox" class="bg-light border-0 small" type="checkbox" name="effort" value="Effort"></input>
+                    <input id="effort-checkbox" class="bg-light border-0 small" type="checkbox" name="effort"
+                      value="Effort"></input>
                     <label id="effort-checkbox" for="effort">Effort</label>
                   </div>
                   <br>
@@ -321,56 +338,60 @@
                   </select>
                   <br>
                   <input id="rating-scale" class="form-control bg-light border-0 small" placeholder="Scale"></input>
-                  <input id="rating-stepsize" class="form-control bg-light border-0 small" placeholder="Step size"></input>
-              </div>
+                  <input id="rating-stepsize" class="form-control bg-light border-0 small"
+                    placeholder="Step size"></input>
+                </div>
 
-              <!-- Problem info -->
-              <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
-                <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Problems</div>
-                <br>
-                <label>Group title</label>
-                <input id="prob-group-title" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Problem"></input>
-                <br>
-                <label>Group description</label>
-                <input id="prob-group-description" class="form-control bg-light border-0 small" type="value" placeholder="e.g. Describe problem info here"></input>
-              </div>
-
-
-              <div class="new-concept">
-                <!-- HTML for adding new concepts is added here -->
-              </div>
+                <!-- Problem info -->
+                <div style="border-style: solid; border-color: #f8f9fc; padding: 20px; margin-top: 15px">
+                  <div style="margin-top: 40px" class="font-weight-bold text-success text-uppercase">Problems</div>
+                  <br>
+                  <label>Group title</label>
+                  <input id="prob-group-title" class="form-control bg-light border-0 small" type="value"
+                    placeholder="e.g. Problem"></input>
+                  <br>
+                  <label>Group description</label>
+                  <input id="prob-group-description" class="form-control bg-light border-0 small" type="value"
+                    placeholder="e.g. Describe problem info here"></input>
+                </div>
 
 
-              <hr>
+                <div class="new-concept">
+                  <!-- HTML for adding new concepts is added here -->
+                </div>
 
-              <a style="margin-top: 20px; display: inline-block" id="add-concept" class="btn btn-light btn-icon-split">
-                <span class="icon text-gray-600">
-                  <i class="fas fa-plus"></i>
-                </span>
-                <span class="text">Add concept</span>
-              </a>
 
-              <a style="margin-top: 20px; display: inline-block" id="dsl-create" class="btn btn-light btn-icon-split">
-                <span class="icon text-gray-600">
-                  <i class="fas fa-arrow-right"></i>
-                </span>
-                <span class="text">Create JSON</span>
-              </a>
+                <hr>
 
-            </form>
+                <a style="margin-top: 20px; display: inline-block" id="add-concept"
+                  class="btn btn-light btn-icon-split">
+                  <span class="icon text-gray-600">
+                    <i class="fas fa-plus"></i>
+                  </span>
+                  <span class="text">Add concept</span>
+                </a>
+
+                <a style="margin-top: 20px; display: inline-block" id="dsl-create" class="btn btn-light btn-icon-split">
+                  <span class="icon text-gray-600">
+                    <i class="fas fa-arrow-right"></i>
+                  </span>
+                  <span class="text">Create JSON</span>
+                </a>
+
+              </form>
 
             </div>
           </div>
-        <!-- End of modal content -->
+          <!-- End of modal content -->
         </div>
       </div>
     </div>
-  
-  
+
+
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  
+
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
@@ -378,9 +399,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
     <!-- required for Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"></script>
 
     <!-- Custom scripts -->
     <script src="js/auth.js"></script>
@@ -388,13 +415,14 @@
     <script src="js/bestpractices/create-instance.js"></script>
     <script src="js/bestpractices/create-bp.js"></script>
     <script src="js/storage.js"></script>
-    <script src="js/dsl.js"></script> 
+    <script src="js/dsl.js"></script>
     <script src="js/bestpractices/dev tools domain.js"></script>
 
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
-    
-    
-  </body>
+
+
+</body>
+
 </html>

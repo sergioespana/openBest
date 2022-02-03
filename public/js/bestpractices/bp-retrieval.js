@@ -50,11 +50,9 @@ const unique = (value, index, self) => {
 // Call the dataTables jQuery plugin
 // Necessary for correctly displaying data in the table
 $(document).ready(function () {
-
   // First initialization of datatable before BPs are retrieved from database
   $('#dataTable').DataTable();
   initTable();
-
 });
 
 
@@ -99,8 +97,7 @@ function initTable() {
           //responsive: true,
           orderCellsTop: true,
           fixedHeader: true,
-        
-
+          
           // createdRow is a function that adds data to the rows created
           "createdRow": function (row, data, dataIndex) {
             // docIDs stores the document id's of the retrieved best practices
@@ -119,7 +116,6 @@ function initTable() {
             this.api().columns().every(function () {
               var column = this;
               if (column[0] < 3) {
-              
                 let cell = $('.filters_ th').eq(
                   $(api.column(column[0]).header()).index()
                 );
@@ -178,14 +174,13 @@ function initTable() {
               }
             });
           },
-          // "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-      
+          
           // dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
           dom: '<"top"flrt<"clear">>rt<"bottom"Bp<"clear">>',
           buttons: [
-             'copy', 'excel', 'pdf'
-           ]
-        
+            'copy', 'excel', 'pdf'
+          ]
+
         })
 
         $('a.toggle-vis').on('click', function (e) {
@@ -267,26 +262,6 @@ async function getDocData(callback) {
 
                   // add the label element to your div
                 }
-                //alex
-                // if(normalkey == "effort"){
-                //   if(alreadyeffortFrame) {return;}
-                //   var slider = document.createElement("input");
-                //   slider.type = "range";
-                //   slider.max = "10";
-                //   slider.min = "1";
-                //   label.appendChild(slider);   // add the box to the element
-                //   alreadyeffortFrame = true;  
-                //}
-                //alex
-                // if(normalkey == "timeframe"){
-                //   if(alreadytimeframe) return;
-                // var slider = document.createElement("input");
-                // slider.type = "range";
-                // slider.max = "10";
-                // slider.min = "1";
-                // label.appendChild(slider);   // add the box to the element          
-                // alreadytimeframe = true;
-                //}
               }
 
             });
@@ -368,106 +343,29 @@ async function getDocData(callback) {
 }
 
 
-// Populating the category selection box
-// function populateCat() {
-
-//   // const categorySelect = document.querySelector('#category-select');
-//   const uniqueCat = catArray.filter(unique);
-
-//   // Iterating over the categories of retrieved BPs
-//   uniqueCat.forEach(categoryElement => {
-
-//     if(!(categoryElement === undefined || categoryElement == "")){
-
-//       var label = document.createElement("label");
-//       var description = document.createTextNode("  " + categoryElement + "   ");
-//       var checkbox = document.createElement("input");
-
-//       // Creates the checkboxes for categories in the filter modal
-//       checkbox.type = "checkbox";    
-//       checkbox.name = "slct" + categoryElement;      
-//       checkbox.value = categoryElement;         
-//       checkbox.style.padding = "20px";
-//       checkbox.style.left =  "20px";
-//       checkbox.style.bottom=  "20px";
-//       checkbox.style.width = "20px";
-//       checkbox.style.height = "20px";
-//       checkbox.style.border = "solid white";
-//       checkbox.style.borderWidth = "20px";
-//       label.style.padding = "5px";
-
-//       label.appendChild(checkbox);   // add the box to the element
-//       label.appendChild(description);// add the description to the element
-
-//       // add the label element to your div
-//       document.getElementById('some_div').appendChild(label);
-
-//       }
-
-//     let category = document.createElement('option');
-//     category.setAttribute('value', categoryElement);
-//     category.textContent = categoryElement;
-//     categorySelect.appendChild(category);
-
-//   });
-
-// }
 
 $("#some_div").on("click", ".checkboxes", function () {
   var value = $(this).attr("value");
   alert(value);
 });
 
-// When a category is selected
-// $("#category-select").change(function() {
 
-//   docIDs = [];
-//   const selectedCat = document.getElementById("category-select").value;
+function printDiv({ divId, title }) {
+  let mywindow = window.open('', 'PRINT', 'height=650,width=900,top=100,left=150');
 
-//   if(selectedCat == ''){
-//     initTable();
-//   }
-//   else{
-//     let bpPath = findPath(collectionPaths, 'bestpractices');
-//     db.collection(`${bpPath}`)
-//         .where(catKeyName, "array-contains", `${selectedCat}`)
-//         .get().then((snapshot) => {
+  mywindow.document.write(`<html><head><title>${title}</title>`);
+  mywindow.document.write('</head><body >');
+  mywindow.document.write(document.getElementById(divId).innerHTML);
+  mywindow.document.write('</body></html>');
 
-//             //Empty the data array
-//             data = [];
-//             snapshot.docs.forEach(doc => {
+  mywindow.document.close(); // necessary for IE >= 10
+  mywindow.focus(); // necessary for IE >= 10*/
 
-//                 // Pushing data to docdata array to populate the table
-//                 let docdata = [`${doc.data()[Object.keys(doc.data())[title]]}`, `${doc.data()[Object.keys(doc.data())[description]]}`, `${doc.data()[Object.keys(doc.data())[date]]}`];
-//                 data.push(docdata);
-//                 docIDs.push(doc.id);
-//             });
+  mywindow.print();
+  mywindow.close();
 
-//             // DataTable needs to be destroyed before reinitializing
-//             $('#dataTable').DataTable().destroy();
-//             $('#dataTable').DataTable( {
-//               data: data,
-//               // createdRow is a function that adds data to the rows created
-//               "createdRow": function( row, data, dataIndex ) {
-//                 // docIDs stores the document id's of the retrieved best practices
-//                 for(i = 0; i < docIDs.length; i++){
-//                   // dataIndex is the internal index of the rows in the dataTable > can therefore be linked to index in docIDs 
-//                   if(dataIndex == i){
-//                     $(row).attr( 'doc-id', `${docIDs[i]}` )
-//                     .attr('onClick', 'tableClick(event)')
-//                     .addClass('bp-row');
-//                   }
-//                 }
-//               }
-//             });
-//         });
-//   }
-//   catArray = [];
-// });
-
-// btnfilter.onclick = function() {
-//   modalfilter.style.display = "block";
-// }
+  return true;
+}
 
 function apply() {
   datatype = [];
