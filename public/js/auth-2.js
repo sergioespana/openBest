@@ -18,7 +18,6 @@ auth.onAuthStateChanged(function(user) {
 // Sign up or log in
 function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
-
     firebase.auth().signInWithPopup(provider).then(result => { 
         console.log(result)
         console.log("hallo")

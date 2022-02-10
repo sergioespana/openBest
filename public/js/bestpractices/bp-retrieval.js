@@ -30,22 +30,9 @@ var datatype = [];
 var alreadytimeframe;
 var alreadyeffortFrame;
 
-// Get the modal
-var modalfilter = document.getElementById("FilterModal");
-
-// Get the button that opens the modal
-var btnfilter = document.getElementById("FilterBtn");
-
-// Get the <span> element that closes the modal
-var spanfilter = document.getElementsByClassName("closefilter")[0];
-
-
-// Function for filtering out duplicate array values
 const unique = (value, index, self) => {
   return self.indexOf(value) === index;
 };
-
-// ############################################
 
 // Call the dataTables jQuery plugin
 // Necessary for correctly displaying data in the table
@@ -79,12 +66,7 @@ function initTable() {
       // Use getDocData to instantiate the docdata information
       // Callback function after getDocData
       getDocData(function () {
-
         // Only populate the category selection box once - when it's empty
-        // if(document.querySelector('#category-select').childElementCount == 1){
-        //   populateCat();
-        // }
-
         // DataTable needs to be destroyed before reinitializing
         $('#dataTable').DataTable().destroy();
         $('#dataTable thead tr')
@@ -217,8 +199,6 @@ async function getDocData(callback) {
         alreadytimeframe = false;
 
         docIDs.push(doc.id);
-        var selection = document.getElementById("filterbtns");
-        selection.innerHTML = "";
         // Pushing key names (without numerics) to keyArray
         // We want to display title, description and date > using this array, we can find the index of those keys in the documents
         for (let key in doc.data()) {
@@ -272,8 +252,6 @@ async function getDocData(callback) {
               div.style.fontFamily = "Arial, Helvetica, sans-serif";
               div.style.fontSize = "20px";
               div.style.fontWeight = "bold";
-              selection.appendChild(div);
-              selection.appendChild(label);
             }
           }
           datatype = [];
@@ -419,6 +397,3 @@ function setValue(key) {
   }
 }
 
-spanfilter.onclick = function () {
-  modalfilter.style.display = "none";
-}

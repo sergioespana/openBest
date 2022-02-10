@@ -324,7 +324,7 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
 
     //react button and functionality
     //if thread nesting is below 3 then the commenters can comment on a nested comment this constraint is to combat endless nesting
-    if (comment.level < 3) {  
+    if (comment.level < 3) {
         var react_button = document.createElement("p");
         react_button.classList.add("react_button", "option");
         react_button.innerText = "React";
@@ -456,10 +456,9 @@ function getallChildren(level, commentid, see_answers, amountofchildren, reason)
 function removeallChildren(level, commentid, BP_id) {
     removeComment(commentid, BP_id, document.getElementById(commentid));
     for (item of getLevelList(level + 1)) {
-        if (item[9] == commentid) {
+        if (item.parent == commentid) {
             getLevelList(level + 1).splice(item, item);
-            //item[4] here refers to the commentid as seen in the db
-            removeallChildren(level + 1, item[4], BP_id);
+            removeallChildren(level + 1, item.id, BP_id);
         }
     }
 }
@@ -515,24 +514,23 @@ function getUserName() {
 }
 // remove 1 element and its children
 function removeElement(element) {
-    myNode = element;
-    while (myNode.hasChildNodes()) {
-        myNode.removeChild(myNode.firstChild);
+    while (element.hasChildNodes()) {
+        element.removeChild(element.firstChild);
     }
-    myNode.remove();
+    element.remove();
 }
 // remove whole comment section
 function remove_comment_elements() {
-    myNode = document.getElementById("commentsection");
-    while (myNode.hasChildNodes()) {
-        myNode.removeChild(myNode.firstChild);
+    let element = document.getElementById("commentsection");
+    while (element.hasChildNodes()) {
+        element.removeChild(element.firstChild);
     }
 }
 // remove top commentbar
 function remove_top_searchbar() {
-    myNode = document.getElementById("searchbar");
-    while (myNode.hasChildNodes()) {
-        myNode.removeChild(myNode.firstChild);
+    let element = document.getElementById("searchbar");
+    while (element.hasChildNodes()) {
+        element.removeChild(element.firstChild);
     }
 }
 // display the See more button if and only if there is text overflow
@@ -545,6 +543,5 @@ function displayMore(comment_text, see_more) {
         see_more.style.display = "none";
         return false;
     }
-
 }
 

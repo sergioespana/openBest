@@ -175,7 +175,7 @@ function submitrating(BPid, scores, text, dimensioninfo, root) {
         ratingtext: text
     }).then(docRef => {
         //draw rating locally
-        drawRating(getUserName(), getTimeDifference(now, getcurrentDateTime()), scores, getUserImage(), docRef.id, BPid, issame(email), root, dimensioninfo, text);
+        drawRating(getUserName(), getTimeDifference(now, getcurrentDateTime()), scores, getUserImage(), docRef.id, BPid, isSame(email), root, dimensioninfo, text);
     })
 
 }
@@ -347,12 +347,12 @@ function createAllRatings(root, ratinglist, transposedInfo, BPid) {
         let email = rating[4];
         let id = rating[5];
         let text = rating[6];
-        drawRating(name, date, score, img, id, BPid, issame(email), root, transposedInfo, text);
+        drawRating(name, date, score, img, id, BPid, isSame(email), root, transposedInfo, text);
     }
 }
 
 //function to draw one instance of a rating, this rating has the same interface as the comments from comment.js
-function drawRating(name, date, text, img, ratingid, BP_id, issame, root, dimensioninfo, ratingtext) {
+function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimensioninfo, ratingtext) {
     // rating wrapper e.g. the wrapper for all the comments contents
     var rating_wrapper = document.createElement("DIV");
     rating_wrapper.id = ratingid;
@@ -403,7 +403,7 @@ function drawRating(name, date, text, img, ratingid, BP_id, issame, root, dimens
     comment_text.innerText = ratingtext;
 
     //allow a user to flag a rating if rating in not from current logged in user
-    if (issame == "false") {
+    if (isSame == "false") {
         //flagging component
         var flag_comment = document.createElement("i");
         flag_comment.classList.add("far", "fa-flag", "flag_button", "dropbtn");
@@ -413,7 +413,7 @@ function drawRating(name, date, text, img, ratingid, BP_id, issame, root, dimens
     }
 
     //if current user is the same as the rater he can remove or edit the rating
-    if (issame == "true") {
+    if (isSame == "true") {
         //remove rating component
         var remove_comment = document.createElement("i");
         remove_comment.classList.add("fa", "fa-trash", "remove_button");

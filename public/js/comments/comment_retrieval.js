@@ -108,7 +108,9 @@ function recursive(level, parent) {
     var comments = getLevelList(level);
     for (comment of comments) {
         if (level == 0 || comment.parent == parent) {
+            //display top level comments
             if (level == 0) { display = "flex" }
+            //display lower level comments
             if (level > 0) { display = "none" }
             draw_comment(comment, checkChildren(comment.id, level), amountOfChildren(comment.id, level), display);
             higherCounter();

@@ -28,7 +28,6 @@ var complexDocRefs = [];
 
 // The type of rating used for this best practice
 var ratingType;
-
 var datatype2 = [];
 
 
@@ -40,7 +39,6 @@ if (btn) {
         modal.style.display = "block";
     }
 }
-
 
 document.getElementById("create-BP-btn").addEventListener("click", function () {
 

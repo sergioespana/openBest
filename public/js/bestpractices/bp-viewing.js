@@ -7,12 +7,12 @@ var db = firebase.firestore();
 
 var modal = document.getElementsByClassName("bp-view-modal")[0];
 var span = document.getElementsByClassName("close")[0];
-
 // Arrays that store the checked docrefs to prevent recursive checks
 var checkedDR = [];
 var checkedSC = [];
 var checkedREL = [];
 let textcontents = ['title','author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort'];
+var listofContainers = []
 // ############################################
 
 function tableClick(e) {
@@ -22,7 +22,9 @@ function tableClick(e) {
     retrieveBPinfo(BPid);
     startupComments(BPid);
     startupRatings(BPid);
+    storeID(BPid);
 }
+
 
 async function retrieveBPinfo(BPid) {
     // bpPath is the collection path to the bestpractices sub-collection
@@ -31,9 +33,39 @@ async function retrieveBPinfo(BPid) {
     // Adding this path to checkedSC to prevent checking the bpdocument again as part of a docref
     checkedSC.push(bpPath);
 
+    //Remove BP component
+    let remove_BP = document.createElement('a');
+    remove_BP.style.marginRight = "15px";
+    remove_BP.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"fa fa-trash\"></i></span\><span class=\"text\">" + "Remove BP" + "</span\>"
+    remove_BP.setAttribute('class', 'btn btn-light btn-icon-split');
+    let remove = document.getElementById('removeBP');
+    remove_BP.id = "removebutton"
+    remove.appendChild(remove_BP);
+    remove_BP.addEventListener("click", function () {
+        // ask for confirmation that a user indeed wants to delete his bp
+        if (confirm("Are you sure you want to delete this best practice?") == true) {
+            removeBP(BPid);
+            alert('Best practice has been removed, the page will now reload');
+            delay(500);
+            location.reload();
+        }
+    });
+
+    //Edit BP component
+    let  edit = document.getElementById('editBP');
+    let edit_BP = document.createElement('a');
+    edit_BP.style.marginRight = "15px";
+    edit_BP.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-edit\"></i></span\><span class=\"text\">" + "Edit BP" + "</span\>"
+    edit_BP.setAttribute('class', 'btn btn-light btn-icon-split');
+    edit_BP.id = ('edit-BP-btn');
+    edit_BP.addEventListener("click", function () {
+        console.log(listofContainers);
+        editBP(listofContainers);
+    })
+    edit.appendChild(edit_BP);
+    
     // PART 1: displaying general best practice info 
     // Categories, authors, date, etc
-
     let bpDoc = await db.collection(`${bpPath}`).where(firebase.firestore.FieldPath.documentId(), "==", `${BPid}`).get();
     for (doc of bpDoc.docs) {
 
@@ -41,25 +73,44 @@ async function retrieveBPinfo(BPid) {
         // indexArr is instantiated in bp-retrieval when dataTable is initially loaded
         let title = indexArr[0];
         BPtitle.innerText = `${doc.data()[Object.keys(doc.data())[title]]}`;
+        //add the element to the listofcontainers. 
+        // This list is used when editing the BP form. 
+        // Note that the digit before the name is related to the BP document and should be changed according to the model.
+        // the same is true for the description
+        listofContainers.push({
+            "name": "10title",
+            "container": BPtitle,
+            "content": `${doc.data()[Object.keys(doc.data())[title]]}`
+          })
 
         let BPdescription = document.getElementById("bp-description");
         let description = indexArr[3];
         BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
+        listofContainers.push({
+            "name": "21description",
+            "container": BPdescription,
+            "content": `${doc.data()[Object.keys(doc.data())[description]]}`
+          })
+
         let categoryArea = document.getElementById("bp-categories");
         let dateArea = document.getElementById("bp-date");
+
         //ADDED//
         let imageArea = document.getElementById("bp-image");
         imageArea.style.marginLeft = "auto";
         imageArea.style.marginRight = "auto";
 
         let audienceArea = document.getElementById("bp-audience");
+
         let effortArea = document.getElementById("bp-effort");
+
         let timeFrameArea = document.getElementById("bp-timeframe");
 
-        // Iterating over the document data and displaying general info
-        for (let [key, value] of Object.entries(doc.data())) {
+      
 
+        // Iterating over the document data and displaying general info
+        for (let [key, value] of Object.entries(doc.data())) {    
             // Displaying authors
             if (key.replace(/[ˆ0-9]+/g, '') == 'author') {
 
@@ -118,13 +169,20 @@ async function retrieveBPinfo(BPid) {
 
             // Displaying categories
             if (key.replace(/[ˆ0-9]+/g, '') == 'categories') {
+                let categories = []
                 // Populating the general info section (authors, date, categories)
                 value.forEach(element => {
                     let categoryButton = document.createElement('a');
                     categoryButton.innerHTML = "<span class=\"text\">" + `${element}` + "</span\>";
                     categoryButton.setAttribute('class', 'btn btn-light btn-icon-split');
                     categoryArea.appendChild(categoryButton);
+                    categories.push(categoryButton)
                 });
+                listofContainers.push({
+                    "name": key,
+                    "container": categories,
+                    "content": value
+                  })
             }
 
             // Displaying date
@@ -132,8 +190,22 @@ async function retrieveBPinfo(BPid) {
                 // Populating the general info section (authors, date, categories)
                 let dateButton = document.createElement('a');
                 dateButton.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-calendar-alt\"></i></span\><span class=\"text\">" + `${value}` + "</span\>";
+
+                // <span class=\"icon text-gray-600\">
+                // <i class=\"far fa-calendar-alt\"></i>
+                // </span\>
+                
+                // <span class=\"text\">" 
+                // </span>"
+
                 dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 dateArea.appendChild(dateButton);
+
+                listofContainers.push({
+                    "name": key,
+                    "container": dateButton,
+                    "content": value
+                  })
             }
             //ADDED//
             // Displaying image
@@ -152,6 +224,13 @@ async function retrieveBPinfo(BPid) {
                 audienceButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 audienceArea.appendChild(audienceButton);
 
+                listofContainers.push({
+                    "name": key,
+                    "container": audienceButton,
+                    "content": value
+                  })
+        
+
             }
 
             if (key.replace(/[ˆ0-9]+/g, '') == 'effort') {
@@ -160,6 +239,12 @@ async function retrieveBPinfo(BPid) {
                 effortButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 effortArea.appendChild(effortButton);
 
+                listofContainers.push({
+                    "name": key,
+                    "container": effortButton,
+                    "content": value
+                  })
+
             }
 
             if (key.replace(/[ˆ0-9]+/g, '') == 'timeframe') {
@@ -167,6 +252,12 @@ async function retrieveBPinfo(BPid) {
                 timeframeButton.innerHTML = "<span class=\"text\">" + `${value}` + "</span\>";
                 timeframeButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 timeFrameArea.appendChild(timeframeButton);
+
+                listofContainers.push({
+                    "name": key,
+                    "container": timeframeButton,
+                    "content": value
+                    })
             }
         }
     }
@@ -187,8 +278,6 @@ async function retrieveDocInfo(docPath, docId, div) {
     for (let [key, value] of Object.entries(currentDoc.data())) {
         let keyText = key.replace(/[0-9]/g, '');
         // The values for the following keys are irrelevant because they are always present in each BP and therefore queried elsewhere
-       
-
         if (! textcontents.includes(keyText)){
             if ((docPath.split('/')[docPath.split('/').length - 1]) != "bestpractices") {
                 // String or text
@@ -258,6 +347,11 @@ async function retrieveDocInfo(docPath, docId, div) {
                     let p = document.createElement('p');
                     p.innerText = value;
                     p.style.marginTop = '15px';
+                    listofContainers.push({
+                        "name": key,
+                        "container": p,
+                        "content": value
+                      })
                     l4.appendChild(p);
                     l3.appendChild(l4);
                     l2.appendChild(l3);
@@ -271,7 +365,6 @@ async function retrieveDocInfo(docPath, docId, div) {
     // PART 2: Displaying subcollections for this document
     // Data is appended to div
     await retrieveSub(docId, docPath, div).then(async function () {
-
         // PART 3: Displaying data from docrefs
         for (let [key, value] of Object.entries(currentDoc.data())) {
             let keyText = key.replace(/[0-9]/g, '');
@@ -348,7 +441,7 @@ async function retrieveSub(refDocId, refDocPath, div) {
         .functions()
         .httpsCallable('getSubCollections');
 
-    await getSubCollections({ docPath: `${refDocPath}` + '/' + `${refDocId}` })
+    await getSubCollections({docPath: `${refDocPath}` + '/' + `${refDocId}` })
         .then(async function (result) {
             let collections = result.data.collections;
             // Checking if this collection has subcollections
@@ -372,7 +465,9 @@ async function retrieveSub(refDocId, refDocPath, div) {
 }
 
 
-span.onclick = function () {
+span.onclick = function () {closeModal()}
+
+function closeModal(){
     modal.style.display = "none";
     //remove comment and rating elements
     remove_comment_elements();
@@ -383,8 +478,10 @@ span.onclick = function () {
     ratinglist = [];
     ratinginfo = [];
     amountOfComments = 0;
+    listofContainers = [];
     ///////////////////////////////////
-
+    let Removebutton = document.getElementById("removeBP");
+    let Editbutton = document.getElementById("editBP");
     let categoryArea = document.getElementById("bp-categories");
     let authorArea = document.getElementById("bp-authors");
     let dateArea = document.getElementById("bp-date");
@@ -395,6 +492,13 @@ span.onclick = function () {
     let coreContent = document.getElementById("bp-core-content");
     let otherSections = document.getElementById("bp-other-sections");
     // Removing previously existing categories, authors and dates
+     
+    while (Removebutton.hasChildNodes()) {
+        Removebutton.removeChild(Removebutton.firstChild);
+    }
+    while (Editbutton.hasChildNodes()) {
+        Editbutton.removeChild(Editbutton.firstChild);
+    }
     while (categoryArea.hasChildNodes()) {
         categoryArea.removeChild(categoryArea.firstChild);
     }
@@ -416,7 +520,6 @@ span.onclick = function () {
     while (timeFrameArea.hasChildNodes()) {
         timeFrameArea.removeChild(timeFrameArea.firstChild);
     }
-
     while (coreContent.hasChildNodes()) {
         coreContent.removeChild(coreContent.firstChild);
     }
@@ -424,4 +527,10 @@ span.onclick = function () {
         otherSections.removeChild(otherSections.firstChild);
     }
 
+}
+
+async function removeBP(BPid) {
+    let path = findPath(collectionPaths, 'bestpractices') + '/';
+    await(db.collection(path).doc(BPid).delete());
+    console.log('best practice removed');
 }

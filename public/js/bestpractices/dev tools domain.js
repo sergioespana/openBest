@@ -2,13 +2,11 @@
 // Populates the domain following the structure defined for the ECG group, take note that this means that it only works for that domain
 // ########################
 // "Economy for the common good/domainstate"
-
+// To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
 
-let place = document.getElementById("popbut");
-
-let tbl = document.createElement('table');
+var tbl = document.createElement('table');
 let thead = document.createElement('thead');
 thead.innerText = "Dev Tools";
 let tbody = document.createElement('tbody');
@@ -67,11 +65,6 @@ row_2.appendChild(row_2_data_1);
 row_2.appendChild(row_2_data_2);
 row_2.appendChild(row_2_data_3);
 tbody.appendChild(row_2);
-
-
-
-place.append(tbl)
-
 
 var bestpractices = [];
 
@@ -199,8 +192,6 @@ async function addECGthemes() {
     }
 }
 
-//snapshot.toString().toString();
-
 async function addAuthor(authorname) {
     let doelstring = "Economy for the common good/domainstate/" + 'authors' + '/';
     let author = null;
@@ -308,7 +299,9 @@ async function updateBP(authorid, themename, bpid) {
 async function addBPs() {
     let doelstring = "Economy for the common good/domainstate/" + 'bestpractices' + '/';
     for (Bp of bestpractices) {
+        
         let author = await (findAuthor(Bp.Written));
+        
         if (author != 'none found') {
             authorid = author;
             console.log('author found');

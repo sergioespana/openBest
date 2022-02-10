@@ -11,6 +11,16 @@ auth.onAuthStateChanged(function (user) {
     document.getElementById("username").innerHTML = user.displayName;
     document.getElementById("profilepicture").src = user.photoURL;
     hideLoadScreen();
+    //for the dev tools
+    //change email to domain administrator if needed
+    if (user.email == 'stefanvanderpijl@gmail.com'){
+      let place = document.getElementById("popbut");
+      // make sure we are on the index page, thats where the dev tools should be displayed.
+      if(place){
+      place.append(tbl)
+      }
+
+    }
   } else {
     // No user is signed in.
     window.location.replace("../login.html");
