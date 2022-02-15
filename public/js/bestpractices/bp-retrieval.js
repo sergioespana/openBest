@@ -69,10 +69,11 @@ function initTable() {
         // Only populate the category selection box once - when it's empty
         // DataTable needs to be destroyed before reinitializing
         $('#dataTable').DataTable().destroy();
-        $('#dataTable thead tr')
-          .clone(true)
-          .addClass('filters_')
-          .appendTo('#dataTable thead');
+        // copy header, needed for custom filters to append to 2nd row
+        // $('#dataTable thead tr')
+        //   .clone(true)
+        //   .addClass('filters_')
+        //   .appendTo('#dataTable thead');
 
         var table = $('#dataTable').DataTable({
           data: data,
@@ -93,72 +94,147 @@ function initTable() {
             }
           },
 
-          initComplete: function () {
+
+          initComplete: function (table) {
             var api = this.api();
             this.api().columns().every(function () {
-              var column = this;
-              if (column[0] < 3) {
-                let cell = $('.filters_ th').eq(
-                  $(api.column(column[0]).header()).index()
-                );
-                let select = $('<select><option value=""></option></select>')
-                $(cell).html(select);
+              let column = this;
+              let columnname = column.header().textContent
+              let initiallyinvisible = ['Audience','Effort','Timeframe','Solution'];
 
-                select
-                  .on('change', function () {
-                    var val = $.fn.dataTable.util.escapeRegex(
-                      $(this).val()
-                    );
-                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                  });
-                column.data().unique().sort().each(function (d, j) {
-                  select.append('<option value="' + d + '">' + d + '</option>')
-                });
+              if (initiallyinvisible.includes(columnname)) {
+                column.visible(false, true);
               }
-              else {
-                // Set the header cell to contain the input element
-                let cell = $('.filters_ th').eq(
-                  $(api.column(column[0]).header()).index()
-                );
-                let title = $(cell).text();
-                $(cell).html('<input type="text" placeholder="' + title + '" />');
 
-                // On every keypress in this input
-                $(
-                  'input',
-                  $('.filters_ th').eq($(api.column(column[0]).header()).index())
-                )
-                  .off('keyup change')
-                  .on('keyup change', function (e) {
-                    e.stopPropagation();
-
-                    // Get the search value
-                    $(this).attr('title', $(this).val());
-                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
-
-                    var cursorPosition = this.selectionStart;
-                    // Search the column for that value
-                    api
-                      .column(column[0])
-                      .search(
-                        this.value != ''
-                          ? regexr.replace('{search}', '(((' + this.value + ')))')
-                          : '',
-                        this.value != '',
-                        this.value == ''
-                      )
-                      .draw();
-
-                    $(this)
-                      .focus()[0]
-                      .setSelectionRange(cursorPosition, cursorPosition);
-                  });
-              }
-            });
+            }
+            )
           },
+
+
+          //
+          //Custom filter assignment
+          //
+          // initComplete: function (table) {
+          //   var api = this.api();
+           
+          //   this.api().columns().every(function () {
+          //     let column = this;
+          //     let columnname = column.header().textContent
+          //     //categorize the column types, this is used for determining fitting filter options
+          //     let categorical = ['Category','Problem'];
+          //     let numerical   = [];
+          //     let textual     = ['Name', 'Description'];
+          //     let date        = ['Date'];
+          //     if (categorical.includes(columnname)) {
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       let select = $('<select><option value=""></option></select>')
+          //       $(cell).html(select);
+          //       select
+          //         .on('change', function () {
+          //           var val = $.fn.dataTable.util.escapeRegex(
+          //             $(this).val()
+          //           );
+          //           column.search(val ? '^' + val + '$' : '', true, false).draw();
+          //         });
+          //       column.data().unique().sort().each(function (d, j) {
+          //         select.append('<option value="' + d + '">' + d + '</option>')
+          //       });
+          //     }
+          //     else if (textual.includes(columnname)) {
+          //       // Set the header cell to contain the input element
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       let title = $(cell).text();
+          //       $(cell).html('<input type="text" placeholder="' + title + '" />');
+          //       // On every keypress in this input
+          //       $(
+          //         'input',
+          //         $('.filters_ th').eq($(api.column(column[0]).header()).index())
+          //       )
+          //         .off('keyup change')
+          //         .on('keyup change', function (e) {
+          //           e.stopPropagation();
+          //           // Get the search value
+          //           $(this).attr('title', $(this).val());
+          //           var regexr = '({search})'; //$(this).parents('th').find('select').val();
+          //           var cursorPosition = this.selectionStart;
+          //           // Search the column for that value
+          //           api
+          //             .column(column[0])
+          //             .search(
+          //               this.value != ''
+          //                 ? regexr.replace('{search}', '(((' + this.value + ')))')
+          //                 : '',
+          //               this.value != '',
+          //               this.value == ''
+          //             )
+          //             .draw();
+          //           $(this)
+          //             .focus()[0]
+          //             .setSelectionRange(cursorPosition, cursorPosition);
+          //         });
+          //     }
+          //     else if (date.includes(columnname)) {
+          //       // Set the header cell to contain the input element
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       var minDate, maxDate;
+ 
+          //       // Custom filtering function which will search data in column one between two values
+          //       $.fn.dataTable.ext.search.push(
+          //           function( settings, data, dataIndex ) {
+          //               var min = minDate.val();
+          //               var max = maxDate.val();
+          //               var date = new Date(data[1]);
+          //               if (
+          //                   ( min === null && max === null ) ||
+          //                   ( min === null && date <= max ) ||
+          //                   ( min <= date   && max === null ) ||
+          //                   ( min <= date   && date <= max )
+          //               ) {
+          //                   return true;
+          //               }
+          //               return false;
+          //           }
+          //       );
+
+
+
+
+          //       $(document).ready(function() { 
+          //          // Create date inputs
+          //          $(cell).html(' <label for="min">From:</label> <input type="date" id="min" name="min"> <label for="max">To:</label> <input type="date" id="max" name="max">');
+
+          //           minDate = new DateTime($('#min'), {
+          //               format: 'YYYY-MM-DD'
+          //           });
+                    
+          //           maxDate = new DateTime($('#max'), {
+          //               format: 'YYYY-MM-DD'
+          //           });
+          //          // $(cell).html(maxDate)
+          //           // Refilter the table
+          //           $('#min, #max').on('change', function () {
+          //               api.draw();
+          //           });
+          //       });
+          //     }
+          //   });
+          // },
+
+          //advanced filters
+          dom: 'Qlfrtip',
+          // columnDefs: [{
+          //     searchBuilderTitle: 'date',
+          //     targets: [1]
+          // }],
           
           // dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
-          dom: '<"top"flrt<"clear">>rt<"bottom"Bp<"clear">>',
+          //dom: '<"top"flrt<"clear">>rt<"bottom"Bp<"clear">>',
           buttons: [
             'copy', 'excel', 'pdf'
           ]
@@ -264,41 +340,64 @@ async function getDocData(callback) {
           if (keyArray[x] == '"title"') {
             indexArr.splice(0, 0, x);
           }
+  
           else if (keyArray[x] == '"categories"') {
             indexArr.splice(1, 0, x);
           }
+        
           else if (keyArray[x] == '"date"') {
             indexArr.splice(2, 0, x);
           }
-          else if (keyArray[x] == '"description"') {
+          else if (keyArray[x] == '"effort"') {
             indexArr.splice(3, 0, x);
           }
-          else if (keyArray[x] == '"problem"') {
+          else if (keyArray[x] == '"timeframe"') {
             indexArr.splice(4, 0, x);
           }
+          else if (keyArray[x] == '"audience"') {
+            indexArr.splice(5, 0, x);
+          }
+
+          else if (keyArray[x] == '"description"') {
+            indexArr.splice(6, 0, x);
+          }
+          else if (keyArray[x] == '"problem"') {
+            indexArr.splice(7, 0, x);
+          }
+          else if (keyArray[x] == '"solution"') {
+            indexArr.splice(8, 0, x);
+          }
+          
         }
 
         // indexArr at index 0 stores the index of the title key in the original keyArr
+        // the order below determines the column order of the table
         title = indexArr[0];
-        category = indexArr[1];
         date = indexArr[2];
-        description = indexArr[3]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
-        problem = indexArr[4];
+        category = indexArr[1];
+       
+        audience = indexArr[5];
+        effort = indexArr[3];
+        timeframe = indexArr[4];
 
+        description = indexArr[6]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
+        problem = indexArr[7];
+
+        solution = indexArr[8]
 
 
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [
           `${doc.data()[Object.keys(doc.data())[title]]}`,
-
           `${doc.data()[Object.keys(doc.data())[date]]}`,
           `${doc.data()[Object.keys(doc.data())[category]]}`,
+          `${doc.data()[Object.keys(doc.data())[audience]]}`,
+          `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
+          `${doc.data()[Object.keys(doc.data())[effort]]}`,
           `${doc.data()[Object.keys(doc.data())[problem]]}`,
-          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 200) + '.....'}`
-
-          // `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
-          // `${doc.data()[Object.keys(doc.data())[effort]]}`
+          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 200) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[solution]].substring(0, 200) + '.....'}`
         ];
 
         // Pushing docdata to data array to populate the table
@@ -327,23 +426,6 @@ $("#some_div").on("click", ".checkboxes", function () {
   alert(value);
 });
 
-
-function printDiv({ divId, title }) {
-  let mywindow = window.open('', 'PRINT', 'height=650,width=900,top=100,left=150');
-
-  mywindow.document.write(`<html><head><title>${title}</title>`);
-  mywindow.document.write('</head><body >');
-  mywindow.document.write(document.getElementById(divId).innerHTML);
-  mywindow.document.write('</body></html>');
-
-  mywindow.document.close(); // necessary for IE >= 10
-  mywindow.focus(); // necessary for IE >= 10*/
-
-  mywindow.print();
-  mywindow.close();
-
-  return true;
-}
 
 function apply() {
   datatype = [];

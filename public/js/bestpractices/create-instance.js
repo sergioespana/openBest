@@ -51,8 +51,6 @@ var jsontest = {
                         "self": "document reference",
                         "related": "document reference"
                     }],
-                    "15filtersolution": "string",
-                    "16filtercategories": "string",
                     "17date": "string",
                     "18effort": "string",
                     "19timeframe": "int",

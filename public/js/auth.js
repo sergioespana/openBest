@@ -19,6 +19,7 @@ auth.onAuthStateChanged(function (user) {
       if(place){
       place.append(tbl)
       }
+      
 
     }
   } else {

@@ -1,7 +1,6 @@
 // ########################
 // Views the clicked best practice
 // ########################
-
 // Create firestore (database) object
 var db = firebase.firestore();
 
@@ -11,10 +10,39 @@ var span = document.getElementsByClassName("close")[0];
 var checkedDR = [];
 var checkedSC = [];
 var checkedREL = [];
-let textcontents = ['title','author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort'];
+let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort'];
 var listofContainers = []
 // ############################################
 
+var currenteamail = null
+var authoremails   = []
+var domainemail   = null
+//change the below url when deployed to: https://green-repo.web.app/bestpractices.html
+const starturl = 'http://localhost:5000/bestpractices.html'
+const queryString = window.location.search;
+var urlParams = new URLSearchParams(queryString);
+//this is used to get the actual user
+auth.onAuthStateChanged(function (user) {
+    if (user) {
+        currenteamail = user.email
+    }
+})
+
+//start the bp if present in the url, this happens when directly searching for one, or scanning a QR
+//Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
+//But this did not work as of now, the challange is that CollectionPaths takes a while to load.
+setTimeout(function(){
+    var selectedbpid = urlParams.get('BPid')
+    if (selectedbpid) {
+        modal.style.display = "block";
+        retrieveBPinfo(selectedbpid);
+        startupComments(selectedbpid);
+        startupRatings(selectedbpid);
+        storeID(selectedbpid);
+    }
+}, 3000); 
+
+//start the bp based on the selected row in the BP table
 function tableClick(e) {
     let clickedRow = e.target.parentElement;
     let BPid = clickedRow.getAttribute('doc-id');
@@ -23,8 +51,8 @@ function tableClick(e) {
     startupComments(BPid);
     startupRatings(BPid);
     storeID(BPid);
+    window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
 }
-
 
 async function retrieveBPinfo(BPid) {
     // bpPath is the collection path to the bestpractices sub-collection
@@ -40,19 +68,18 @@ async function retrieveBPinfo(BPid) {
     remove_BP.setAttribute('class', 'btn btn-light btn-icon-split');
     let remove = document.getElementById('removeBP');
     remove_BP.id = "removebutton"
-    remove.appendChild(remove_BP);
     remove_BP.addEventListener("click", function () {
         // ask for confirmation that a user indeed wants to delete his bp
         if (confirm("Are you sure you want to delete this best practice?") == true) {
             removeBP(BPid);
             alert('Best practice has been removed, the page will now reload');
-            delay(500);
+            window.history.replaceState("", "", starturl);
             location.reload();
         }
     });
 
     //Edit BP component
-    let  edit = document.getElementById('editBP');
+    let edit = document.getElementById('editBP');
     let edit_BP = document.createElement('a');
     edit_BP.style.marginRight = "15px";
     edit_BP.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-edit\"></i></span\><span class=\"text\">" + "Edit BP" + "</span\>"
@@ -62,8 +89,18 @@ async function retrieveBPinfo(BPid) {
         console.log(listofContainers);
         editBP(listofContainers);
     })
-    edit.appendChild(edit_BP);
-    
+
+
+    //QR code
+    // var qrcode = new QRCode("qr_code", {
+	//     text: starturl + window.location.search,
+	//     width: 128,
+	//     height: 128,
+	//     colorDark : "#000000",
+	//     colorLight : "#ffffff",
+	//     correctLevel : QRCode.CorrectLevel.H
+	// });
+       
     // PART 1: displaying general best practice info 
     // Categories, authors, date, etc
     let bpDoc = await db.collection(`${bpPath}`).where(firebase.firestore.FieldPath.documentId(), "==", `${BPid}`).get();
@@ -81,17 +118,17 @@ async function retrieveBPinfo(BPid) {
             "name": "10title",
             "container": BPtitle,
             "content": `${doc.data()[Object.keys(doc.data())[title]]}`
-          })
+        })
 
         let BPdescription = document.getElementById("bp-description");
-        let description = indexArr[3];
+        let description = indexArr[6];
         BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
         listofContainers.push({
             "name": "21description",
             "container": BPdescription,
             "content": `${doc.data()[Object.keys(doc.data())[description]]}`
-          })
+        })
 
         let categoryArea = document.getElementById("bp-categories");
         let dateArea = document.getElementById("bp-date");
@@ -107,10 +144,8 @@ async function retrieveBPinfo(BPid) {
 
         let timeFrameArea = document.getElementById("bp-timeframe");
 
-      
-
         // Iterating over the document data and displaying general info
-        for (let [key, value] of Object.entries(doc.data())) {    
+        for (let [key, value] of Object.entries(doc.data())) {
             // Displaying authors
             if (key.replace(/[ˆ0-9]+/g, '') == 'author') {
 
@@ -132,6 +167,9 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(addDiv).append(authorName);
+                            }
+                            if (key == 'email'){
+                                authoremails.push(value);
                             }
                         }
                     }
@@ -173,39 +211,43 @@ async function retrieveBPinfo(BPid) {
                 // Populating the general info section (authors, date, categories)
                 value.forEach(element => {
                     let categoryButton = document.createElement('a');
-                    categoryButton.innerHTML = "<span class=\"text\">" + `${element}` + "</span\>";
+                    let span = document.createElement('span');
+                    span.setAttribute('class', 'text');
+                    span.innerText = element;
+                    categoryButton.appendChild(span);
                     categoryButton.setAttribute('class', 'btn btn-light btn-icon-split');
                     categoryArea.appendChild(categoryButton);
-                    categories.push(categoryButton)
+                    categories.push(span)
                 });
                 listofContainers.push({
                     "name": key,
                     "container": categories,
                     "content": value
-                  })
+                })
             }
 
             // Displaying date
             if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
                 // Populating the general info section (authors, date, categories)
                 let dateButton = document.createElement('a');
-                dateButton.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-calendar-alt\"></i></span\><span class=\"text\">" + `${value}` + "</span\>";
-
-                // <span class=\"icon text-gray-600\">
-                // <i class=\"far fa-calendar-alt\"></i>
-                // </span\>
-                
-                // <span class=\"text\">" 
-                // </span>"
-
+                let span1 = document.createElement('span');
+                span1.setAttribute('class', 'icon text-gray-600');
+                let icon = document.createElement('i');
+                icon.setAttribute('class', 'far fa-calendar-alt');
+                span1.appendChild(icon);
+                let span2 = document.createElement('span');
+                span2.setAttribute('class', 'text');
+                span2.innerText = value;
+                dateButton.append(span1);
+                dateButton.append(span2);
                 dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 dateArea.appendChild(dateButton);
 
                 listofContainers.push({
                     "name": key,
-                    "container": dateButton,
+                    "container": span2,
                     "content": value
-                  })
+                })
             }
             //ADDED//
             // Displaying image
@@ -220,46 +262,83 @@ async function retrieveBPinfo(BPid) {
             //ADDED FOR ECG//
             if (key.replace(/[ˆ0-9]+/g, '') == 'audience') {
                 let audienceButton = document.createElement('a');
-                audienceButton.innerHTML = "<span class=\"text\">" + `${value}` + "</span\>";
                 audienceButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                audienceArea.appendChild(audienceButton);
+                let span1 = document.createElement('span');
+                span1.setAttribute('class', 'icon text-gray-600');
+                let icon = document.createElement('i');
+                icon.setAttribute('class', 'fa fa-light fa-users');
+                span1.appendChild(icon);
+                let span2 = document.createElement('span');
+                span2.setAttribute('class', 'text');
+                span2.innerText = value;
 
+                audienceButton.appendChild(span1);
+                audienceButton.appendChild(span2);
+                audienceArea.appendChild(audienceButton);
                 listofContainers.push({
                     "name": key,
-                    "container": audienceButton,
+                    "container": span2,
                     "content": value
-                  })
-        
+                })
+
 
             }
 
             if (key.replace(/[ˆ0-9]+/g, '') == 'effort') {
                 let effortButton = document.createElement('a');
-                effortButton.innerHTML = "<span class=\"text\">" + `${value}` + "</span\>";
                 effortButton.setAttribute('class', 'btn btn-light btn-icon-split');
+
+                let span1 = document.createElement('span');
+                span1.setAttribute('class', 'icon text-gray-600');
+                let icon = document.createElement('i');
+                icon.setAttribute('class', 'fa fa-hammer');
+                span1.appendChild(icon);
+
+                let span2 = document.createElement('span');
+                span2.setAttribute('class', 'text');
+                span2.innerText = value;
+
+                effortButton.appendChild(span1);
+                effortButton.appendChild(span2);
                 effortArea.appendChild(effortButton);
 
                 listofContainers.push({
                     "name": key,
-                    "container": effortButton,
+                    "container": span2,
                     "content": value
-                  })
-
+                })
             }
 
             if (key.replace(/[ˆ0-9]+/g, '') == 'timeframe') {
                 let timeframeButton = document.createElement('a');
-                timeframeButton.innerHTML = "<span class=\"text\">" + `${value}` + "</span\>";
                 timeframeButton.setAttribute('class', 'btn btn-light btn-icon-split');
+                let span1 = document.createElement('span');
+                span1.setAttribute('class', 'icon text-gray-600');
+                let icon = document.createElement('i');
+                icon.setAttribute('class', 'fa fa-clock');
+                span1.appendChild(icon);
+
+
+                let span2 = document.createElement('span');
+                span2.setAttribute('class', 'text');
+                span2.innerText = value;
+
+                timeframeButton.appendChild(span1);
+                timeframeButton.appendChild(span2);
                 timeFrameArea.appendChild(timeframeButton);
 
                 listofContainers.push({
                     "name": key,
-                    "container": timeframeButton,
+                    "container": span2,
                     "content": value
-                    })
+                })
             }
         }
+    }
+    //make the remove and edit functionalities available to the domain administrator, BP author, and developer
+    if (currenteamail == 'stefanvanderpijl@gmail.com' || authoremails.includes(currenteamail) || currentemail == domainemail){
+        remove.appendChild(remove_BP);
+        edit.appendChild(edit_BP);
     }
 
     // The div in which BP content should be placed
@@ -278,7 +357,7 @@ async function retrieveDocInfo(docPath, docId, div) {
     for (let [key, value] of Object.entries(currentDoc.data())) {
         let keyText = key.replace(/[0-9]/g, '');
         // The values for the following keys are irrelevant because they are always present in each BP and therefore queried elsewhere
-        if (! textcontents.includes(keyText)){
+        if (!textcontents.includes(keyText)) {
             if ((docPath.split('/')[docPath.split('/').length - 1]) != "bestpractices") {
                 // String or text
                 if (typeof (value) != 'object') {
@@ -351,7 +430,7 @@ async function retrieveDocInfo(docPath, docId, div) {
                         "name": key,
                         "container": p,
                         "content": value
-                      })
+                    })
                     l4.appendChild(p);
                     l3.appendChild(l4);
                     l2.appendChild(l3);
@@ -369,7 +448,7 @@ async function retrieveDocInfo(docPath, docId, div) {
         for (let [key, value] of Object.entries(currentDoc.data())) {
             let keyText = key.replace(/[0-9]/g, '');
             // The values for the following keys are irrelevant because they are always present in each BP and therefore queries later on
-            if (! textcontents.concat('description').includes(keyText)) {
+            if (!textcontents.concat('description').includes(keyText)) {
 
                 // Arrays of docrefs 
                 // The docref should not point back to a collection that has already been checked, to prevent recursive additions
@@ -441,7 +520,7 @@ async function retrieveSub(refDocId, refDocPath, div) {
         .functions()
         .httpsCallable('getSubCollections');
 
-    await getSubCollections({docPath: `${refDocPath}` + '/' + `${refDocId}` })
+    await getSubCollections({ docPath: `${refDocPath}` + '/' + `${refDocId}` })
         .then(async function (result) {
             let collections = result.data.collections;
             // Checking if this collection has subcollections
@@ -465,9 +544,9 @@ async function retrieveSub(refDocId, refDocPath, div) {
 }
 
 
-span.onclick = function () {closeModal()}
+span.onclick = function () {closeModal() }
 
-function closeModal(){
+function closeModal() {
     modal.style.display = "none";
     //remove comment and rating elements
     remove_comment_elements();
@@ -482,6 +561,7 @@ function closeModal(){
     ///////////////////////////////////
     let Removebutton = document.getElementById("removeBP");
     let Editbutton = document.getElementById("editBP");
+    let QRSection = document.getElementById("qr_code");
     let categoryArea = document.getElementById("bp-categories");
     let authorArea = document.getElementById("bp-authors");
     let dateArea = document.getElementById("bp-date");
@@ -492,12 +572,15 @@ function closeModal(){
     let coreContent = document.getElementById("bp-core-content");
     let otherSections = document.getElementById("bp-other-sections");
     // Removing previously existing categories, authors and dates
-     
+
     while (Removebutton.hasChildNodes()) {
         Removebutton.removeChild(Removebutton.firstChild);
     }
     while (Editbutton.hasChildNodes()) {
         Editbutton.removeChild(Editbutton.firstChild);
+    }
+    while (QRSection.hasChildNodes()) {
+        QRSection.removeChild(QRSection.firstChild);
     }
     while (categoryArea.hasChildNodes()) {
         categoryArea.removeChild(categoryArea.firstChild);
@@ -526,11 +609,26 @@ function closeModal(){
     while (otherSections.hasChildNodes()) {
         otherSections.removeChild(otherSections.firstChild);
     }
-
+    //reset URL
+    window.history.replaceState("", "", starturl);
 }
 
 async function removeBP(BPid) {
+    //remove subcollections of the BP
+    subcollections = ['comments','ratings','example']
+    for (subcollection of subcollections){
+        let path = findPath(collectionPaths, 'bestpractices') + '/' + BPid + '/' + subcollection;
+        // Getting a reference to all documents in the sub-collections of a best practice
+        let bpSub = await db.collection(path).get();
+        // Each document that matches the query is cycled through 
+        for (doc of bpSub.docs) {
+             db.collection(path).doc(doc.id).delete()
+         
+        }
+    }
     let path = findPath(collectionPaths, 'bestpractices') + '/';
-    await(db.collection(path).doc(BPid).delete());
-    console.log('best practice removed');
+    //delete BP itself
+    await (db.collection(path).doc(BPid).delete());
 }
+
+    
