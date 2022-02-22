@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest = {
     //collection
-    "Economy for the common good": {
+    "Stichting Code Sociale Ondernemingen": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Economy for the Common Good (ECG) (Test environment)",
+            "name": "Stichting Code Sociale Ondernemingen (Showcase environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -33,33 +33,22 @@ var jsontest = {
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "10title": "string",
-                    "11categories": ["string"],
-                    "12ECGTheme": [{
-                        "name": "Adresses",
-                        "self": "document reference",
-                        "related": "document reference"
-                    }],
-
+                    "11theme": ["string"],
+                    "12Sustainability dimension": ["string"],
                     "13image": "string",
                     "14author": [{
                         "name": "Written by",
                         "self": "document reference",
                         "related": "document reference"
-                    },
-                    {
-                        "name": "Reviewed by",
-                        "self": "document reference",
-                        "related": "document reference"
                     }],
-                    "17date": "string",
-                    "18effort": "string",
-                    "19timeframe": "int",
-                    "20audience": "string",
-                    "21description": "text",
-                    "22problem": "string",
-                    "23solution": "text",
-
-
+                    "15date": "string",
+                    "16effort": "string",
+                    "17timeframe": "int",
+                    "18audience": "string",
+                    "19quote": "string",
+                    "20description": "text",
+                    "21treatment": "string",
+                    "22takeaway": "text",
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -117,14 +106,6 @@ var jsontest = {
                     "4name": "string"
                 }
             },
-            //collection
-            "ECGThemes": {
-                //document
-                "ECGThemedocument": {
-                    "1displayfeature": false,
-                    "2name": "string"
-                }
-            }
         }
     }
 };

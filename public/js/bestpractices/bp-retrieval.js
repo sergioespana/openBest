@@ -100,7 +100,8 @@ function initTable() {
             this.api().columns().every(function () {
               let column = this;
               let columnname = column.header().textContent
-              let initiallyinvisible = ['Audience','Effort','Timeframe','Solution'];
+              let initiallyinvisible = []
+             // ['Audience','Effort','Timeframe','Solution'];
 
               if (initiallyinvisible.includes(columnname)) {
                 column.visible(false, true);
@@ -290,7 +291,8 @@ async function getDocData(callback) {
             datatype.forEach(attribute => {
               if (!(attribute === undefined || attribute == "")) {
 
-                if (!(normalkey == "categories" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems" || normalkey == "effort" || normalkey == "timeframe" || normalkey == "date")) {
+                let normalkeys = ["categories", "title","description","author","created","lessonslearned","problems","effort","timeframe","date"]
+                if (!(normalkeys.includes(normalkey))) {
 
                   var description = document.createTextNode("  " + attribute + "   ");
                   var checkbox = document.createElement("input");
@@ -337,31 +339,38 @@ async function getDocData(callback) {
             indexArr.splice(0, 0, x);
           }
   
-          else if (keyArray[x] == '"categories"') {
+          else if (keyArray[x] == '"theme"') {
             indexArr.splice(1, 0, x);
           }
         
-          else if (keyArray[x] == '"date"') {
+          else if (keyArray[x] == '"sustainability dimension"') {
             indexArr.splice(2, 0, x);
           }
-          else if (keyArray[x] == '"effort"') {
+
+          else if (keyArray[x] == '"date"') {
             indexArr.splice(3, 0, x);
           }
-          else if (keyArray[x] == '"timeframe"') {
+          else if (keyArray[x] == '"effort"') {
             indexArr.splice(4, 0, x);
           }
-          else if (keyArray[x] == '"audience"') {
+          else if (keyArray[x] == '"timeframe"') {
             indexArr.splice(5, 0, x);
+          }
+          else if (keyArray[x] == '"audience"') {
+            indexArr.splice(6, 0, x);
+          }
+          else if (keyArray[x] == '"quote"') {
+            indexArr.splice(7, 0, x);
           }
 
           else if (keyArray[x] == '"description"') {
-            indexArr.splice(6, 0, x);
-          }
-          else if (keyArray[x] == '"problem"') {
-            indexArr.splice(7, 0, x);
-          }
-          else if (keyArray[x] == '"solution"') {
             indexArr.splice(8, 0, x);
+          }
+          else if (keyArray[x] == '"treatment"') {
+            indexArr.splice(9, 0, x);
+          }
+          else if (keyArray[x] == '"takewaway"') {
+            indexArr.splice(10, 0, x);
           }
           
         }
@@ -369,31 +378,32 @@ async function getDocData(callback) {
         // indexArr at index 0 stores the index of the title key in the original keyArr
         // the order below determines the column order of the table
         title = indexArr[0];
-        date = indexArr[2];
-        category = indexArr[1];
-       
-        audience = indexArr[5];
-        effort = indexArr[3];
-        timeframe = indexArr[4];
+        date = indexArr[3];
+        theme = indexArr[1];
+        dimension = indexArr[2];
+        audience = indexArr[6];
+        effort = indexArr[4];
+        timeframe = indexArr[5];
+        quote = indexArr[7];
+        description = indexArr[8]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
+        treatment = indexArr[9];
+        takeaway = indexArr[10];
 
-        description = indexArr[6]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
-        problem = indexArr[7];
-
-        solution = indexArr[8]
-
-
+        
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [
           `${doc.data()[Object.keys(doc.data())[title]]}`,
           `${doc.data()[Object.keys(doc.data())[date]]}`,
-          `${doc.data()[Object.keys(doc.data())[category]]}`,
+          `${doc.data()[Object.keys(doc.data())[theme]]}`,
+          `${doc.data()[Object.keys(doc.data())[dimension]]}`,
           `${doc.data()[Object.keys(doc.data())[audience]]}`,
           `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
           `${doc.data()[Object.keys(doc.data())[effort]]}`,
-          `${doc.data()[Object.keys(doc.data())[problem]]}`,
-          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 200) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[solution]].substring(0, 200) + '.....'}`
+          `${doc.data()[Object.keys(doc.data())[quote]]}`,
+          `${doc.data()[Object.keys(doc.data())[description]]}`,
+          `${doc.data()[Object.keys(doc.data())[treatment]]}`,
+          `${doc.data()[Object.keys(doc.data())[takeaway]]}`
         ];
 
         // Pushing docdata to data array to populate the table

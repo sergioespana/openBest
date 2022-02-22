@@ -1,11 +1,11 @@
 // ########################
-// Populates the domain following the structure defined for the ECG group, take note that this means that it only works for that domain
+// Populates the domain following the structure defined for the  PwC, take note that this means that it only works for that domain
 // ########################
-// "Economy for the common good/domainstate"
+// "Stichting Code Sociale Ondernemingen/domainstate"
 // To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
-let domainstate = 'Economy for the common good/domainstate/'
+let domainstate = 'Stichting Code Sociale Ondernemingen/domainstate/'
 
 var tbl = document.createElement('table');
 let thead = document.createElement('thead');
@@ -23,8 +23,12 @@ popbutton1.addEventListener("click", async function () { await addAuthors() });
 
 var popbutton2 = document.createElement("INPUT");
 popbutton2.type = "button";
-popbutton2.value = "Populate ECG Themes";
-popbutton2.addEventListener("click", async function () { await addECGthemes() });
+popbutton2.value = "Populate Themes";
+popbutton2.addEventListener("click", async function () { 
+    await addthemes() 
+    await addsustainabilitydimensions()
+
+});
 
 
 var popbutton3 = document.createElement("INPUT");
@@ -128,26 +132,12 @@ function GetTableFromExcel(data) {
 async function addAuthors() {
     let doelstring = domainstate + 'authors' + '/';
     let list = [
-        "Bausinger",
-        "Blattwerk Gartengestaltung GmbH",
-        "Buch7",
-        "CulumNATURA",
-        "Elobau",
-        "EMChiemgau",
-        "FAHNENGÄRTNER",
-        "Grüne Erde",
-        "Märkisches Landbrot",
-        "Munich’s Pools",
-        "Municipality of Mäder",
-        "Nellie Nashorn (Rhino) ",
-        "Ökofrost",
-        "Randegger Ottilienquelle",
-        "Samaritan Foundation",
-        "SONNENTOR",
-        "Soulbottles",
-        "Taifun-Tofu GmbH",
-        "verlag GmbH",
-        "Voelkel"
+        'Sergio España',
+        'Yannick Dogterom', 'Jan Corné Vink', 'Damian den Ouden',
+        'B.C.G. Knüppe', 'F.S. Slijkhuis', 'S.A.M. Verwijmeren',
+        'Derek Vlaanderen', 'Wouter Westerkamp', 'Evan Wille',
+        'Max Herbermann', 'Lowie van Bijsterveld', 'Tommy Versteeg',
+        'Rik Adegeest', 'Domenico Essoussi', 'Thijmen Zonneveld'
     ]
 
     for (authorname of list) {
@@ -161,78 +151,19 @@ async function addAuthors() {
     }
 }
 
-async function addECGthemes() {
-    let doelstring = domainstate + 'ECGThemes' + '/';
-    let list = [
-        "A1 Human dignity in the supply chain",
-        "A2 Solidarity and social justice in the supply chain",
-        "A3 Environmental sustainability in the supply chain",
-        "A4 Transparency and co-determination in the supply chain",
-        "B1 Ethical position in relation to financial resources",
-        "B2 Social position in relation to financial resources",
-        "B3 Use of funds in relation to social and environmental impacts",
-        "B4 Ownership and co-determination",
-        "C1 Human dignity in the workplace and working environment",
-        "C2 Self-determined working arrangements",
-        "C3 Environmentally-friendly behaviour of staff",
-        "C4 Co-determination and transparency within the organisation",
-        "D1 Ethical customer relations",
-        "D2 Cooperation and solidarity with other companies",
-        "D3 Impact on the environment of the use and disposal of products and services",
-        "C4 Co-determination and transparency within the organisation",
-        "D1 Ethical customer relations",
-        "D2 Cooperation and solidarity with other companies",
-        "D3 Impact on the environment of the use and disposal of products and services",
-        "D4 Customer participation and product transparency",
-        "E1 The purpose of products and services and their effect on society",
-        "E2 Contribution to society",
-        "E3 Reduction of environmental impact",
-        "E4 Transparency and co-determination"
-    ]
-    for (theme of list) {
-        //write author to db
-        let data = {
-            name: theme,
-            relationship: []
-        }
-        await db.collection(doelstring).doc(theme).set(data);
-        console.log('theme is added under ID ', theme);
-
-    }
-}
-
 async function addUsers() {
     let doelstring = domainstate + 'users' + '/';
-    // let list = [
-    //     "Bausinger",
-    //     "Blattwerk Gartengestaltung GmbH",
-    //     "Buch7",
-    //     "CulumNATURA",
-    //     "Elobau",
-    //     "EMChiemgau",
-    //     "FAHNENGÄRTNER",
-    //     "Grüne Erde",
-    //     "Märkisches Landbrot",
-    //     "Munich’s Pools",
-    //     "Municipality of Mäder",
-    //     "Nellie Nashorn (Rhino) ",
-    //     "Ökofrost",
-    //     "Randegger Ottilienquelle",
-    //     "Samaritan Foundation",
-    //     "SONNENTOR",
-    //     "Soulbottles",
-    //     "Taifun-Tofu GmbH",
-    //     "verlag GmbH",
-    //     "Voelkel"
-    // ]
+    let list = [
+      
+    ]
 
-    for (authorname of list) {
+    for (username of list) {
         //write author to db
         await db.collection(doelstring).add({
-            name: authorname,
+            name: username,
             relationship: []
         }).then(docRef => {
-            console.log('author', authorname, ' is added under ID ', docRef.id);
+            console.log('user', username, ' is added under ID ', docRef.id);
         })
     }
 }
@@ -276,129 +207,97 @@ async function updateAuthor(authorid, bpid) {
             name: 'Written by',
             related: db.doc(domainstate + 'bestpractices/' + bpid),
             self: db.doc(domainstate + 'authors/' + authorid)
-        },
-
-        {
-            name: 'Reviewed by',
-            related: db.doc(domainstate + 'bestpractices/' + bpid),
-            self: db.doc(domainstate + 'authors/' + authorid)
         }
         ]
     });
 }
 
-async function updateTheme(themename, bpid) {
-    let themeid = await (findTheme(themename));
-    let doelstring = domainstate + 'ECGThemes' + '/';
-    await db.collection(doelstring).doc(themeid).update({
-        'relationship': [{
-            name: 'Adresses',
-            related: db.doc(domainstate + 'bestpractices/' + bpid),
-            self: db.doc(domainstate + 'ECGThemes/' + themeid)
-        },
-        ]
-    });
 
-}
 
-async function findTheme(themename) {
-    let doelstring = domainstate + 'ECGThemes' + '/';
-    let themeid = null;
-    await db.collection(doelstring).where("name", '==', themename).get().then(docRef => {
-        if (docRef.docs.length >= 1) {
-            themeid = docRef.docs[0].id;
-        }
 
-    })
-    return themeid
-}
 
-async function updateBP(authorid, themename, bpid) {
+
+
+async function updateBP(authorids, bpid) {
     let doelstring = domainstate + 'bestpractices' + '/';
-    let themeid = await (findTheme(themename));
-    await db.collection(doelstring).doc(bpid).update({
-        '12ECGTheme': [{
-            name: 'Adresses',
-            related: db.doc(domainstate + 'ECGThemes/' + themeid),
-            self: db.doc(domainstate + 'bestpractices/' + bpid)
-        }],
-        '14author': [{
-            name: 'Adresses',
-            related: db.doc(domainstate + 'ECGThemes/' + themeid),
-            self: db.doc(domainstate + 'bestpractices/' + bpid)
-        },
-        {
-            name: 'Written by',
-            related: db.doc(domainstate + 'authors/' + authorid),
-            self: db.doc(domainstate + 'bestpractices/' + bpid)
-        },
-        {
-            name: 'Reviewed by',
-            related: db.doc(domainstate + 'authors/' + authorid),
-            self: db.doc(domainstate + 'bestpractices/' + bpid)
-        }
-        ]
-    });
+    for (authorid of authorids){
+        await db.collection(doelstring).doc(bpid).update({
+            '14author':[
+            {
+               name: 'Written by',
+               related: db.doc(domainstate + 'authors/' + authorid),
+               self: db.doc(domainstate + 'bestpractices/' + bpid)
+            }
+
+            ]
+
+        })
+    }
 }
 
 async function addBPs() {
     let doelstring = domainstate + 'bestpractices' + '/';
     for (Bp of bestpractices) {
+        let authors = Bp.Written.split(',');
+        let authorids = [];
+        for (author of authors){
+        let output = await (findAuthor(author));
 
-        let author = await (findAuthor(Bp.Written));
-
-        if (author != 'none found') {
-            authorid = author;
+        if (output != 'none found') {
+            authorids.push(output);
             console.log('author found');
         }
 
-        if (author == 'none found') {
-            authorid = await (addAuthor(Bp.Written));
+        if (output == 'none found') {
+            let authorid = await (addAuthor(author));
+            authorids.push(authorid);
             console.log('author added', authorid);
         }
+    }
 
         await db.collection(doelstring).add({
             '10title': Bp.Title,
-            '11categories': [Bp.Categories],
-            '12ECGTheme': [{
-                name: Bp.Adresses,
-                related: 'pathrelated',
-                self: 'pathself'
-            }],
+            '11theme': [Bp.Theme],
+            '12sustainability dimension': [Bp.Sustainabilitydimension],
             '13image': Bp.Image,
             '14author': [{
                 name: Bp.Written,
                 related: 'pathrelated',
                 self: 'pathself'
             }],
-            '17date': Bp.Date,
-            '18effort': Bp.Effort,
-            '19timeframe': Bp.Timeframe,
-            '20audience': Bp.Audience,
-            '21description': Bp.Description,
-            '22problem': Bp.Problem,
-            '23solution': Bp.Solution,
+            '15date': Bp.Date,
+            '16effort': Bp.Effort,
+            '17timeframe': Bp.Timeframe,
+            '18audience': Bp.Audience,
+            '19quote': Bp.Quote,
+            '20description': Bp.Description,
+            '21treatment': Bp.Treatment,
+            '22takeaway': Bp.Takeaway,
 
             created: "true",
 
         }).then(docRef => {
-            console.log('BP is added under ID ', docRef.id);
-
+            //Assign the relation between the bp and the author on the authors side
+            for (authorid of authorids){
             updateAuthor(authorid, docRef.id);
-            updateTheme(Bp.Adresses, docRef.id);
-            updateBP(authorid, Bp.Adresses, docRef.id);
+            }
+            //Assign the relation between the bp and the author,theme and dimension on the bp side
+            updateBP(authorids, docRef.id);
 
+           
+            //Create standard BP subcollections
             let path = doelstring + docRef.id + '/';
             createCommentDocs(path);
             createRatingDocs(path);
             createExampleDocs(path);
 
-            console.log('done', docRef.id);
+            console.log('BP is added under ID ', docRef.id);
 
         })
     }
 
 }
+
 async function createCommentDocs(path) {
     let data = {
         "displayfeature": false,
@@ -417,7 +316,7 @@ async function createRatingDocs(path) {
     let data = {
         "ratingtype": ["stars"],
         "dimension": ["Effort"],
-        "dimensiondescription": ["Effort describes the effort required to put into the bladibla"],
+        "dimensiondescription": ["Effort describes the effort required for applying the Best Practice"],
         "scale": [5],
         "stepsize": [1]
     }
