@@ -1,8 +1,10 @@
 //This file contains the functions used when editing a bp.
 let bpid = null
+let domainstate = 'Economy for the common good/domainstate/'
 
 function storeID(BPid) {
     bpid = BPid;
+    console.log(collectionPaths);
 }
 
 let anchor1 = document.getElementById('editconfirm');
@@ -11,7 +13,7 @@ let confirm_BP_edit = document.createElement('a');
 confirm_BP_edit.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"  fa fa-check  \"></i></span\><span class=\"text\">" + "Confirm edit" + "</span\>"
 confirm_BP_edit.setAttribute('class', 'btn btn-light btn-icon-split');
 confirm_BP_edit.style.display = "none";
-confirm_BP_edit.addEventListener("click", function () {confirmBPEditing()});
+confirm_BP_edit.addEventListener("click", function () { confirmBPEditing() });
 anchor1.appendChild(confirm_BP_edit);
 
 let anchor2 = document.getElementById('editcancel');
@@ -20,7 +22,7 @@ cancel_BP_edit.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"  fa f
 cancel_BP_edit.setAttribute('class', 'btn btn-light btn-icon-split');
 cancel_BP_edit.style.display = "none";
 cancel_BP_edit.style.marginRight = '15px';
-cancel_BP_edit.addEventListener("click", function () {cancelBPEditing() });
+cancel_BP_edit.addEventListener("click", function () { cancelBPEditing() });
 anchor2.appendChild(cancel_BP_edit);
 
 function editBP(listofContainers) {
@@ -73,7 +75,6 @@ function cancelBPEditing() {
     }
 }
 
-
 function confirmBPEditing() {
     //hide the cancel and confirm buttons
     cancel_BP_edit.style.display = "none";
@@ -87,7 +88,7 @@ function confirmBPEditing() {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
                 if (c.innerText != item.content) {
-                    differences += 1;  
+                    differences += 1;
                 }
                 allcontent.push(c.innerText);
             }
@@ -116,15 +117,15 @@ function confirmBPEditing() {
         }
     }
     if (differences > 0) {
-        addBPs(bpid);
+        editBPs(bpid);
         $('#dataTable').DataTable();
         initTable();
+        alert('The BP has been updated');
     }
 }
 
-
-async function addBPs(BPid) {
-    let path = "Economy for the common good/domainstate/" + 'bestpractices' + '/';
+async function editBPs(BPid) {
+    let path = domainstate + 'bestpractices' + '/';
     for (item of listofContainers) {
         if (item.name != "11categories") {
             await db.collection(path).doc(BPid).update({
@@ -147,6 +148,5 @@ async function addBPs(BPid) {
         item.content = item.currencontent
         item.currencontent = null;
     }
-    alert('The BP has been updated');
 }
 

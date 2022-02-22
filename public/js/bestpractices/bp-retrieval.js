@@ -201,10 +201,6 @@ function initTable() {
           //               return false;
           //           }
           //       );
-
-
-
-
           //       $(document).ready(function() { 
           //          // Create date inputs
           //          $(cell).html(' <label for="min">From:</label> <input type="date" id="min" name="min"> <label for="max">To:</label> <input type="date" id="max" name="max">');

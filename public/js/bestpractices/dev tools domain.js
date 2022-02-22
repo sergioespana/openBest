@@ -5,6 +5,7 @@
 // To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
+let domainstate = 'Economy for the common good/domainstate/'
 
 var tbl = document.createElement('table');
 let thead = document.createElement('thead');
@@ -28,8 +29,13 @@ popbutton2.addEventListener("click", async function () { await addECGthemes() })
 
 var popbutton3 = document.createElement("INPUT");
 popbutton3.type = "button";
-popbutton3.value = "Populate best practices";
-popbutton3.addEventListener("click", async function () { await addBPs(); });
+popbutton3.value = "Populate users";
+popbutton3.addEventListener("click", async function () { await addUsers()});
+
+var popbutton4 = document.createElement("INPUT");
+popbutton4.type = "button";
+popbutton4.value = "Populate best practices";
+popbutton4.addEventListener("click", async function () { await addBPs(); });
 
 var fileselec = document.createElement("INPUT");
 fileselec.type = "file";
@@ -46,9 +52,12 @@ let row_1_data_1 = document.createElement('td');
 row_1_data_1.appendChild(popbutton1);
 let row_1_data_2 = document.createElement('td');
 row_1_data_2.appendChild(popbutton2);
+let row_1_data_3 = document.createElement('td');
+row_1_data_3.appendChild(popbutton3);
 
 row_1.appendChild(row_1_data_1);
 row_1.appendChild(row_1_data_2);
+row_1.appendChild(row_1_data_3);
 tbody.appendChild(row_1);
 
 
@@ -59,7 +68,7 @@ row_2_data_1.appendChild(fileselec);
 let row_2_data_2 = document.createElement('td');
 row_2_data_2.appendChild(probutton);
 let row_2_data_3 = document.createElement('td');
-row_2_data_3.appendChild(popbutton3);
+row_2_data_3.appendChild(popbutton4);
 
 row_2.appendChild(row_2_data_1);
 row_2.appendChild(row_2_data_2);
@@ -117,7 +126,7 @@ function GetTableFromExcel(data) {
 
 
 async function addAuthors() {
-    let doelstring = "Economy for the common good/domainstate/" + 'authors' + '/';
+    let doelstring = domainstate + 'authors' + '/';
     let list = [
         "Bausinger",
         "Blattwerk Gartengestaltung GmbH",
@@ -153,7 +162,7 @@ async function addAuthors() {
 }
 
 async function addECGthemes() {
-    let doelstring = "Economy for the common good/domainstate/" + 'ECGThemes' + '/';
+    let doelstring = domainstate + 'ECGThemes' + '/';
     let list = [
         "A1 Human dignity in the supply chain",
         "A2 Solidarity and social justice in the supply chain",
@@ -192,8 +201,46 @@ async function addECGthemes() {
     }
 }
 
+async function addUsers() {
+    let doelstring = domainstate + 'users' + '/';
+    // let list = [
+    //     "Bausinger",
+    //     "Blattwerk Gartengestaltung GmbH",
+    //     "Buch7",
+    //     "CulumNATURA",
+    //     "Elobau",
+    //     "EMChiemgau",
+    //     "FAHNENGÄRTNER",
+    //     "Grüne Erde",
+    //     "Märkisches Landbrot",
+    //     "Munich’s Pools",
+    //     "Municipality of Mäder",
+    //     "Nellie Nashorn (Rhino) ",
+    //     "Ökofrost",
+    //     "Randegger Ottilienquelle",
+    //     "Samaritan Foundation",
+    //     "SONNENTOR",
+    //     "Soulbottles",
+    //     "Taifun-Tofu GmbH",
+    //     "verlag GmbH",
+    //     "Voelkel"
+    // ]
+
+    for (authorname of list) {
+        //write author to db
+        await db.collection(doelstring).add({
+            name: authorname,
+            relationship: []
+        }).then(docRef => {
+            console.log('author', authorname, ' is added under ID ', docRef.id);
+        })
+    }
+}
+
+
+
 async function addAuthor(authorname) {
-    let doelstring = "Economy for the common good/domainstate/" + 'authors' + '/';
+    let doelstring = domainstate + 'authors' + '/';
     let author = null;
     //write author to db
     await db.collection(doelstring).add({
@@ -209,7 +256,7 @@ async function addAuthor(authorname) {
 }
 
 async function findAuthor(authorname) {
-    let doelstring = "Economy for the common good/domainstate/" + 'authors' + '/';
+    let doelstring = domainstate + 'authors' + '/';
     let author = null;
     await db.collection(doelstring).where("name", '==', authorname).get().then(docRef => {
         if (docRef.docs.length >= 1) {
@@ -223,32 +270,31 @@ async function findAuthor(authorname) {
 }
 
 async function updateAuthor(authorid, bpid) {
-    let doelstring = "Economy for the common good/domainstate/" + 'authors' + '/';
+    let doelstring = domainstate + 'authors' + '/';
     await db.collection(doelstring).doc(authorid).update({
         relationship: [{
             name: 'Written by',
-            related: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid),
-            self: db.doc('/Economy for the common good/domainstate/authors/' + authorid)
+            related: db.doc(domainstate + 'bestpractices/' + bpid),
+            self: db.doc(domainstate + 'authors/' + authorid)
         },
 
         {
             name: 'Reviewed by',
-            related: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid),
-            self: db.doc('/Economy for the common good/domainstate/authors/' + authorid)
+            related: db.doc(domainstate + 'bestpractices/' + bpid),
+            self: db.doc(domainstate + 'authors/' + authorid)
         }
         ]
     });
 }
 
-
 async function updateTheme(themename, bpid) {
     let themeid = await (findTheme(themename));
-    let doelstring = "Economy for the common good/domainstate/" + 'ECGThemes' + '/';
+    let doelstring = domainstate + 'ECGThemes' + '/';
     await db.collection(doelstring).doc(themeid).update({
         'relationship': [{
             name: 'Adresses',
-            related: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid),
-            self: db.doc('/Economy for the common good/domainstate/ECGThemes/' + themeid)
+            related: db.doc(domainstate + 'bestpractices/' + bpid),
+            self: db.doc(domainstate + 'ECGThemes/' + themeid)
         },
         ]
     });
@@ -256,7 +302,7 @@ async function updateTheme(themename, bpid) {
 }
 
 async function findTheme(themename) {
-    let doelstring = "Economy for the common good/domainstate/" + 'ECGThemes' + '/';
+    let doelstring = domainstate + 'ECGThemes' + '/';
     let themeid = null;
     await db.collection(doelstring).where("name", '==', themename).get().then(docRef => {
         if (docRef.docs.length >= 1) {
@@ -267,41 +313,40 @@ async function findTheme(themename) {
     return themeid
 }
 
-
 async function updateBP(authorid, themename, bpid) {
-    let doelstring = "Economy for the common good/domainstate/" + 'bestpractices' + '/';
+    let doelstring = domainstate + 'bestpractices' + '/';
     let themeid = await (findTheme(themename));
     await db.collection(doelstring).doc(bpid).update({
         '12ECGTheme': [{
             name: 'Adresses',
-            related: db.doc('/Economy for the common good/domainstate/ECGThemes/' + themeid),
-            self: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid)
+            related: db.doc(domainstate + 'ECGThemes/' + themeid),
+            self: db.doc(domainstate + 'bestpractices/' + bpid)
         }],
         '14author': [{
             name: 'Adresses',
-            related: db.doc('/Economy for the common good/domainstate/ECGThemes/' + themeid),
-            self: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid)
+            related: db.doc(domainstate + 'ECGThemes/' + themeid),
+            self: db.doc(domainstate + 'bestpractices/' + bpid)
         },
         {
             name: 'Written by',
-            related: db.doc('/Economy for the common good/domainstate/authors/' + authorid),
-            self: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid)
+            related: db.doc(domainstate + 'authors/' + authorid),
+            self: db.doc(domainstate + 'bestpractices/' + bpid)
         },
         {
             name: 'Reviewed by',
-            related: db.doc('/Economy for the common good/domainstate/authors/' + authorid),
-            self: db.doc('/Economy for the common good/domainstate/bestpractices/' + bpid)
+            related: db.doc(domainstate + 'authors/' + authorid),
+            self: db.doc(domainstate + 'bestpractices/' + bpid)
         }
         ]
     });
 }
 
 async function addBPs() {
-    let doelstring = "Economy for the common good/domainstate/" + 'bestpractices' + '/';
+    let doelstring = domainstate + 'bestpractices' + '/';
     for (Bp of bestpractices) {
-        
+
         let author = await (findAuthor(Bp.Written));
-        
+
         if (author != 'none found') {
             authorid = author;
             console.log('author found');

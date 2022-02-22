@@ -16,6 +16,7 @@ var listofContainers = []
 
 var currenteamail = null
 var authoremails   = []
+//change domainemail to the domain administrator.....
 var domainemail   = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 const starturl = 'http://localhost:5000/bestpractices.html'
@@ -72,6 +73,7 @@ async function retrieveBPinfo(BPid) {
         // ask for confirmation that a user indeed wants to delete his bp
         if (confirm("Are you sure you want to delete this best practice?") == true) {
             removeBP(BPid);
+            delay(500);
             alert('Best practice has been removed, the page will now reload');
             window.history.replaceState("", "", starturl);
             location.reload();
@@ -167,9 +169,11 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(addDiv).append(authorName);
+                                console.log('name ', value)
                             }
                             if (key == 'email'){
                                 authoremails.push(value);
+                                console.log('email ',value)
                             }
                         }
                     }
@@ -196,6 +200,11 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(authorNameDiv).append(authorName);
+                                console.log('nieuwe naam', value)
+                            }
+                            if (key == 'email'){
+                                authoremails.push(value);
+                                console.log('email ',value)
                             }
                         }
                         $(relNameRow).append(relNameDiv);
