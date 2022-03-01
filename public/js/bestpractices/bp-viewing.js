@@ -73,7 +73,7 @@ async function retrieveBPinfo(BPid) {
         // ask for confirmation that a user indeed wants to delete his bp
         if (confirm("Are you sure you want to delete this best practice?") == true) {
             removeBP(BPid);
-            delay(500);
+            delay(800);
             alert('Best practice has been removed, the page will now reload');
             window.history.replaceState("", "", starturl);
             location.reload();
@@ -88,7 +88,6 @@ async function retrieveBPinfo(BPid) {
     edit_BP.setAttribute('class', 'btn btn-light btn-icon-split');
     edit_BP.id = ('edit-BP-btn');
     edit_BP.addEventListener("click", function () {
-        console.log(listofContainers);
         editBP(listofContainers);
     })
 
@@ -123,16 +122,17 @@ async function retrieveBPinfo(BPid) {
         })
 
         let BPdescription = document.getElementById("bp-description");
-        let description = indexArr[6];
+        let description = indexArr[8];
         BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
         listofContainers.push({
-            "name": "21description",
+            "name": "20description",
             "container": BPdescription,
             "content": `${doc.data()[Object.keys(doc.data())[description]]}`
         })
 
-        let categoryArea = document.getElementById("bp-categories");
+        let dimensionArea = document.getElementById("bp-dimension");
+        let themeArea = document.getElementById("bp-theme");
         let dateArea = document.getElementById("bp-date");
 
         //ADDED//
@@ -169,11 +169,9 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(addDiv).append(authorName);
-                                console.log('name ', value)
                             }
                             if (key == 'email'){
                                 authoremails.push(value);
-                                console.log('email ',value)
                             }
                         }
                     }
@@ -200,11 +198,11 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(authorNameDiv).append(authorName);
-                                console.log('nieuwe naam', value)
+                                
                             }
                             if (key == 'email'){
                                 authoremails.push(value);
-                                console.log('email ',value)
+                                
                             }
                         }
                         $(relNameRow).append(relNameDiv);
@@ -214,26 +212,48 @@ async function retrieveBPinfo(BPid) {
                 }
             }
 
-            // Displaying categories
-            if (key.replace(/[ˆ0-9]+/g, '') == 'categories') {
-                let categories = []
+            // Displaying dimension
+            if (key.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
+                let dimensions = []
                 // Populating the general info section (authors, date, categories)
                 value.forEach(element => {
-                    let categoryButton = document.createElement('a');
+                    let dimensionButton = document.createElement('a');
                     let span = document.createElement('span');
                     span.setAttribute('class', 'text');
                     span.innerText = element;
-                    categoryButton.appendChild(span);
-                    categoryButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                    categoryArea.appendChild(categoryButton);
-                    categories.push(span)
+                    dimensionButton.appendChild(span);
+                    dimensionButton.setAttribute('class', 'btn btn-light btn-icon-split');
+                    dimensionArea.appendChild(dimensionButton);
+                    dimensions.push(span)
                 });
                 listofContainers.push({
                     "name": key,
-                    "container": categories,
+                    "container": dimensions,
                     "content": value
                 })
             }
+
+            // Displaying theme
+            if (key.replace(/[ˆ0-9]+/g, '') == 'theme') {
+                let themes = []
+                // Populating the general info section (authors, date, categories)
+                value.forEach(element => {
+                    let themeButton = document.createElement('a');
+                    let span = document.createElement('span');
+                    span.setAttribute('class', 'text');
+                    span.innerText = element;
+                    themeButton.appendChild(span);
+                    themeButton.setAttribute('class', 'btn btn-light btn-icon-split');
+                    themeArea.appendChild(themeButton);
+                    themes.push(span)
+                });
+                listofContainers.push({
+                    "name": key,
+                    "container": themes,
+                    "content": value
+                })
+            }
+            
 
             // Displaying date
             if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
@@ -470,17 +490,22 @@ async function retrieveDocInfo(docPath, docId, div) {
                     let contentDiv = document.createElement('div');
 
                     // Checking if the found relationships in this docref are not added yet
-                    for (let docref = 0; docref < value.length; docref++) {
-                        // The subcollection of this ref
-                        let refElements = (value[docref].related.path).split('/');
-                        let refDocId = refElements[refElements.length - 1];
-                        let refColPath = (value[docref].related.path).replace('/' + refDocId, '');
 
-                        // We only want to check relationships that have not been checked with subcollections that have not been checked
-                        if (!(checkedREL.includes(value[docref].related)) && !(checkedSC.includes(refColPath))) {
-                            toCheck.push(value[docref].related)
-                        }
-                    }
+
+                    // The below is commented because currently there is no reviewed by relationship
+
+
+                    // for (let docref = 0; docref < value.length; docref++) {
+                    //     // The subcollection of this ref
+                    //     let refElements = (value[docref].related.path).split('/');
+                    //     let refDocId = refElements[refElements.length - 1];
+                    //     let refColPath = (value[docref].related.path).replace('/' + refDocId, '');
+
+                    //     // We only want to check relationships that have not been checked with subcollections that have not been checked
+                    //     if (!(checkedREL.includes(value[docref].related)) && !(checkedSC.includes(refColPath))) {
+                    //         toCheck.push(value[docref].related)
+                    //     }
+                    // }
 
                     // If there are relationships that should be checked/added
                     if (toCheck.length > 0) {
@@ -571,7 +596,8 @@ function closeModal() {
     let Removebutton = document.getElementById("removeBP");
     let Editbutton = document.getElementById("editBP");
     let QRSection = document.getElementById("qr_code");
-    let categoryArea = document.getElementById("bp-categories");
+    let dimensionArea = document.getElementById("bp-dimension");
+    let themeArea = document.getElementById("bp-theme");
     let authorArea = document.getElementById("bp-authors");
     let dateArea = document.getElementById("bp-date");
     let imageArea = document.getElementById("bp-image");
@@ -591,8 +617,13 @@ function closeModal() {
     while (QRSection.hasChildNodes()) {
         QRSection.removeChild(QRSection.firstChild);
     }
-    while (categoryArea.hasChildNodes()) {
-        categoryArea.removeChild(categoryArea.firstChild);
+
+    while (dimensionArea.hasChildNodes()) {
+        dimensionArea.removeChild(dimensionArea.firstChild);
+    }
+ 
+    while (themeArea.hasChildNodes()) {
+        themeArea.removeChild(themeArea.firstChild);
     }
     while (authorArea.hasChildNodes()) {
         authorArea.removeChild(authorArea.firstChild);

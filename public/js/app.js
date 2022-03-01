@@ -5,12 +5,16 @@
 // Create firestore (database) object
 var db = firebase.firestore();
 
+
 // userEmail is used to match the email of the current user to the database of users
 var userEmail;
 var userName;
 // userPath and dName are used to determine the domain of the current user
 var userPath;
 var dName;
+
+// Current domain
+
 
 // Variable that stores if a domain has been instantiated
 var domainInstantiated;
@@ -33,14 +37,13 @@ $(document).ready(function () {
 
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-      userEmail = user.email;
-      userName = user.displayName;
-      let usercard = document.getElementById("user-card");
+      userEmail     = user.email;
+      userName      = user.displayName;
+      let usercard  = document.getElementById("user-card");
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
 
       checkUser(function () {
-
         // Checking if this person is the administrator
         if (dName) {
           db.collection(`${dName[0]}`).doc(`${dName[1]}`)
@@ -50,7 +53,7 @@ $(document).ready(function () {
 
               if (doc.data().administrator == userEmail) {
                 let admincard = document.getElementById("administrator-card");
-                let usercard = document.getElementById("user-card");
+                let usercard  = document.getElementById("user-card");
 
                 if (admincard) {
                   admincard.style.display = "inline-block";

@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest = {
     //collection
-    "Stichting Code Sociale Ondernemingen": {
+    "Greenoffice UU": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Stichting Code Sociale Ondernemingen (Showcase environment)",
+            "name": "Greenoffice UU (Showcase environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {

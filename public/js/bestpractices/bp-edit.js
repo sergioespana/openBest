@@ -1,10 +1,17 @@
 //This file contains the functions used when editing a bp.
 let bpid = null
-let domainstate = 'Economy for the common good/domainstate/'
+let domainstate
+
+window.onload = function () {
+    setTimeout(
+        async function () {
+            domainstate = await findPath(documentPaths, 'domainstate') + '/'
+        }
+        , 3000)
+}
 
 function storeID(BPid) {
     bpid = BPid;
-    console.log(collectionPaths);
 }
 
 let anchor1 = document.getElementById('editconfirm');
@@ -35,7 +42,9 @@ function editBP(listofContainers) {
         }
     }
     for (item of listofContainers) {
-        if (item.name.replace(/[ˆ0-9]+/g, '') == 'categories') {
+        //if container consists of lists of containers
+        let arraycontainers = ['theme','sustainability dimension']
+        if (arraycontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
             }
@@ -54,7 +63,7 @@ function cancelBPEditing() {
     //make the content not editable
     //reset the content to the original contents
     for (item of listofContainers) {
-        if (item.name.replace(/[ˆ0-9]+/g, '') == 'categories') {
+        if (item.name.replace(/[ˆ0-9]+/g, '') == 'theme' || item.name.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
                 c.innerText = item.content;
@@ -83,7 +92,7 @@ function confirmBPEditing() {
     //check if current content of the element differs from the orginial content
     let differences = 0;
     for (item of listofContainers) {
-        if (item.name.replace(/[ˆ0-9]+/g, '') == 'categories') {
+        if (item.name.replace(/[ˆ0-9]+/g, '') == 'theme' || item.name.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
             let allcontent = [];
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
@@ -127,12 +136,12 @@ function confirmBPEditing() {
 async function editBPs(BPid) {
     let path = domainstate + 'bestpractices' + '/';
     for (item of listofContainers) {
-        if (item.name != "11categories") {
+        if (item.name.replace(/[ˆ0-9]+/g, '') != "theme" || item.name.replace(/[ˆ0-9]+/g, '') != "sustainability dimension") {
             await db.collection(path).doc(BPid).update({
                 [item.name]: item.currencontent
             })//.then(console.log(item.name, 'in the database'))
         }
-        if (item.name == "11categories") {
+        if (item.name.replace(/[ˆ0-9]+/g, '') == 'theme' || item.name.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
             //console.log(item.name, item.currencontent)
             if (item.content[0].constructor === Array) {
                 await db.collection(path).doc(BPid).update({

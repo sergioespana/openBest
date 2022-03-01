@@ -22,17 +22,17 @@ async function getComments(BPid) {
     // Each document that matches the query is cycled through 
     for (doc of bpCom.docs) {
         // for every comment get the relevant info
-        let comment = new Object();
-        comment.author = doc.data().author;
-        comment.date = getTimeDifference(now, doc.data().date);
-        comment.text = doc.data().text;
-        comment.img = doc.data().img;
-        comment.id = doc.id;
-        comment.email = doc.data().email;
-        comment.level = doc.data().level;
-        comment.parent = doc.data().parent;
-        comment.BPid = BPid;
-        comment.isSame = isSame(comment.email);
+        let comment     = new Object();
+        comment.author  = doc.data().author;
+        comment.date    = getTimeDifference(now, doc.data().date);
+        comment.text    = doc.data().text;
+        comment.img     = doc.data().img;
+        comment.id      = doc.id;
+        comment.email   = doc.data().email;
+        comment.level   = doc.data().level;
+        comment.parent  = doc.data().parent;
+        comment.BPid    = BPid;
+        comment.isSame  = isSame(comment.email);
         commentlist.push(comment);
     }
     return commentlist;

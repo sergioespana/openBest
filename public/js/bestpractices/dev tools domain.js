@@ -1,11 +1,11 @@
 // ########################
 // Populates the domain following the structure defined for the  PwC, take note that this means that it only works for that domain
 // ########################
-// "Stichting Code Sociale Ondernemingen/domainstate"
+// "Greenoffice UU/domainstate"
 // To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
-let domainstate = 'Stichting Code Sociale Ondernemingen/domainstate/'
+let domainstate = 'Greenoffice UU/domainstate/'
 
 var tbl = document.createElement('table');
 let thead = document.createElement('thead');
@@ -24,8 +24,8 @@ popbutton1.addEventListener("click", async function () { await addAuthors() });
 var popbutton2 = document.createElement("INPUT");
 popbutton2.type = "button";
 popbutton2.value = "Populate Themes";
-popbutton2.addEventListener("click", async function () { 
-    await addthemes() 
+popbutton2.addEventListener("click", async function () {
+    await addthemes()
     await addsustainabilitydimensions()
 
 });
@@ -34,7 +34,7 @@ popbutton2.addEventListener("click", async function () {
 var popbutton3 = document.createElement("INPUT");
 popbutton3.type = "button";
 popbutton3.value = "Populate users";
-popbutton3.addEventListener("click", async function () { await addUsers()});
+popbutton3.addEventListener("click", async function () { await addUsers() });
 
 var popbutton4 = document.createElement("INPUT");
 popbutton4.type = "button";
@@ -93,7 +93,6 @@ function UploadProcess() {
             if (reader.readAsBinaryString) {
                 reader.onload = function (e) {
                     bestpractices = GetTableFromExcel(e.target.result);
-                    console.log(bestpractices);
                 };
                 reader.readAsBinaryString(fileUpload.files[0]);
             } else {
@@ -105,7 +104,6 @@ function UploadProcess() {
                         data += String.fromCharCode(bytes[i]);
                     }
                     bestpractices = GetTableFromExcel(data);
-                    console.log(bestpractices);
                 };
                 reader.readAsArrayBuffer(fileUpload.files[0]);
             }
@@ -153,10 +151,7 @@ async function addAuthors() {
 
 async function addUsers() {
     let doelstring = domainstate + 'users' + '/';
-    let list = [
-      
-    ]
-
+    let list = []
     for (username of list) {
         //write author to db
         await db.collection(doelstring).add({
@@ -212,59 +207,49 @@ async function updateAuthor(authorid, bpid) {
     });
 }
 
-
-
-
-
-
-
 async function updateBP(authorids, bpid) {
     let doelstring = domainstate + 'bestpractices' + '/';
-    for (authorid of authorids){
-        await db.collection(doelstring).doc(bpid).update({
-            '14author':[
-            {
-               name: 'Written by',
-               related: db.doc(domainstate + 'authors/' + authorid),
-               self: db.doc(domainstate + 'bestpractices/' + bpid)
+    for (authorid of authorids) {
+        let currentDoc = await db.collection(doelstring).doc(bpid).get();
+        for(let [key, value] of Object.entries(currentDoc.data())){
+            if(key.replace(/[0-9]/g, '') == 'author'){
+                let currentRefArray = value;                
+                currentRefArray.push({name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related:  db.doc(domainstate + 'authors/' + authorid)});
+                db.collection(doelstring).doc(bpid).set({'14author': currentRefArray}, { merge: true });
+
             }
-
-            ]
-
-        })
+        }
     }
 }
+
+
 
 async function addBPs() {
     let doelstring = domainstate + 'bestpractices' + '/';
     for (Bp of bestpractices) {
         let authors = Bp.Written.split(',');
         let authorids = [];
-        for (author of authors){
-        let output = await (findAuthor(author));
+        for (author of authors) {
+            let output = await (findAuthor(author));
 
-        if (output != 'none found') {
-            authorids.push(output);
-            console.log('author found');
-        }
+            if (output != 'none found') {
+                authorids.push(output);
+                console.log('author found');
+            }
 
-        if (output == 'none found') {
-            let authorid = await (addAuthor(author));
-            authorids.push(authorid);
-            console.log('author added', authorid);
+            if (output == 'none found') {
+                let authorid = await (addAuthor(author));
+                authorids.push(authorid);
+                console.log('author added', authorid);
+            }
         }
-    }
 
         await db.collection(doelstring).add({
             '10title': Bp.Title,
             '11theme': [Bp.Theme],
             '12sustainability dimension': [Bp.Sustainabilitydimension],
             '13image': Bp.Image,
-            '14author': [{
-                name: Bp.Written,
-                related: 'pathrelated',
-                self: 'pathself'
-            }],
+            '14author': [],
             '15date': Bp.Date,
             '16effort': Bp.Effort,
             '17timeframe': Bp.Timeframe,
@@ -278,18 +263,19 @@ async function addBPs() {
 
         }).then(docRef => {
             //Assign the relation between the bp and the author on the authors side
-            for (authorid of authorids){
-            updateAuthor(authorid, docRef.id);
+            for (authorid of authorids) {
+                updateAuthor(authorid, docRef.id);
             }
-            //Assign the relation between the bp and the author,theme and dimension on the bp side
-            updateBP(authorids, docRef.id);
 
-           
             //Create standard BP subcollections
             let path = doelstring + docRef.id + '/';
             createCommentDocs(path);
             createRatingDocs(path);
             createExampleDocs(path);
+
+
+            //Assign the relation between the bp and the author,theme and dimension on the bp side
+            updateBP(authorids, docRef.id);
 
             console.log('BP is added under ID ', docRef.id);
 

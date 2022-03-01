@@ -80,7 +80,7 @@ function initTable() {
           //responsive: true,
           orderCellsTop: true,
           fixedHeader: true,
-          
+
           // createdRow is a function that adds data to the rows created
           "createdRow": function (row, data, dataIndex) {
             // docIDs stores the document id's of the retrieved best practices
@@ -100,24 +100,25 @@ function initTable() {
             this.api().columns().every(function () {
               let column = this;
               let columnname = column.header().textContent
-              let initiallyinvisible = []
-             // ['Audience','Effort','Timeframe','Solution'];
+              let initiallyinvisible = ['Audience', 'Effort', 'Timeframe', 'Quote'];
+              let alwaysinvisible = ['Image', 'Author']
 
-              if (initiallyinvisible.includes(columnname)) {
+              if (initiallyinvisible.includes(columnname) || alwaysinvisible.includes(columnname)) {
                 column.visible(false, true);
               }
-
             }
             )
           },
 
+
+          
 
           //
           //Custom filter assignment
           //
           // initComplete: function (table) {
           //   var api = this.api();
-           
+
           //   this.api().columns().every(function () {
           //     let column = this;
           //     let columnname = column.header().textContent
@@ -184,7 +185,7 @@ function initTable() {
           //         $(api.column(column[0]).header()).index()
           //       );
           //       var minDate, maxDate;
- 
+
           //       // Custom filtering function which will search data in column one between two values
           //       $.fn.dataTable.ext.search.push(
           //           function( settings, data, dataIndex ) {
@@ -209,7 +210,7 @@ function initTable() {
           //           minDate = new DateTime($('#min'), {
           //               format: 'YYYY-MM-DD'
           //           });
-                    
+
           //           maxDate = new DateTime($('#max'), {
           //               format: 'YYYY-MM-DD'
           //           });
@@ -224,14 +225,15 @@ function initTable() {
           // },
 
           //advanced filters
-          dom: 'Qlfrtip',
+         //dom: 'QlfrtiBp',
           // columnDefs: [{
           //     searchBuilderTitle: 'date',
           //     targets: [1]
           // }],
-          
-          // dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
-          //dom: '<"top"flrt<"clear">>rt<"bottom"Bp<"clear">>',
+
+          //dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
+          dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>',
+   
           buttons: [
             'copy', 'excel', 'pdf'
           ]
@@ -252,7 +254,7 @@ function initTable() {
 
 // Delay function specifies how long to wait on an async function
 function delay() {
-  return new Promise(resolve => setTimeout(resolve, 800));
+  return new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 
@@ -291,7 +293,7 @@ async function getDocData(callback) {
             datatype.forEach(attribute => {
               if (!(attribute === undefined || attribute == "")) {
 
-                let normalkeys = ["categories", "title","description","author","created","lessonslearned","problems","effort","timeframe","date"]
+                let normalkeys = ["categories", "title", "description", "author", "created", "lessonslearned", "problems", "effort", "timeframe", "date"]
                 if (!(normalkeys.includes(normalkey))) {
 
                   var description = document.createTextNode("  " + attribute + "   ");
@@ -338,11 +340,11 @@ async function getDocData(callback) {
           if (keyArray[x] == '"title"') {
             indexArr.splice(0, 0, x);
           }
-  
+
           else if (keyArray[x] == '"theme"') {
             indexArr.splice(1, 0, x);
           }
-        
+
           else if (keyArray[x] == '"sustainability dimension"') {
             indexArr.splice(2, 0, x);
           }
@@ -369,10 +371,10 @@ async function getDocData(callback) {
           else if (keyArray[x] == '"treatment"') {
             indexArr.splice(9, 0, x);
           }
-          else if (keyArray[x] == '"takewaway"') {
+          else if (keyArray[x] == '"takeaway"') {
             indexArr.splice(10, 0, x);
           }
-          
+
         }
 
         // indexArr at index 0 stores the index of the title key in the original keyArr
@@ -389,7 +391,7 @@ async function getDocData(callback) {
         treatment = indexArr[9];
         takeaway = indexArr[10];
 
-        
+
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [
@@ -401,9 +403,9 @@ async function getDocData(callback) {
           `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
           `${doc.data()[Object.keys(doc.data())[effort]]}`,
           `${doc.data()[Object.keys(doc.data())[quote]]}`,
-          `${doc.data()[Object.keys(doc.data())[description]]}`,
-          `${doc.data()[Object.keys(doc.data())[treatment]]}`,
-          `${doc.data()[Object.keys(doc.data())[takeaway]]}`
+          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[treatment]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[takeaway]].substring(0, 150) + '.....'}`
         ];
 
         // Pushing docdata to data array to populate the table
