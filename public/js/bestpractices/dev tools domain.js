@@ -5,7 +5,7 @@
 // To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
-let domainstate = 'Greenoffice UU/domainstate/'
+let domainstate = 'Greenoffice UU showcase/domainstate/'
 
 var tbl = document.createElement('table');
 let thead = document.createElement('thead');
@@ -130,12 +130,7 @@ function GetTableFromExcel(data) {
 async function addAuthors() {
     let doelstring = domainstate + 'authors' + '/';
     let list = [
-        'Sergio España',
-        'Yannick Dogterom', 'Jan Corné Vink', 'Damian den Ouden',
-        'B.C.G. Knüppe', 'F.S. Slijkhuis', 'S.A.M. Verwijmeren',
-        'Derek Vlaanderen', 'Wouter Westerkamp', 'Evan Wille',
-        'Max Herbermann', 'Lowie van Bijsterveld', 'Tommy Versteeg',
-        'Rik Adegeest', 'Domenico Essoussi', 'Thijmen Zonneveld'
+     
     ]
 
     for (authorname of list) {
@@ -216,7 +211,6 @@ async function updateBP(authorids, bpid) {
                 let currentRefArray = value;                
                 currentRefArray.push({name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related:  db.doc(domainstate + 'authors/' + authorid)});
                 db.collection(doelstring).doc(bpid).set({'14author': currentRefArray}, { merge: true });
-
             }
         }
     }
@@ -227,6 +221,7 @@ async function updateBP(authorids, bpid) {
 async function addBPs() {
     let doelstring = domainstate + 'bestpractices' + '/';
     for (Bp of bestpractices) {
+        console.log(Bp);
         let authors = Bp.Written.split(',');
         let authorids = [];
         for (author of authors) {
@@ -246,21 +241,16 @@ async function addBPs() {
 
         await db.collection(doelstring).add({
             '10title': Bp.Title,
-            '11theme': [Bp.Theme],
-            '12sustainability dimension': [Bp.Sustainabilitydimension],
-            '13image': Bp.Image,
-            '14author': [],
-            '15date': Bp.Date,
-            '16effort': Bp.Effort,
-            '17timeframe': Bp.Timeframe,
-            '18audience': Bp.Audience,
-            '19quote': Bp.Quote,
-            '20description': Bp.Description,
-            '21treatment': Bp.Treatment,
-            '22takeaway': Bp.Takeaway,
-
+            '11university': Bp.University,
+            '12image': Bp.Image,
+            '13author': [],
+            '14date': Bp.Date,
+            "15introduction":Bp.Introduction,
+            "16process": Bp.Process,
+            "17outcome": Bp.Outcome,
+            "18conclusion": Bp.Conclusion,
+            "19learnmore": Bp.Learnmore,
             created: "true",
-
         }).then(docRef => {
             //Assign the relation between the bp and the author on the authors side
             for (authorid of authorids) {
@@ -271,7 +261,6 @@ async function addBPs() {
             let path = doelstring + docRef.id + '/';
             createCommentDocs(path);
             createRatingDocs(path);
-            createExampleDocs(path);
 
 
             //Assign the relation between the bp and the author,theme and dimension on the bp side
@@ -309,14 +298,6 @@ async function createRatingDocs(path) {
     await db.collection(path + 'ratings').doc('ratingdocument').set(data);
 }
 
-async function createExampleDocs(path) {
-    let data = {
-        "displayfeature": true,
-        "2name": "string",
-        "3description": "text"
-    }
-    await db.collection(path + 'example').doc('exampledocument').set(data);
-}
 
 
 

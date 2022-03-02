@@ -6,7 +6,7 @@ var user = firebase.auth().currentUser;
 // Set administrators, note that this is not the domain administrator but the programmer requiring executive rights.
 var administrators = ['stefanvanderpijl@gmail.com']
 // Below option determines if the administrators can see the admin options, for showcasing purposes this should be false
-const adminoptionenabled = false
+const adminoptionenabled = true
 
 
 auth.onAuthStateChanged(function (user) {

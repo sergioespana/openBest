@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest = {
     //collection
-    "Greenoffice UU": {
+    "Greenoffice UU showcase": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Greenoffice UU (Showcase environment)",
+            "name": "Greenoffice UU (Testcase environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -33,22 +33,20 @@ var jsontest = {
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "10title": "string",
-                    "11theme": ["string"],
-                    "12Sustainability dimension": ["string"],
-                    "13image": "string",
-                    "14author": [{
+                    "11university": "string",
+                    "12image": "string",
+                    "13author": [{
                         "name": "Written by",
                         "self": "document reference",
                         "related": "document reference"
                     }],
-                    "15date": "string",
-                    "16effort": "string",
-                    "17timeframe": "int",
-                    "18audience": "string",
-                    "19quote": "string",
-                    "20description": "text",
-                    "21treatment": "string",
-                    "22takeaway": "text",
+                    "14date": "string",
+                    "15introduction": "text",
+                    "16process": "text",
+                    "17outcome": "text",
+                    "18conclusion": "text",
+                    "19learnmore": "text",
+                    
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -75,15 +73,6 @@ var jsontest = {
                         }
                     },
 
-                    "example": {
-                        "exampledocument": {
-                            "01grouptitle": "Example",
-                            "02groupdesc": "Describe an example here.",
-                            "1displayfeature": true,
-                            "2name": "string",
-                            "3description": "text"
-                        }
-                    },
                 }
             },
             //collection

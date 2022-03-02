@@ -10,7 +10,7 @@ var span = document.getElementsByClassName("close")[0];
 var checkedDR = [];
 var checkedSC = [];
 var checkedREL = [];
-let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort'];
+let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort','university'];
 var listofContainers = []
 // ############################################
 
@@ -121,18 +121,9 @@ async function retrieveBPinfo(BPid) {
             "content": `${doc.data()[Object.keys(doc.data())[title]]}`
         })
 
-        let BPdescription = document.getElementById("bp-description");
-        let description = indexArr[8];
-        BPdescription.innerText = `${doc.data()[Object.keys(doc.data())[description]]}`;
 
-        listofContainers.push({
-            "name": "20description",
-            "container": BPdescription,
-            "content": `${doc.data()[Object.keys(doc.data())[description]]}`
-        })
-
-        let dimensionArea = document.getElementById("bp-dimension");
-        let themeArea = document.getElementById("bp-theme");
+        
+        let UniversityArea = document.getElementById("bp-university");
         let dateArea = document.getElementById("bp-date");
 
         //ADDED//
@@ -140,11 +131,11 @@ async function retrieveBPinfo(BPid) {
         imageArea.style.marginLeft = "auto";
         imageArea.style.marginRight = "auto";
 
-        let audienceArea = document.getElementById("bp-audience");
+        // let audienceArea = document.getElementById("bp-audience");
 
-        let effortArea = document.getElementById("bp-effort");
+        // let effortArea = document.getElementById("bp-effort");
 
-        let timeFrameArea = document.getElementById("bp-timeframe");
+        // let timeFrameArea = document.getElementById("bp-timeframe");
 
         // Iterating over the document data and displaying general info
         for (let [key, value] of Object.entries(doc.data())) {
@@ -212,44 +203,23 @@ async function retrieveBPinfo(BPid) {
                 }
             }
 
-            // Displaying dimension
-            if (key.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
-                let dimensions = []
-                // Populating the general info section (authors, date, categories)
-                value.forEach(element => {
-                    let dimensionButton = document.createElement('a');
-                    let span = document.createElement('span');
-                    span.setAttribute('class', 'text');
-                    span.innerText = element;
-                    dimensionButton.appendChild(span);
-                    dimensionButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                    dimensionArea.appendChild(dimensionButton);
-                    dimensions.push(span)
-                });
-                listofContainers.push({
-                    "name": key,
-                    "container": dimensions,
-                    "content": value
-                })
-            }
 
-            // Displaying theme
-            if (key.replace(/[ˆ0-9]+/g, '') == 'theme') {
-                let themes = []
+            // Displaying university
+            if (key.replace(/[ˆ0-9]+/g, '') == 'university') {
+         
                 // Populating the general info section (authors, date, categories)
-                value.forEach(element => {
-                    let themeButton = document.createElement('a');
-                    let span = document.createElement('span');
-                    span.setAttribute('class', 'text');
-                    span.innerText = element;
-                    themeButton.appendChild(span);
-                    themeButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                    themeArea.appendChild(themeButton);
-                    themes.push(span)
-                });
+    
+                let themeButton = document.createElement('a');
+                let span = document.createElement('span');
+                span.setAttribute('class', 'text');
+                span.innerText = value;
+                themeButton.appendChild(span);
+                themeButton.setAttribute('class', 'btn btn-light btn-icon-split');
+                UniversityArea.appendChild(themeButton);
+            
                 listofContainers.push({
                     "name": key,
-                    "container": themes,
+                    "container": span,
                     "content": value
                 })
             }
@@ -596,14 +566,10 @@ function closeModal() {
     let Removebutton = document.getElementById("removeBP");
     let Editbutton = document.getElementById("editBP");
     let QRSection = document.getElementById("qr_code");
-    let dimensionArea = document.getElementById("bp-dimension");
-    let themeArea = document.getElementById("bp-theme");
+    let UniversityArea = document.getElementById("bp-university");
     let authorArea = document.getElementById("bp-authors");
     let dateArea = document.getElementById("bp-date");
     let imageArea = document.getElementById("bp-image");
-    let audienceArea = document.getElementById("bp-audience");
-    let effortArea = document.getElementById("bp-effort");
-    let timeFrameArea = document.getElementById("bp-timeframe");
     let coreContent = document.getElementById("bp-core-content");
     let otherSections = document.getElementById("bp-other-sections");
     // Removing previously existing categories, authors and dates
@@ -618,12 +584,9 @@ function closeModal() {
         QRSection.removeChild(QRSection.firstChild);
     }
 
-    while (dimensionArea.hasChildNodes()) {
-        dimensionArea.removeChild(dimensionArea.firstChild);
-    }
  
-    while (themeArea.hasChildNodes()) {
-        themeArea.removeChild(themeArea.firstChild);
+    while (UniversityArea.hasChildNodes()) {
+        UniversityArea.removeChild(UniversityArea.firstChild);
     }
     while (authorArea.hasChildNodes()) {
         authorArea.removeChild(authorArea.firstChild);
@@ -633,15 +596,6 @@ function closeModal() {
     }
     while (dateArea.hasChildNodes()) {
         dateArea.removeChild(dateArea.firstChild);
-    }
-    while (audienceArea.hasChildNodes()) {
-        audienceArea.removeChild(audienceArea.firstChild);
-    }
-    while (effortArea.hasChildNodes()) {
-        effortArea.removeChild(effortArea.firstChild);
-    }
-    while (timeFrameArea.hasChildNodes()) {
-        timeFrameArea.removeChild(timeFrameArea.firstChild);
     }
     while (coreContent.hasChildNodes()) {
         coreContent.removeChild(coreContent.firstChild);

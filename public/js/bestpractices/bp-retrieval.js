@@ -231,13 +231,13 @@ function initTable() {
           //     targets: [1]
           // }],
 
-          //dom: '<"top"Bfrtip<"clear">>rt<"bottom"iflp<"clear">>',
-          dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>',
-   
-          buttons: [
-            'copy', 'excel', 'pdf'
-          ]
-
+          // with export buttons
+          // dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>',
+          // buttons: [
+          //   'copy', 'excel', 'pdf'
+          // ]
+          // without export buttons
+          dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>'
         })
 
         $('a.toggle-vis').on('click', function (e) {
@@ -337,75 +337,61 @@ async function getDocData(callback) {
           // The index of the title, description and date keys is pushed to indexArr
           // Using splice ensures that title is pushed to index 0, description to index 4, etc
           //Keep in mind that this order should resemble the models numerical order.
+
+          
           if (keyArray[x] == '"title"') {
             indexArr.splice(0, 0, x);
           }
 
-          else if (keyArray[x] == '"theme"') {
+          else if (keyArray[x] == '"university"') {
             indexArr.splice(1, 0, x);
           }
 
-          else if (keyArray[x] == '"sustainability dimension"') {
+          else if (keyArray[x] == '"date"') {
             indexArr.splice(2, 0, x);
           }
-
-          else if (keyArray[x] == '"date"') {
+          else if (keyArray[x] == '"introduction"') {
             indexArr.splice(3, 0, x);
           }
-          else if (keyArray[x] == '"effort"') {
+          else if (keyArray[x] == '"process"') {
             indexArr.splice(4, 0, x);
           }
-          else if (keyArray[x] == '"timeframe"') {
+          else if (keyArray[x] == '"outcome"') {
             indexArr.splice(5, 0, x);
           }
-          else if (keyArray[x] == '"audience"') {
+          else if (keyArray[x] == '"conclusion"') {
             indexArr.splice(6, 0, x);
           }
-          else if (keyArray[x] == '"quote"') {
+
+          else if (keyArray[x] == '"learnmore"') {
             indexArr.splice(7, 0, x);
           }
-
-          else if (keyArray[x] == '"description"') {
-            indexArr.splice(8, 0, x);
-          }
-          else if (keyArray[x] == '"treatment"') {
-            indexArr.splice(9, 0, x);
-          }
-          else if (keyArray[x] == '"takeaway"') {
-            indexArr.splice(10, 0, x);
-          }
-
         }
 
         // indexArr at index 0 stores the index of the title key in the original keyArr
         // the order below determines the column order of the table
-        title = indexArr[0];
-        date = indexArr[3];
-        theme = indexArr[1];
-        dimension = indexArr[2];
-        audience = indexArr[6];
-        effort = indexArr[4];
-        timeframe = indexArr[5];
-        quote = indexArr[7];
-        description = indexArr[8]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
-        treatment = indexArr[9];
-        takeaway = indexArr[10];
 
+
+
+        title = indexArr[0];
+        date = indexArr[2];
+        university = indexArr[1];
+        introduction = indexArr[3];
+        proces = indexArr[4];
+        outcome = indexArr[5];
+        conclusion = indexArr[6];
+        //description = indexArr[8]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
 
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [
           `${doc.data()[Object.keys(doc.data())[title]]}`,
           `${doc.data()[Object.keys(doc.data())[date]]}`,
-          `${doc.data()[Object.keys(doc.data())[theme]]}`,
-          `${doc.data()[Object.keys(doc.data())[dimension]]}`,
-          `${doc.data()[Object.keys(doc.data())[audience]]}`,
-          `${doc.data()[Object.keys(doc.data())[timeframe]]}`,
-          `${doc.data()[Object.keys(doc.data())[effort]]}`,
-          `${doc.data()[Object.keys(doc.data())[quote]]}`,
-          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 150) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[treatment]].substring(0, 150) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[takeaway]].substring(0, 150) + '.....'}`
+          `${doc.data()[Object.keys(doc.data())[university]]}`,
+          `${doc.data()[Object.keys(doc.data())[introduction]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[proces]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[outcome]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[conclusion]].substring(0, 150) + '.....'}`
         ];
 
         // Pushing docdata to data array to populate the table
