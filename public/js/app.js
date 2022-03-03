@@ -5,6 +5,7 @@
 // Create firestore (database) object
 var db = firebase.firestore();
 
+var administrators = ['stefanvanderpijl@gmail.com']
 
 // userEmail is used to match the email of the current user to the database of users
 var userEmail;
@@ -51,7 +52,7 @@ $(document).ready(function () {
           await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc){
               // Setting the domain name
               domainName.innerHTML = doc.data().name;
-
+              administrators.push(doc.data().administrator)
               if (doc.data().administrator == userEmail) {
                 let admincard = document.getElementById("administrator-card");
                 let usercard  = document.getElementById("user-card");
@@ -75,6 +76,11 @@ $(document).ready(function () {
             menuItemBP.style.display = "inline";
             menuItemToc.style.display = "inline";
           }
+        }
+
+        if (developers.includes(userEmail) && dName){
+          let developercard = document.getElementById("developer-card");
+          developercard.style.display = "inline-block";
         }
 
         // If the user belongs to no domain

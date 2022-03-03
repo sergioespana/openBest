@@ -28,48 +28,53 @@ async function waitFordomainjson_domain() {
 
 
 var tbl = document.createElement('table');
-let thead = document.createElement('thead');
-thead.innerText = "Dev Tools";
 let tbody = document.createElement('tbody');
 
-tbl.appendChild(thead);
 tbl.appendChild(tbody);
 
 var popbutton1 = document.createElement("INPUT");
 popbutton1.type = "button";
 popbutton1.value = "Populate Authors";
 popbutton1.addEventListener("click", async function () { await addAuthors() });
+popbutton1.setAttribute('class', 'btn btn-light btn-icon-split');
 
 
 var popbutton2 = document.createElement("INPUT");
 popbutton2.type = "button";
 popbutton2.value = "Populate Themes";
-popbutton2.addEventListener("click", async function () {
-    await addthemes()
-    await addsustainabilitydimensions()
-
-});
+popbutton2.addEventListener("click", async function () {});
+popbutton2.setAttribute('class', 'btn btn-light btn-icon-split');
 
 
 var popbutton3 = document.createElement("INPUT");
 popbutton3.type = "button";
 popbutton3.value = "Populate users";
 popbutton3.addEventListener("click", async function () { await addUsers() });
+popbutton3.setAttribute('class', 'btn btn-light btn-icon-split');
 
 var popbutton4 = document.createElement("INPUT");
 popbutton4.type = "button";
 popbutton4.value = "Populate best practices";
 popbutton4.addEventListener("click", async function () { await addBPs(); });
+popbutton4.setAttribute('class', 'btn btn-light btn-icon-split');
 
 var fileselec = document.createElement("INPUT");
 fileselec.type = "file";
 fileselec.id = "fileUpload";
+fileselec.style.display = "none";
+
+var fileseleclabel = document.createElement("label")
+fileseleclabel.setAttribute('for', 'fileUpload');
+fileseleclabel.innerText =  "Upload Excel"
+fileseleclabel.style.display = 'inline-block'
+fileseleclabel.setAttribute('class', 'btn btn-light btn-icon-split');
+
 
 var probutton = document.createElement("INPUT");
 probutton.type = "button";
 probutton.value = "upload";
 probutton.addEventListener("click", function () { UploadProcess() });
-
+probutton.setAttribute('class', 'btn btn-light btn-icon-split');
 
 let row_1 = document.createElement('tr');
 let row_1_data_1 = document.createElement('td');
@@ -89,6 +94,8 @@ tbody.appendChild(row_1);
 let row_2 = document.createElement('tr');
 let row_2_data_1 = document.createElement('td');
 row_2_data_1.appendChild(fileselec);
+row_2_data_1.appendChild(fileseleclabel);
+
 let row_2_data_2 = document.createElement('td');
 row_2_data_2.appendChild(probutton);
 let row_2_data_3 = document.createElement('td');
