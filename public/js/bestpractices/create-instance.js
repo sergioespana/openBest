@@ -14,15 +14,15 @@ var fieldsArr = [];
 // The functions from this class would ideally be used in dsl.js. However, this also requires making sure that every page has access to the jsonmodel, instead of the static jsontest defined here.
 
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
-var jsontest = {
+var jsontest_ = {
     //collection
-    "Greenoffice UU showcase": {
+    "PwC test": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Greenoffice UU (Testcase environment)",
+            "name": "PwC (test deploy environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -109,9 +109,10 @@ if (document.getElementById("create-instance-btn")) {
         documentPaths = [];
         // remove this after dev
         //jsontest = JSONmodel;
-        console.log(jsontest);
-        extractJSON(jsontest, 0, '');
+        console.log(jsontest_);
+        extractJSON(jsontest_, 0, '');
         extractFields();
+      
     })
 };
 
@@ -197,8 +198,11 @@ function extractFields() {
 
         var docPath = documentPaths[x];
         // Passing the doc info and collection path to writeDB to instantiate
+        if (docPath){
         writeDB(collectionPaths[x], docInfo, docPath);
+        }
     }
+    writeModel()
 }
 
 // Writing to DB and then reloading the page
@@ -217,9 +221,7 @@ function writeDB(coll, doci, docp) {
 }
 
 function delay() {
-    console.log('done');
     return new Promise(resolve => setTimeout(resolve, 800));
-
 }
 
 
@@ -229,9 +231,7 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
     // >> This info is later also used in create-bp to instantiate featured
     // >> Info provided by user in create-bp will overwrite this info
     db.collection(coll).doc(docName).set(JSONinfo);
-
     let userPath = findPath(collectionPaths, 'user');
-
     // Only writing this info when the domain hasn't been instantiated yet
     if (domainInstantiated == false) {
         db.collection(userPath).doc('d-user').set({ 'email': userEmail, 'name': userName, 'role': 'administrator' });
@@ -239,6 +239,14 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
 
     await delay();
     callback();
+}
+
+async function writeModel (){
+    let domain      = documentPaths[0].split("/")[0]
+    let domainstate = documentPaths[0].split("/")[1]
+    await db.collection(domain).doc(domainstate).update({
+        model: jsontest_
+    });
 }
 
 

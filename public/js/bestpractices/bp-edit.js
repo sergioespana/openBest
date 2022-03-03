@@ -2,13 +2,24 @@
 let bpid = null
 let domainstate
 
+
 window.onload = function () {
-    setTimeout(
-        async function () {
-            domainstate = await findPath(documentPaths, 'domainstate') + '/'
-        }
-        , 3000)
+    waitFordomainjson_edit()  
 }
+
+async function waitFordomainjson_edit(){
+    //if domain is already loaded:
+    if(typeof domainjson !== "undefined"){
+         // First initialization of datatable before BPs are retrieved from database
+        extractJSON(domainjson, 0, '');
+        domainstate = await findPath(documentPaths, 'domainstate') + '/'
+    }
+     //else wait and try again:
+    else{
+        setTimeout(waitFordomainjson_edit, 250);
+    }
+  }
+
 
 function storeID(BPid) {
     bpid = BPid;
@@ -139,19 +150,18 @@ async function editBPs(BPid) {
         if (item.name.replace(/[ˆ0-9]+/g, '') != "theme" || item.name.replace(/[ˆ0-9]+/g, '') != "sustainability dimension") {
             await db.collection(path).doc(BPid).update({
                 [item.name]: item.currencontent
-            })//.then(console.log(item.name, 'in the database'))
+            })
         }
         if (item.name.replace(/[ˆ0-9]+/g, '') == 'theme' || item.name.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
-            //console.log(item.name, item.currencontent)
             if (item.content[0].constructor === Array) {
                 await db.collection(path).doc(BPid).update({
                     [item.name]: item.currencontent[0]
-                })//.then(console.log(item.name, 'in the database'))
+                })
             }
             else {
                 await db.collection(path).doc(BPid).update({
                     [item.name]: item.currencontent
-                })//.then(console.log(item.name, 'in the database'))
+                })
             }
         }
         item.content = item.currencontent

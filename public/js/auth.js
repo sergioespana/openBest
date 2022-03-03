@@ -24,8 +24,6 @@ auth.onAuthStateChanged(function (user) {
       if (place) {
         place.append(tbl)
       }
-
-
     }
   } else {
     // No user is signed in.

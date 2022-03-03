@@ -69,11 +69,11 @@ async function retrieveBPinfo(BPid) {
     remove_BP.setAttribute('class', 'btn btn-light btn-icon-split');
     let remove = document.getElementById('removeBP');
     remove_BP.id = "removebutton"
-    remove_BP.addEventListener("click", function () {
+    remove_BP.addEventListener("click", async function () {
         // ask for confirmation that a user indeed wants to delete his bp
         if (confirm("Are you sure you want to delete this best practice?") == true) {
             removeBP(BPid);
-            delay(800);
+            await delay();
             alert('Best practice has been removed, the page will now reload');
             window.history.replaceState("", "", starturl);
             location.reload();

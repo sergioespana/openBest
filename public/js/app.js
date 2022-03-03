@@ -12,6 +12,8 @@ var userName;
 // userPath and dName are used to determine the domain of the current user
 var userPath;
 var dName;
+// domainjson is the domain model of the domain of the user retrieved from the db
+var domainjson;
 
 // Current domain
 
@@ -43,11 +45,10 @@ $(document).ready(function () {
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
 
-      checkUser(function () {
+      checkUser(async function () {
         // Checking if this person is the administrator
         if (dName) {
-          db.collection(`${dName[0]}`).doc(`${dName[1]}`)
-            .onSnapshot(function (doc) {
+          await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc){
               // Setting the domain name
               domainName.innerHTML = doc.data().name;
 
@@ -101,28 +102,44 @@ async function checkUser(callback) {
   // A collection group query is used to search across the WHOLE DATABASE for the "email" field in a "users" subcollection
   // Regardless of the domain
   // This collection group index is manually created in the Firebase console
-  db.collectionGroup('users')
-    .where('email', '==', userEmail)
-    .get().then(function (snapshot) {
-      snapshot.docs.forEach(doc => {
-        // The path to the users group of the currently logged in user
-        userPath = doc.ref.parent.path;
-
-        // Checking if one of the results matches the currently defined domain name in jsontest
-        if (Object.entries(jsontest)[0][0] == userPath.split("/")[0]) {
-          dName = userPath.split("/");
-        }
-      });
-    })
-
-
-  await delay();
+  await db.collectionGroup('users').where('email', '==', userEmail).get().then(async function (snapshot) {
+    snapshot.docs.forEach(doc => {
+      // The path to the users group of the currently logged in user
+      userPath = doc.ref.parent.path;
+    });
+    //new authorization
+    //if a user exists, get the path to the domain and retrieve the domain model string and replace the reference string with the model string. Hence overwriting the static model with a dynamic model fitting the users domain.
+    if (userPath) {
+      dName = userPath.split("/");
+      let domain = userPath.split("/")[0]
+      let domainstate = userPath.split("/")[1]
+      let domainmodel = await db.collection(domain).doc(domainstate).get()
+      domainjson = domainmodel.data().model
+    }
+    else {
+      //user does not exist yet...
+    }
+  })
+  await delay()
   callback();
 }
 
 function delay() {
   return new Promise(resolve => setTimeout(resolve, 600));
 }
+
+
+function waitFordomainjson_app(){
+  //if domain is already loaded:
+  if(typeof domainjson !== "undefined"){
+    return new Promise(resolve => setTimeout(resolve,1));
+  }
+   //else wait and try again:
+  else{
+      setTimeout(waitFordomainjson_app, 250);
+  }
+}
+
 
 
 // Finds the collectionpath that corresponds to a wildcard filter
@@ -134,9 +151,4 @@ function findPath(array, filter) {
   return result[0];
 }
 
-// requirejs(["helper/util"], function(util) {
-//   //This function is called when scripts/helper/util.js is loaded.
-//   //If util.js calls define(), then this function is not fired until
-//   //util's dependencies have loaded, and the util argument will hold
-//   //the module value for "helper/util".
-// });
+

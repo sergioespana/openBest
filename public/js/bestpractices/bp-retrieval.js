@@ -37,14 +37,28 @@ const unique = (value, index, self) => {
 // Call the dataTables jQuery plugin
 // Necessary for correctly displaying data in the table
 $(document).ready(function () {
-  // First initialization of datatable before BPs are retrieved from database
-  $('#dataTable').DataTable();
-  initTable();
+  //wait for domainjson to be found
+  waitFordomainjson_retrieval()
 });
+
+//the below function guards the functions from firing premature.
+//this could better be done using async and await but unfortunately this didnt seem to work.
+function waitFordomainjson_retrieval(){
+  //if domain is already loaded:
+  if(typeof domainjson !== "undefined"){
+       // First initialization of datatable before BPs are retrieved from database
+      $('#dataTable').DataTable();
+      initTable();    
+  }
+   //else wait and try again:
+  else{
+      setTimeout(waitFordomainjson_retrieval, 250);
+  }
+}
 
 
 // First initialization of table when document is ready loading
-function initTable() {
+async function initTable() {
 
   // Clean slate of data every time this function is called
   data = [];
@@ -53,7 +67,7 @@ function initTable() {
   docIDs = [];
 
   // extractJSON instantiates the collection paths
-  extractJSON(jsontest, 0, '');
+  extractJSON(domainjson, 0, '');
   // bpPath is the collection path to the bestpractices sub-collection
   let bpPath = findPath(collectionPaths, 'bestpractices');
 
@@ -252,18 +266,12 @@ function initTable() {
 
 }
 
-// Delay function specifies how long to wait on an async function
-function delay() {
-  return new Promise(resolve => setTimeout(resolve, 1000));
-}
-
-
 // This function get the document info from all best practice documents
 async function getDocData(callback) {
   // bpPath is the collection path to the bestpractices sub-collection
   let bpPath = findPath(collectionPaths, 'bestpractices');
   //Getting all best practice documents
-  db.collection(`${bpPath}`)
+  await db.collection(`${bpPath}`)
     .where("created", "==", "true")
     .get().then((snapshot) => {
       snapshot.docs.forEach(doc => {
@@ -407,9 +415,6 @@ async function getDocData(callback) {
           }
       });
     });
-
-
-  await delay();
   callback();
 }
 

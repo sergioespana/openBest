@@ -55,6 +55,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
 
     check = "nothing";
 
+
     // First alter the JSON string by inserting the unique doc id's
     alterJSON(uniqueDocID, function (aJSON) {
 
@@ -715,12 +716,11 @@ function delay() {
 // Creates an altered version of the JSON model by inserting the unique doc id's 
 // for the subcollections that have instantiated features
 async function alterJSON(docid, callback) {
-
-    let alteredJSONstring = JSON.stringify(jsontest);
+    let alteredJSONstring = JSON.stringify(domainjson);
 
     // Making sure the collectionPaths array is available
     collectionPaths = [];
-    extractJSON(jsontest, 0, '');
+    extractJSON(domainjson, 0, '');
 
     // Remove all children from the BPform > prevents duplicate form features
     while (BPform.hasChildNodes()) {

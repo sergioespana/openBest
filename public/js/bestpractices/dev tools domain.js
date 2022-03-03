@@ -5,7 +5,27 @@
 // To be able to see the dev tools please change the email adress in auth.js to your own emailadress.
 
 var db = firebase.firestore();
-let domainstate = 'Greenoffice UU showcase/domainstate/'
+let domainstate
+
+
+window.onload = function () {
+    waitFordomainjson_domain()
+}
+
+async function waitFordomainjson_domain() {
+    //if domain is already loaded:
+    if (typeof domainjson !== "undefined") {
+        // First initialization of datatable before BPs are retrieved from database
+        extractJSON(domainjson, 0, '');
+        domainstate = await findPath(documentPaths, 'domainstate') + '/'
+    }
+    //else wait and try again:
+    else {
+        setTimeout(waitFordomainjson_domain, 250);
+    }
+}
+
+
 
 var tbl = document.createElement('table');
 let thead = document.createElement('thead');
@@ -130,7 +150,7 @@ function GetTableFromExcel(data) {
 async function addAuthors() {
     let doelstring = domainstate + 'authors' + '/';
     let list = [
-     
+
     ]
 
     for (authorname of list) {
@@ -206,11 +226,11 @@ async function updateBP(authorids, bpid) {
     let doelstring = domainstate + 'bestpractices' + '/';
     for (authorid of authorids) {
         let currentDoc = await db.collection(doelstring).doc(bpid).get();
-        for(let [key, value] of Object.entries(currentDoc.data())){
-            if(key.replace(/[0-9]/g, '') == 'author'){
-                let currentRefArray = value;                
-                currentRefArray.push({name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related:  db.doc(domainstate + 'authors/' + authorid)});
-                db.collection(doelstring).doc(bpid).set({'14author': currentRefArray}, { merge: true });
+        for (let [key, value] of Object.entries(currentDoc.data())) {
+            if (key.replace(/[0-9]/g, '') == 'author') {
+                let currentRefArray = value;
+                currentRefArray.push({ name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related: db.doc(domainstate + 'authors/' + authorid) });
+                db.collection(doelstring).doc(bpid).set({ '14author': currentRefArray }, { merge: true });
             }
         }
     }
@@ -245,7 +265,7 @@ async function addBPs() {
             '12image': Bp.Image,
             '13author': [],
             '14date': Bp.Date,
-            "15introduction":Bp.Introduction,
+            "15introduction": Bp.Introduction,
             "16process": Bp.Process,
             "17outcome": Bp.Outcome,
             "18conclusion": Bp.Conclusion,
