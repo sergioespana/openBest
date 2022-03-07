@@ -209,6 +209,17 @@
                         class="btn btn-light btn-icon-split">
                         <span class="text">Create model</span>
                       </a>
+                      <div class="row">
+                        <p style="margin-top: 10px;">As an adminstrator, you add users and authors to the domain using
+                          the buttons below</p>
+                      </div>
+                      <a style="display: block" id="add-user-btn" class="btn btn-light btn-icon-split">
+                        <span class="text">Add user</span>
+                      </a>
+                      <a style="margin-top: 10px; display: block" id="add-author-btn"
+                        class="btn btn-light btn-icon-split">
+                        <span class="text">Add Author</span>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -230,10 +241,13 @@
                     </div>
                     <div class="col-lg-6">
                       <div class="row">
-                        <p id="developer-text">As a developer, you can populate the repository using data from excel files below</p>
+                        <p id="developer-text">As a developer, you can populate the repository using data from Excel
+                          files below</p>
+                        <p>Currently only best practices can be loaded from Excel, others like authors are defined in
+                          code and should hence be added in the code of the scripts</p>
                       </div>
-                               
-          <div id='popbut'></div>
+
+                      <div id='popbut'></div>
                     </div>
                   </div>
                 </div>
@@ -256,7 +270,7 @@
 
         <!-- Modal content -->
         <div class="bp-modal-content">
-          <span class="close"><i class="fas fa-times"></i></span>
+          <span id="bp-close" class="close"><i class="fas fa-times"></i></span>
           <div class="col-sm-10 col-lg-6 col-centered">
             <div class="bp-modal-body">
               <h1>Best practice entry</h1>
@@ -297,13 +311,137 @@
       </div>
     </div>
 
+
+    <!-- The Modal for entering a user -->
+    <div id="user-modal" style="display:none" id="wrapper" class="user-modal container-fluid">
+      <div class="row" style="margin: 0px">
+
+        <!-- Modal content -->
+        <div class="user-modal-content">
+          <span id="user-close" class="close"><i class="fas fa-times"></i></span>
+          <div class="col-sm-10 col-lg-6 col-centered">
+            <div class="user-modal-body">
+              <h1>User management</h1>
+
+              <div class="card card-margin border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Add user
+                      </div>
+                      <div style="padding-right: 12px" class="p">Use this form to add a user to your domain, take
+                        care to fill in all fields</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-edit fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <form id="user-entry-form">
+                <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
+                  <br>
+                  <label>Name of the user</label>
+                  <input required id="input-user-name" class="form-control bg-light border-0 small" type="value"
+                    placeholder="Username"></input>
+                  <br>
+                  <label>Email of the user</label>
+                  <input required id="input-user-email" class="form-control bg-light border-0 small" type="value"
+                    placeholder="example@gmail.com"></input>
+                  <br>
+
+                  <label  for="role">Role of the user:</label>
+                  <select required name="role" id="role" class="form-control bg-light border-0 small">
+                    <option value="user">user</option>
+                    <option value="administrator">administrator</option>
+                  </select>
+
+                  <label for="makeauthor">Also make an Author account for this user?:</label>
+                  <select required name="makeauthor" id="makeauthor" class="form-control bg-light border-0 small">
+                    <option value="negative">no</option>
+                    <option value="affirmative">yes</option>
+                  </select>
+                </div>
+              </form>
+
+              <a id="store-user-btn" class="btn btn-light btn-icon-split">
+                <span class="icon text-gray-600">
+                  <i class="fas fa-arrow-right"></i>
+                </span>
+                <span class="text">Store User</span>
+              </a>
+            </div>
+          </div>
+          <!-- End of modal content -->
+        </div>
+
+      </div>
+    </div>
+
+     <!-- The Modal for entering an author -->
+     <div id="author-modal" style="display:none" id="wrapper" class="author-modal container-fluid">
+      <div class="row" style="margin: 0px">
+
+        <!-- Modal content -->
+        <div class="author-modal-content">
+          <span id="author-close" class="close"><i class="fas fa-times"></i></span>
+          <div class="col-sm-10 col-lg-6 col-centered">
+            <div class="author-modal-body">
+              <h1>Author management</h1>
+
+              <div class="card card-margin border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Add author
+                      </div>
+                      <div style="padding-right: 12px" class="p">Use this form to add an author to your domain, take
+                        care to fill in all fields</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-edit fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <form id="author-entry-form">
+                <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
+                  <br>
+                  <label>Name of the user</label>
+                  <input required id="input-author-name" class="form-control bg-light border-0 small" type="value"
+                    placeholder="Username"></input>
+                  <br>
+                  <label>Email of the user</label>
+                  <input required id="input-author-email" class="form-control bg-light border-0 small" type="value"
+                    placeholder="example@gmail.com"></input>
+                </div>
+              </form>
+
+              <a id="store-author-btn" class="btn btn-light btn-icon-split">
+                <span class="icon text-gray-600">
+                  <i class="fas fa-arrow-right"></i>
+                </span>
+                <span class="text">Store Author</span>
+              </a>
+            </div>
+          </div>
+          <!-- End of modal content -->
+        </div>
+
+      </div>
+    </div>
+
     <!-- The Modal for creating a model -->
     <div id="model-modal" style="display:none" id="wrapper" class="model-modal container-fluid">
       <div class="row" style="margin: 0px">
 
         <!-- Modal content -->
         <div class="model-modal-content">
-          <span class="close"><i class="fas fa-times"></i></span>
+          <span id="model-close" class="close"><i class="fas fa-times"></i></span>
           <div class="col-sm-10 col-lg-6 col-centered">
             <div class="model-modal-body">
 
@@ -438,6 +576,8 @@
     <script src="js/bestpractices/create-instance.js"></script>
     <script src="js/bestpractices/create-bp.js"></script>
     <script src="js/dsl.js"></script>
+    <script src="js/bestpractices/add-user.js"></script>
+    <script src="js/bestpractices/add-author.js"></script>
     <script src="js/bestpractices/dev tools domain.js"></script>
 
 

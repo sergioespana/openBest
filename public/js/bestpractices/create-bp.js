@@ -15,7 +15,7 @@ var docRefCounter = 0;
 var modal = document.getElementById("bp-modal");
 var btn = document.getElementById("create-BP-btn");
 // Span elements closes the modal
-var span = document.getElementsByClassName("close")[0];
+var span = document.getElementById("bp-close");
 
 // Div instantiated for the set of features for each concept
 var check;

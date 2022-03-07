@@ -32,31 +32,34 @@ let tbody = document.createElement('tbody');
 
 tbl.appendChild(tbody);
 
-var popbutton1 = document.createElement("INPUT");
+var popbutton1 = document.createElement("a");
 popbutton1.type = "button";
-popbutton1.value = "Populate Authors";
 popbutton1.addEventListener("click", async function () { await addAuthors() });
 popbutton1.setAttribute('class', 'btn btn-light btn-icon-split');
+popbutton1.appendChild(createspan('Populate Authors'))
+popbutton1.style.marginRight = '10px';
 
-
-var popbutton2 = document.createElement("INPUT");
+var popbutton2 = document.createElement("a");
 popbutton2.type = "button";
-popbutton2.value = "Populate Themes";
 popbutton2.addEventListener("click", async function () {});
 popbutton2.setAttribute('class', 'btn btn-light btn-icon-split');
+popbutton2.appendChild(createspan('Populate Themes'));
+popbutton2.style.marginRight = '10px';
 
 
-var popbutton3 = document.createElement("INPUT");
+var popbutton3 = document.createElement("a");
 popbutton3.type = "button";
-popbutton3.value = "Populate users";
 popbutton3.addEventListener("click", async function () { await addUsers() });
 popbutton3.setAttribute('class', 'btn btn-light btn-icon-split');
+popbutton3.appendChild(createspan('Populate Users'));
+popbutton3.style.marginRight = '10px';
 
-var popbutton4 = document.createElement("INPUT");
+var popbutton4 = document.createElement("a");
 popbutton4.type = "button";
-popbutton4.value = "Populate best practices";
 popbutton4.addEventListener("click", async function () { await addBPs(); });
 popbutton4.setAttribute('class', 'btn btn-light btn-icon-split');
+popbutton4.appendChild(createspan('Populate best practices'))
+popbutton4.style.marginRight = '10px';
 
 var fileselec = document.createElement("INPUT");
 fileselec.type = "file";
@@ -65,16 +68,19 @@ fileselec.style.display = "none";
 
 var fileseleclabel = document.createElement("label")
 fileseleclabel.setAttribute('for', 'fileUpload');
-fileseleclabel.innerText =  "Upload Excel"
 fileseleclabel.style.display = 'inline-block'
 fileseleclabel.setAttribute('class', 'btn btn-light btn-icon-split');
+fileseleclabel.appendChild(createspan('Upload Excel'))
+fileseleclabel.style.marginRight = '10px';
 
 
-var probutton = document.createElement("INPUT");
+var probutton = document.createElement("a");
 probutton.type = "button";
-probutton.value = "upload";
 probutton.addEventListener("click", function () { UploadProcess() });
 probutton.setAttribute('class', 'btn btn-light btn-icon-split');
+probutton.appendChild(createspan('Upload'))
+probutton.style.marginRight = '10px';
+
 
 let row_1 = document.createElement('tr');
 let row_1_data_1 = document.createElement('td');
@@ -157,9 +163,7 @@ function GetTableFromExcel(data) {
 async function addAuthors() {
     let doelstring = domainstate + 'authors' + '/';
     let list = [
-
     ]
-
     for (authorname of list) {
         //write author to db
         await db.collection(doelstring).add({
@@ -325,6 +329,11 @@ async function createRatingDocs(path) {
     await db.collection(path + 'ratings').doc('ratingdocument').set(data);
 }
 
-
+function createspan(text){
+    span = document.createElement('span')
+    span.innerText = text
+    span.setAttribute('class', 'text')
+    return span
+}
 
 

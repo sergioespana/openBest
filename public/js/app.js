@@ -77,9 +77,9 @@ $(document).ready(function () {
             menuItemToc.style.display = "inline";
           }
         }
-
-        if (developers.includes(userEmail) && dName){
-          let developercard = document.getElementById("developer-card");
+        let developercard = document.getElementById("developer-card");
+        if (developers.includes(userEmail) && dName && developercard){
+         
           developercard.style.display = "inline-block";
         }
 

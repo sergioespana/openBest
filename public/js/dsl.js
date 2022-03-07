@@ -8,7 +8,7 @@ var db = firebase.firestore();
 var dslmodal = document.getElementById("model-modal");
 var dslbtn = document.getElementById("create-model-btn");
 // span elements closes the modal
-var dslspan = document.getElementsByClassName("close")[1];
+var dslspan = document.getElementById("model-close");
 // Counts the amount of concept instances
 var counter = 0;
 var subcounter = 100;

@@ -15,7 +15,7 @@ var listofContainers = []
 // ############################################
 
 var currenteamail = null
-var authoremails   = []
+var authoremails  = []
 //change domainemail to the domain administrator.....
 var domainemail   = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
@@ -31,7 +31,6 @@ auth.onAuthStateChanged(function (user) {
 
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
-//But this did not work as of now, the challange is that CollectionPaths takes a while to load.
 setTimeout(function(){
     var selectedbpid = urlParams.get('BPid')
     if (selectedbpid) {
