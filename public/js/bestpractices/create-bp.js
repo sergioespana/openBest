@@ -1174,6 +1174,7 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
     modal.style.display = "none";
     // Resetting the counter
     docRefCounter = 0;
+    addactivity(userEmail, 'created', entryDocName, getcurrentDateTime())
 });
 
 

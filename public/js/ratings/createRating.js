@@ -134,6 +134,7 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
 
     submitbutton.addEventListener("click", async function () {
         let ratings = collectrating(ratingdimensions)
+        addactivity(userEmail, 'make rating', BPid, getcurrentDateTime())
         if (ratings.includes(null)) {
             alert("Please select a value for your rating before submitting your rating");
         }

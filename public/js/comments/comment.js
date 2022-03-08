@@ -131,10 +131,7 @@ function addbuttons(div, text, elem, commentid) {
     }
 }
 
-function getcurrentDateTime() {
-    var date = new Date();
-    return (date.toUTCString());
-}
+
 
 function masterCancel(buttonbar, text) {
     text.innerText = "";
@@ -143,6 +140,7 @@ function masterCancel(buttonbar, text) {
 }
 function masterSubmit(buttonbar, text) {
     var message = text.innerText;
+    addactivity(userEmail, 'make top comment', BPid, getcurrentDateTime())
     if (message.length >= 1) {
         masterCancel(buttonbar, text);
         let comment = new Object;
@@ -464,6 +462,7 @@ function removeallChildren(level, commentid, BP_id) {
 }
 function subSubmit(text, parentelem, commentid) {
     var message = text.innerText;
+    addactivity(userEmail, 'make sub comment', BPid, getcurrentDateTime())
     if (message.length >= 1) {
         subCancel(text, parentelem);
         let comment = new Object;

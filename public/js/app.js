@@ -158,3 +158,7 @@ function findPath(array, filter) {
 }
 
 
+function getcurrentDateTime() {
+  var date = new Date();
+  return (date.toUTCString());
+}

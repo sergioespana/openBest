@@ -39,6 +39,7 @@ setTimeout(function(){
         startupComments(selectedbpid);
         startupRatings(selectedbpid);
         storeID(selectedbpid);
+        addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
     }
 }, 3000); 
 
@@ -52,6 +53,7 @@ function tableClick(e) {
     startupRatings(BPid);
     storeID(BPid);
     window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
+    addactivity(userEmail, 'open', BPid, getcurrentDateTime())
 }
 
 async function retrieveBPinfo(BPid) {
@@ -342,6 +344,11 @@ async function retrieveBPinfo(BPid) {
     // The div in which BP content should be placed
     let bpCore = document.getElementById("bp-core-content");
     retrieveDocInfo(bpPath, BPid, bpCore);
+
+    span.onclick = function () {
+        closeModal() 
+        addactivity(userEmail, 'close', bpid, getcurrentDateTime())
+    }
 }
 
 
@@ -547,7 +554,10 @@ async function retrieveSub(refDocId, refDocPath, div) {
 }
 
 
-span.onclick = function () {closeModal() }
+// span.onclick = function () {
+//     closeModal() 
+//     addactivity(userEmail, 'close', 'NoBPID', getcurrentDateTime())
+// }
 
 function closeModal() {
     modal.style.display = "none";
@@ -622,6 +632,7 @@ async function removeBP(BPid) {
     let path = findPath(collectionPaths, 'bestpractices') + '/';
     //delete BP itself
     await (db.collection(path).doc(BPid).delete());
+    addactivity(userEmail, 'remove', BPid, getcurrentDateTime())
 }
 
     

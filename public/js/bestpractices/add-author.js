@@ -49,6 +49,22 @@ function addauthor(){
         name: authornamespan.value,
     }).then(
        console.log('author posted'),
-       alert('Author added')
+       alert('Author added'),
+       addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
     )
+}
+
+
+async function findAuthor(authorname) {
+    let doelstring = domainstate + 'authors' + '/';
+    let author = null;
+    await db.collection(doelstring).where("name", '==', authorname).get().then(docRef => {
+        if (docRef.docs.length >= 1) {
+            author = docRef.docs[0].id;
+        }
+        else {
+            author = 'none found';
+        }
+    })
+    return author
 }

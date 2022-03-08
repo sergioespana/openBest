@@ -40,7 +40,12 @@ cancel_BP_edit.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"  fa f
 cancel_BP_edit.setAttribute('class', 'btn btn-light btn-icon-split');
 cancel_BP_edit.style.display = "none";
 cancel_BP_edit.style.marginRight = '15px';
-cancel_BP_edit.addEventListener("click", function () { cancelBPEditing() });
+cancel_BP_edit.addEventListener("click", function () { 
+    
+    cancelBPEditing() 
+    addactivity(userEmail, 'cancel edit', bpid, getcurrentDateTime())
+
+});
 anchor2.appendChild(cancel_BP_edit);
 
 function editBP(listofContainers) {
@@ -131,6 +136,7 @@ function confirmBPEditing() {
         $('#dataTable').DataTable();
         initTable();
         alert('The BP has been updated');
+        addactivity(userEmail, 'edit', bpid, getcurrentDateTime())
     }
 }
 

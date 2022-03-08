@@ -37,7 +37,7 @@ if (userbtn) {
     }
 }
 
-document.getElementById("store-user-btn").addEventListener("click", function () {
+document.getElementById("store-user-btn").addEventListener("click",async function () {
     let values = [emailspan.value, namespan.value, rolespan.value]
     if (values.includes('')){alert('Please fill in all fields')}
     else{
@@ -47,9 +47,6 @@ document.getElementById("store-user-btn").addEventListener("click", function () 
         }
         
     }
-
-
-
 })
 
 // Closing the modal
@@ -67,19 +64,22 @@ function addUser(){
         role: rolespan.value
     }).then(
        console.log('user posted'),
-       alert('User added')
+       alert('User added'),
+       addactivity(userEmail, 'added user', 'noBP involved', getcurrentDateTime())
     )
 }
 
 function addauthor_(){
     extractJSON(domainjson, 0, '');
     authorpath = findPath(collectionPaths, 'authors') + '/'
-    console.log(authorpath)
     db.collection(authorpath).add({
         email: emailspan.value,
         name: namespan.value,
     }).then(
        console.log('author posted'),
-       alert('Author added')
+       alert('Author added'),
+       addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
     )
 }
+
+
