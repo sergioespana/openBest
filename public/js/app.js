@@ -12,6 +12,7 @@ var userEmail;
 var userName;
 // userPath and dName are used to determine the domain of the current user
 var userPath;
+var userRole;
 var dName;
 // domainjson is the domain model of the domain of the user retrieved from the db
 var domainjson;
@@ -46,14 +47,17 @@ $(document).ready(function () {
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
 
-      checkUser(async function () {
-        // Checking if this person is the administrator
+      checkUser(
+        
+      async function () {
+        // Checking if this person an administrator
         if (dName) {
           await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc){
               // Setting the domain name
               domainName.innerHTML = doc.data().name;
-              administrators.push(doc.data().administrator)
-              if (doc.data().administrator == userEmail) {
+              // check if person is administrator
+              if (userRole === 'administrator' || administrators.includes(userEmail)) {
+
                 let admincard = document.getElementById("administrator-card");
                 let usercard  = document.getElementById("user-card");
 
@@ -72,9 +76,9 @@ $(document).ready(function () {
           }
           if (dName) {
             let menuItemBP = document.getElementById("menu-bp-item");
-            let menuItemToc = document.getElementById("menu-toc-item");
+          //  let menuItemToc = document.getElementById("menu-toc-item");
             menuItemBP.style.display = "inline";
-            menuItemToc.style.display = "inline";
+          //  menuItemToc.style.display = "inline";
           }
         }
         let developercard = document.getElementById("developer-card");
@@ -92,12 +96,11 @@ $(document).ready(function () {
           }
 
           // If the user belongs to no domain, refer to the index page
-          if (window.location.pathname == '/bestpractices.html' || window.location.pathname == '/toc.html') {
+          if (window.location.pathname == '/bestpractices.html'){ //|| window.location.pathname == '/toc.html') {
             window.location.replace("/index.html");
           }
         }
       });
-
     }
   });
 
@@ -108,10 +111,15 @@ async function checkUser(callback) {
   // A collection group query is used to search across the WHOLE DATABASE for the "email" field in a "users" subcollection
   // Regardless of the domain
   // This collection group index is manually created in the Firebase console
-  await db.collectionGroup('users').where('email', '==', userEmail).get().then(async function (snapshot) {
+  //all users...
+  await db.collectionGroup('users').get().then(async function (snapshot) {  
     snapshot.docs.forEach(doc => {
-      // The path to the users group of the currently logged in user
+    let localemail    = String(userEmail).valueOf().replaceAll(" ", "")
+    let  serveremail  =  String(doc.data().email).valueOf().replaceAll(" ", "")
+    if (localemail === serveremail){
       userPath = doc.ref.parent.path;
+      userRole = doc.data().role
+    }
     });
     //new authorization
     //if a user exists, get the path to the domain and retrieve the domain model string and replace the reference string with the model string. Hence overwriting the static model with a dynamic model fitting the users domain.

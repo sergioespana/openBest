@@ -336,7 +336,7 @@ async function retrieveBPinfo(BPid) {
         }
     }
     //make the remove and edit functionalities available to the domain administrator, BP author, and developer
-    if (administrators.includes(currenteamail) || authoremails.includes(currenteamail) || developers.includes(currenteamail)){
+    if (userRole == 'administrator' || authoremails.includes(currenteamail) || developers.includes(currenteamail)){
         remove.appendChild(remove_BP);
         edit.appendChild(edit_BP);
     }

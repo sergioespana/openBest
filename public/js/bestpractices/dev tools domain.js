@@ -25,8 +25,6 @@ async function waitFordomainjson_domain() {
     }
 }
 
-
-
 var tbl = document.createElement('table');
 let tbody = document.createElement('tbody');
 
@@ -159,7 +157,6 @@ function GetTableFromExcel(data) {
     return excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);
 };
 
-
 async function addAuthors() {
     let doelstring = domainstate + 'authors' + '/';
     let list = [
@@ -188,8 +185,6 @@ async function addUsers() {
         })
     }
 }
-
-
 
 async function addAuthor(authorname) {
     let doelstring = domainstate + 'authors' + '/';
@@ -246,8 +241,6 @@ async function updateBP(authorids, bpid) {
         }
     }
 }
-
-
 
 async function addBPs() {
     let doelstring = domainstate + 'bestpractices' + '/';
