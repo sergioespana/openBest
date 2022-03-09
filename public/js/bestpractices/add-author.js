@@ -47,6 +47,7 @@ function addauthor(){
     db.collection(authorpath).add({
         email: authoremailspan.value,
         name: authornamespan.value,
+        relationship: []
     }).then(
        console.log('author posted'),
        alert('Author added'),

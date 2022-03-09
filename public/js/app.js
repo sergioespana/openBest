@@ -17,9 +17,6 @@ var dName;
 // domainjson is the domain model of the domain of the user retrieved from the db
 var domainjson;
 
-// Current domain
-
-
 // Variable that stores if a domain has been instantiated
 var domainInstantiated;
 

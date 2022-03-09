@@ -92,10 +92,8 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
 
                         //Iterating over the key-value pairs of the documents in which features should be displayed
                         for (let [key, value] of docdata) {
-                            if (key.includes("filter")) {
-                                console.log("Skipped + " + key);
-                            }
-                            else {
+                          
+                            
 
                                 // Before features are instantiated, we need to be able to populate docref dropdowns
                                 if (typeof (value[0]) == "object") {
@@ -115,7 +113,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
                                 // Calling instantiateFeatures with the docrefArray that corresponds to the current key
                                 instantiateFeatures(key, value, coll, doc, docrefArray);
 
-                            }
+                            
                         }
                     })
                 })
@@ -266,7 +264,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
 
             label.textContent = upperKey;
             input.textContent = value;
-
+            if (keyText != 'author'){
             // HTML code block for adding another element to the form group
             let addOtherHTML =
                 "<a style=\"margin-top: 10px; display: block; width: fit-content\" id=\"addItem-" + `${key}` + "\" class=\"btn btn-light btn-icon-split\"\>\
@@ -276,6 +274,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     <span class=\"text\">"+ `${upperKey}` + "</span\>\
                 </a>"
             addOther.innerHTML = addOtherHTML;
+            }
             // HTML code block for adding another docref drowpdown to the form group
             let addExistingHTML =
                 "<a style=\"margin-top: 10px display: block width: fit-content\"  id=\"addExisting-" + `${key}` + "\" class=\"btn btn-light btn-icon-split\"\>\
@@ -331,31 +330,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                 }
 
 
-                // This code can be used to create a dropdown area using existing values / predefined from the database.
-                else if (false) {
-                    conceptDiv.append(label);
-                    let select = document.createElement('select');
-                    select.setAttribute('class', 'form-control bg-light border-0 small');
-
-                    var divvie = document.createElement('div');
-                    conceptDiv.append(divvie);
-
-                    var solutionArr = await getExisting(key);
-                    solutionArr.filter(unique);
-
-                    solutionArr.forEach(attribute => {
-                        if (!(attribute == "text" || attribute == undefined)) {
-                            let option = document.createElement('option');
-                            option.setAttribute('value', attribute);
-                            option.textContent = attribute;
-                            select.add(option);
-                        }
-                    })
-
-                    divvie.appendChild(select);
-
-
-                }
+            
                 // Larger text fields
                 else if (value == 'text') {
                     conceptDiv.appendChild(label);
@@ -453,7 +428,6 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             addOtherRel.setAttribute('docrefpath', docrefPath + '/' + doc.id + '-' + relname);
                             addOtherRel.setAttribute('docrefcoll', docrefPath);
                             addOtherRel.setAttribute('docref-docname', doc.id + '-' + relname);
-
                             conceptDiv.appendChild(addOtherRel);
                         }
                     }
@@ -476,7 +450,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             conceptDiv.appendChild(referenceSelect);
 
                             // Adding the values of the docrefArray to the dropdown
-                            docrefArray.forEach(docref => {
+                            docrefArray.sort(function(a, b) { return a - b; }).forEach(docref => {
                                 let option = document.createElement('option');
                                 option.setAttribute('value', docref[0]);
                                 option.setAttribute('docname', docref[1]);
@@ -490,12 +464,10 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                                 referenceSelect.add(option);
                             });
 
-
                             referenceSelect.setAttribute('colpath', coll)
                             referenceSelect.setAttribute('docname', doc.id);
                             referenceSelect.setAttribute('key', key);
                             referenceSelect.setAttribute('type', 'select');
-
 
                             // Adding a button to add an existing docref (dropdown)
                             let addExRel = document.createElement('a');
@@ -842,14 +814,11 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                     var entryKey = filledBPform.elements[i].getAttribute('key');
                     var entryType = filledBPform.elements[i].getAttribute('type');
 
-                    console.log(entryKey);
-                    console.log(entryType);
 
                     if (entryType == 'checkbox') {
                         var inputs = document.querySelectorAll('slct[]');
                         for (var i = 0; i < inputs.length; i++) {
                             inputs[i].checked = true;
-                            console.log(inputs[i]);
                         }
                         JSONarray.push('\"' + `${entryKey}` + '\": \"' + `${filledBPform.elements[i].value}` + '\"');
                     }
@@ -968,7 +937,7 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
                     JSONstring += ("{" + element + ",");
                 }
                 else if (JSONarray[JSONarray.length - 1] === element) {
-                    JSONstring += (element + "}")
+                    JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + "}")
                 }
                 else {
                     JSONstring += (element + ",");
@@ -978,7 +947,6 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
 
             // STEP 4
             // Writing the best practice to the database
-
             db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
 
 

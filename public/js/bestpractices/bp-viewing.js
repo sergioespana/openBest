@@ -1,6 +1,11 @@
 // ########################
 // Views the clicked best practice
 // ########################
+
+// This file contains viewing procedures for many elements that we can expect to see in a best practice, note that for most elements a standard procedure is followed
+// This means that all elements are displayed equally. For some special elements this is formulated differently (e.g. audience). Note that this does not mean
+// That all these elements need to be present. If you for instance expect never to see an element then feel free to delete it.
+
 // Create firestore (database) object
 var db = firebase.firestore();
 
@@ -10,15 +15,16 @@ var span = document.getElementsByClassName("close")[0];
 var checkedDR = [];
 var checkedSC = [];
 var checkedREL = [];
-let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort','university'];
+let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort', 'university'];
 var listofContainers = []
 // ############################################
 
 var currenteamail = null
-var authoremails  = []
+var authoremails = []
 //change domainemail to the domain administrator.....
-var domainemail   = null
+var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
+//or when locally run to 'http://localhost:5000/bestpractices.html'
 const starturl = 'http://localhost:5000/bestpractices.html'
 const queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
@@ -31,17 +37,23 @@ auth.onAuthStateChanged(function (user) {
 
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
-setTimeout(function(){
+setTimeout(function () {
     var selectedbpid = urlParams.get('BPid')
+    var qr = urlParams.get('QR')
     if (selectedbpid) {
         modal.style.display = "block";
         retrieveBPinfo(selectedbpid);
         startupComments(selectedbpid);
         startupRatings(selectedbpid);
         storeID(selectedbpid);
-        addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+        if (qr){
+            addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+        }
+        else{
+            addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
     }
-}, 3000); 
+    }
+}, 3000);
 
 //start the bp based on the selected row in the BP table
 function tableClick(e) {
@@ -94,15 +106,15 @@ async function retrieveBPinfo(BPid) {
 
 
     //QR code
-    // var qrcode = new QRCode("qr_code", {
-	//     text: starturl + window.location.search,
-	//     width: 128,
-	//     height: 128,
-	//     colorDark : "#000000",
-	//     colorLight : "#ffffff",
-	//     correctLevel : QRCode.CorrectLevel.H
-	// });
-       
+    let qrcode = new QRCode("qr_code", {
+        text: starturl + window.location.search + '?' + "BPid=" + BPid + "QR=true",
+        width: 110,
+        height: 110,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
     // PART 1: displaying general best practice info 
     // Categories, authors, date, etc
     let bpDoc = await db.collection(`${bpPath}`).where(firebase.firestore.FieldPath.documentId(), "==", `${BPid}`).get();
@@ -123,7 +135,7 @@ async function retrieveBPinfo(BPid) {
         })
 
 
-        
+
         let UniversityArea = document.getElementById("bp-university");
         let dateArea = document.getElementById("bp-date");
 
@@ -162,7 +174,7 @@ async function retrieveBPinfo(BPid) {
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(addDiv).append(authorName);
                             }
-                            if (key == 'email'){
+                            if (key == 'email') {
                                 authoremails.push(value);
                             }
                         }
@@ -190,11 +202,11 @@ async function retrieveBPinfo(BPid) {
                                 authorName.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-user\"></i></span\><span class=\"text\">" + value + "</span\>";
                                 authorName.setAttribute('class', 'btn btn-light btn-icon-split');
                                 $(authorNameDiv).append(authorName);
-                                
+
                             }
-                            if (key == 'email'){
+                            if (key == 'email') {
                                 authoremails.push(value);
-                                
+
                             }
                         }
                         $(relNameRow).append(relNameDiv);
@@ -207,9 +219,9 @@ async function retrieveBPinfo(BPid) {
 
             // Displaying university
             if (key.replace(/[ˆ0-9]+/g, '') == 'university') {
-         
+
                 // Populating the general info section (authors, date, categories)
-    
+
                 let themeButton = document.createElement('a');
                 let span = document.createElement('span');
                 span.setAttribute('class', 'text');
@@ -217,14 +229,14 @@ async function retrieveBPinfo(BPid) {
                 themeButton.appendChild(span);
                 themeButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 UniversityArea.appendChild(themeButton);
-            
+
                 listofContainers.push({
                     "name": key,
                     "container": span,
                     "content": value
                 })
             }
-            
+
 
             // Displaying date
             if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
@@ -253,13 +265,15 @@ async function retrieveBPinfo(BPid) {
             // Displaying image
             if (key.replace(/[ˆ0-9]+/g, '') == 'image') {
                 // Populating the general info section 
-                let picture = document.createElement("img");
-                picture.src = value;
-                picture.style.width = 'calc(100%)';
-                imageArea.appendChild(picture);
+                if (value != '') {
+                    let picture = document.createElement("img");
+                    picture.src = value;
+                    picture.style.width = 'calc(100%)';
+                    imageArea.appendChild(picture);
+                }
 
             }
-            //ADDED FOR ECG//
+
             if (key.replace(/[ˆ0-9]+/g, '') == 'audience') {
                 let audienceButton = document.createElement('a');
                 audienceButton.setAttribute('class', 'btn btn-light btn-icon-split');
@@ -336,7 +350,10 @@ async function retrieveBPinfo(BPid) {
         }
     }
     //make the remove and edit functionalities available to the domain administrator, BP author, and developer
-    if (userRole == 'administrator' || authoremails.includes(currenteamail) || developers.includes(currenteamail)){
+    if (userRole == 'administrator' || authoremails.includes(currenteamail) || developers.includes(currenteamail)) {
+        console.log('administrator', userRole == 'administrator')
+        console.log('author email', authoremails.includes(currenteamail))
+        console.log('developer', developers.includes(currenteamail))
         remove.appendChild(remove_BP);
         edit.appendChild(edit_BP);
     }
@@ -346,7 +363,7 @@ async function retrieveBPinfo(BPid) {
     retrieveDocInfo(bpPath, BPid, bpCore);
 
     span.onclick = function () {
-        closeModal() 
+        closeModal()
         addactivity(userEmail, 'close', bpid, getcurrentDateTime())
     }
 }
@@ -465,24 +482,6 @@ async function retrieveDocInfo(docPath, docId, div) {
                     // Creating a new div for this docref
                     let contentDiv = document.createElement('div');
 
-                    // Checking if the found relationships in this docref are not added yet
-
-
-                    // The below is commented because currently there is no reviewed by relationship
-
-
-                    // for (let docref = 0; docref < value.length; docref++) {
-                    //     // The subcollection of this ref
-                    //     let refElements = (value[docref].related.path).split('/');
-                    //     let refDocId = refElements[refElements.length - 1];
-                    //     let refColPath = (value[docref].related.path).replace('/' + refDocId, '');
-
-                    //     // We only want to check relationships that have not been checked with subcollections that have not been checked
-                    //     if (!(checkedREL.includes(value[docref].related)) && !(checkedSC.includes(refColPath))) {
-                    //         toCheck.push(value[docref].related)
-                    //     }
-                    // }
-
                     // If there are relationships that should be checked/added
                     if (toCheck.length > 0) {
                         contentDiv.style.borderStyle = "solid";
@@ -554,10 +553,7 @@ async function retrieveSub(refDocId, refDocPath, div) {
 }
 
 
-// span.onclick = function () {
-//     closeModal() 
-//     addactivity(userEmail, 'close', 'NoBPID', getcurrentDateTime())
-// }
+
 
 function closeModal() {
     modal.style.display = "none";
@@ -566,6 +562,7 @@ function closeModal() {
     remove_top_searchbar();
     remove_rating_elements();
     //reset lists and counters
+    authoremails = [];
     commentlist = [];
     ratinglist = [];
     ratinginfo = [];
@@ -593,7 +590,7 @@ function closeModal() {
         QRSection.removeChild(QRSection.firstChild);
     }
 
- 
+
     while (UniversityArea.hasChildNodes()) {
         UniversityArea.removeChild(UniversityArea.firstChild);
     }
@@ -618,15 +615,15 @@ function closeModal() {
 
 async function removeBP(BPid) {
     //remove subcollections of the BP
-    subcollections = ['comments','ratings','example']
-    for (subcollection of subcollections){
+    subcollections = ['comments', 'ratings', 'example']
+    for (subcollection of subcollections) {
         let path = findPath(collectionPaths, 'bestpractices') + '/' + BPid + '/' + subcollection;
         // Getting a reference to all documents in the sub-collections of a best practice
         let bpSub = await db.collection(path).get();
         // Each document that matches the query is cycled through 
         for (doc of bpSub.docs) {
-             db.collection(path).doc(doc.id).delete()
-         
+            db.collection(path).doc(doc.id).delete()
+
         }
     }
     let path = findPath(collectionPaths, 'bestpractices') + '/';
@@ -635,4 +632,4 @@ async function removeBP(BPid) {
     addactivity(userEmail, 'remove', BPid, getcurrentDateTime())
 }
 
-    
+

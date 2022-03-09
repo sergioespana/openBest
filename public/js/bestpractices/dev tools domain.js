@@ -27,7 +27,6 @@ async function waitFordomainjson_domain() {
 
 var tbl = document.createElement('table');
 let tbody = document.createElement('tbody');
-
 tbl.appendChild(tbody);
 
 var popbutton1 = document.createElement("a");
@@ -43,7 +42,6 @@ popbutton2.addEventListener("click", async function () {});
 popbutton2.setAttribute('class', 'btn btn-light btn-icon-split');
 popbutton2.appendChild(createspan('Populate Themes'));
 popbutton2.style.marginRight = '10px';
-
 
 var popbutton3 = document.createElement("a");
 popbutton3.type = "button";
@@ -78,7 +76,6 @@ probutton.addEventListener("click", function () { UploadProcess() });
 probutton.setAttribute('class', 'btn btn-light btn-icon-split');
 probutton.appendChild(createspan('Upload'))
 probutton.style.marginRight = '10px';
-
 
 let row_1 = document.createElement('tr');
 let row_1_data_1 = document.createElement('td');
@@ -186,12 +183,15 @@ async function addUsers() {
     }
 }
 
-async function addAuthor(authorname) {
+async function addAuthor(authorinfo) {
     let doelstring = domainstate + 'authors' + '/';
     let author = null;
+    let [authorname, authoremail] = splitAuthorinfo(authorinfo)
+    //console.log(authorname, authoremail)
     //write author to db
     await db.collection(doelstring).add({
         name: authorname,
+        email: authoremail,
         relationship: []
     }).then(docRef => {
         console.log('author is added under ID ', docRef.id);
@@ -266,7 +266,7 @@ async function addBPs() {
         await db.collection(doelstring).add({
             '10title': Bp.Title,
             '11university': Bp.University,
-            '12image': Bp.Image,
+            '12image': '',
             '13author': [],
             '14date': Bp.Date,
             "15introduction": Bp.Introduction,
@@ -330,3 +330,8 @@ function createspan(text){
 }
 
 
+function splitAuthorinfo(authorinfo) {
+    let email = authorinfo.substring(authorinfo.indexOf("(") + 1, authorinfo.lastIndexOf(")"));
+    let author = authorinfo.split("(")[0].replace(/\s+$/, '');
+    return [author, email]
+}
