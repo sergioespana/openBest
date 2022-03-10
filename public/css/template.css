@@ -1111,9 +1111,10 @@ pre code {
     flex: 0 0 41.66667%;
     max-width: 41.66667%;
   }
+  /* changed this to better fit the modal of the best practice */
   .col-lg-6 {
     flex: 0 0 50%;
-    max-width: 50%;
+    max-width: 60%;
   }
   .col-lg-7 {
     flex: 0 0 58.33333%;

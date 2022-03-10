@@ -30,36 +30,35 @@ var datatype = [];
 var alreadytimeframe;
 var alreadyeffortFrame;
 
-// Get the modal
-var modalfilter = document.getElementById("FilterModal");
-
-// Get the button that opens the modal
-var btnfilter = document.getElementById("FilterBtn");
-
-// Get the <span> element that closes the modal
-var spanfilter = document.getElementsByClassName("closefilter")[0];
-
-
-// Function for filtering out duplicate array values
 const unique = (value, index, self) => {
   return self.indexOf(value) === index;
 };
 
-// ############################################
-
 // Call the dataTables jQuery plugin
 // Necessary for correctly displaying data in the table
-$(document).ready(function() {
-
-  // First initialization of datatable before BPs are retrieved from database
-  $('#dataTable').DataTable();
-  initTable();
-
+$(document).ready(function () {
+  //wait for domainjson to be found
+  waitFordomainjson_retrieval()
 });
+
+//the below function guards the functions from firing premature.
+//this could better be done using async and await but unfortunately this didnt seem to work.
+function waitFordomainjson_retrieval() {
+  //if domain is already loaded:
+  if (typeof domainjson !== "undefined") {
+    // First initialization of datatable before BPs are retrieved from database
+    $('#dataTable').DataTable();
+    initTable();
+  }
+  //else wait and try again:
+  else {
+    setTimeout(waitFordomainjson_retrieval, 250);
+  }
+}
 
 
 // First initialization of table when document is ready loading
-function initTable() {
+async function initTable() {
 
   // Clean slate of data every time this function is called
   data = [];
@@ -68,7 +67,7 @@ function initTable() {
   docIDs = [];
 
   // extractJSON instantiates the collection paths
-  extractJSON(jsontest, 0, '');
+  extractJSON(domainjson, 0, '');
   // bpPath is the collection path to the bestpractices sub-collection
   let bpPath = findPath(collectionPaths, 'bestpractices');
 
@@ -76,369 +75,406 @@ function initTable() {
   db.collection(`${bpPath}`)
     // This where clause makes sure we only get best practices that are created by users
     .where("created", "==", "true")
-      .get().then((snapshot) => {
-          
-          // Use getDocData to instantiate the docdata information
-          // Callback function after getDocData
-          getDocData(function() { 
+    .get().then((snapshot) => {
 
-            // Only populate the category selection box once - when it's empty
-            if(document.querySelector('#category-select').childElementCount == 1){
-              populateCat();
-            }
+      // Use getDocData to instantiate the docdata information
+      // Callback function after getDocData
+      getDocData(function () {
+        // Only populate the category selection box once - when it's empty
+        // DataTable needs to be destroyed before reinitializing
+        $('#dataTable').DataTable().destroy();
+        // copy header, needed for custom filters to append to 2nd row
+        // $('#dataTable thead tr')
+        //   .clone(true)
+        //   .addClass('filters_')
+        //   .appendTo('#dataTable thead');
 
-            // DataTable needs to be destroyed before reinitializing
-            $('#dataTable').DataTable().destroy();
-            $('#dataTable').DataTable( {
-              data: data,
-              // createdRow is a function that adds data to the rows created
-              "createdRow": function( row, data, dataIndex ) {
-                // docIDs stores the document id's of the retrieved best practices
-                for(i = 0; i < docIDs.length; i++){
-                  // dataIndex is the internal index of the rows in the dataTable > can therefore be linked to index in docIDs 
-                  if(dataIndex == i){
-                    $(row).attr( 'doc-id', `${docIDs[i]}` )
-                    .attr('onClick', 'tableClick(event)')
-                    .addClass('bp-row');
-                  }
-                }
+        var table = $('#dataTable').DataTable({
+          data: data,
+          //responsive: true,
+          orderCellsTop: true,
+          fixedHeader: true,
+
+          // createdRow is a function that adds data to the rows created
+          "createdRow": function (row, data, dataIndex) {
+            // docIDs stores the document id's of the retrieved best practices
+            for (i = 0; i < docIDs.length; i++) {
+              // dataIndex is the internal index of the rows in the dataTable > can therefore be linked to index in docIDs 
+              if (dataIndex == i) {
+                $(row).attr('doc-id', `${docIDs[i]}`)
+                  .attr('onClick', 'tableClick(event)')
+                  .addClass('bp-row');
               }
-            } );
+            }
+          },
 
-          });
 
+          initComplete: function (table) {
+            var api = this.api();
+            this.api().columns().every(function () {
+              let column = this;
+              let columnname = column.header().textContent
+              let initiallyinvisible = ['Audience', 'Effort', 'Timeframe', 'Quote'];
+              let alwaysinvisible = ['Image', 'Author']
+
+              if (initiallyinvisible.includes(columnname) || alwaysinvisible.includes(columnname)) {
+                column.visible(false, true);
+              }
+            }
+            )
+          },
+
+
+
+
+          //
+          //Custom filter assignment
+          //
+          // initComplete: function (table) {
+          //   var api = this.api();
+
+          //   this.api().columns().every(function () {
+          //     let column = this;
+          //     let columnname = column.header().textContent
+          //     //categorize the column types, this is used for determining fitting filter options
+          //     let categorical = ['Category','Problem'];
+          //     let numerical   = [];
+          //     let textual     = ['Name', 'Description'];
+          //     let date        = ['Date'];
+          //     if (categorical.includes(columnname)) {
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       let select = $('<select><option value=""></option></select>')
+          //       $(cell).html(select);
+          //       select
+          //         .on('change', function () {
+          //           var val = $.fn.dataTable.util.escapeRegex(
+          //             $(this).val()
+          //           );
+          //           column.search(val ? '^' + val + '$' : '', true, false).draw();
+          //         });
+          //       column.data().unique().sort().each(function (d, j) {
+          //         select.append('<option value="' + d + '">' + d + '</option>')
+          //       });
+          //     }
+          //     else if (textual.includes(columnname)) {
+          //       // Set the header cell to contain the input element
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       let title = $(cell).text();
+          //       $(cell).html('<input type="text" placeholder="' + title + '" />');
+          //       // On every keypress in this input
+          //       $(
+          //         'input',
+          //         $('.filters_ th').eq($(api.column(column[0]).header()).index())
+          //       )
+          //         .off('keyup change')
+          //         .on('keyup change', function (e) {
+          //           e.stopPropagation();
+          //           // Get the search value
+          //           $(this).attr('title', $(this).val());
+          //           var regexr = '({search})'; //$(this).parents('th').find('select').val();
+          //           var cursorPosition = this.selectionStart;
+          //           // Search the column for that value
+          //           api
+          //             .column(column[0])
+          //             .search(
+          //               this.value != ''
+          //                 ? regexr.replace('{search}', '(((' + this.value + ')))')
+          //                 : '',
+          //               this.value != '',
+          //               this.value == ''
+          //             )
+          //             .draw();
+          //           $(this)
+          //             .focus()[0]
+          //             .setSelectionRange(cursorPosition, cursorPosition);
+          //         });
+          //     }
+          //     else if (date.includes(columnname)) {
+          //       // Set the header cell to contain the input element
+          //       let cell = $('.filters_ th').eq(
+          //         $(api.column(column[0]).header()).index()
+          //       );
+          //       var minDate, maxDate;
+
+          //       // Custom filtering function which will search data in column one between two values
+          //       $.fn.dataTable.ext.search.push(
+          //           function( settings, data, dataIndex ) {
+          //               var min = minDate.val();
+          //               var max = maxDate.val();
+          //               var date = new Date(data[1]);
+          //               if (
+          //                   ( min === null && max === null ) ||
+          //                   ( min === null && date <= max ) ||
+          //                   ( min <= date   && max === null ) ||
+          //                   ( min <= date   && date <= max )
+          //               ) {
+          //                   return true;
+          //               }
+          //               return false;
+          //           }
+          //       );
+          //       $(document).ready(function() { 
+          //          // Create date inputs
+          //          $(cell).html(' <label for="min">From:</label> <input type="date" id="min" name="min"> <label for="max">To:</label> <input type="date" id="max" name="max">');
+
+          //           minDate = new DateTime($('#min'), {
+          //               format: 'YYYY-MM-DD'
+          //           });
+
+          //           maxDate = new DateTime($('#max'), {
+          //               format: 'YYYY-MM-DD'
+          //           });
+          //          // $(cell).html(maxDate)
+          //           // Refilter the table
+          //           $('#min, #max').on('change', function () {
+          //               api.draw();
+          //           });
+          //       });
+          //     }
+          //   });
+          // },
+
+          //advanced filters
+          //dom: 'QlfrtiBp',
+          // columnDefs: [{
+          //     searchBuilderTitle: 'date',
+          //     targets: [1]
+          // }],
+
+          // with export buttons
+          // dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>',
+          // buttons: [
+          //   'copy', 'excel', 'pdf'
+          // ]
+          // without export buttons
+          dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>'
+        })
+
+        $('a.toggle-vis').on('click', function (e) {
+          e.preventDefault();
+          // Get the column API object
+          var column = table.column($(this).attr('data-column'));
+          // Toggle the visibility
+          column.visible(!column.visible());
+        });
       });
+    });
 
 }
-
-// Delay function specifies how long to wait on an async function
-function delay() {
-  return new Promise(resolve => setTimeout(resolve, 800));
-}
-
 
 // This function get the document info from all best practice documents
 async function getDocData(callback) {
   // bpPath is the collection path to the bestpractices sub-collection
   let bpPath = findPath(collectionPaths, 'bestpractices');
   //Getting all best practice documents
-  db.collection(`${bpPath}`)
+  await db.collection(`${bpPath}`)
     .where("created", "==", "true")
-      .get().then((snapshot) => {
+    .get().then((snapshot) => {
+      snapshot.docs.forEach(doc => {
+        keyArray = [];
+        indexArr = [];
+
+        alreadyeffortFrame = false;
+        alreadytimeframe = false;
+
+        docIDs.push(doc.id);
+        // Pushing key names (without numerics) to keyArray
+        // We want to display title, description and date > using this array, we can find the index of those keys in the documents
+        for (let key in doc.data()) {
+          keyArray.push(JSON.stringify(key).replace(/[ˆ0-9]+/g, ''));
+          keyArrayWithNum.push(key);
+          normalkey = JSON.stringify(key).replace(/[ˆ0-9]+/g, '');
+          normalkey = normalkey.replace(/['"]+/g, '');
+
           snapshot.docs.forEach(doc => {
-            keyArray = [];
-            indexArr = [];
-
-            alreadyeffortFrame = false;
-            alreadytimeframe = false;
-
-            docIDs.push(doc.id);
-            var selection = document.getElementById("filterbtns");
-            selection.innerHTML = "";
-            // Pushing key names (without numerics) to keyArray
-            // We want to display title, description and date > using this array, we can find the index of those keys in the documents
-            for (let key in doc.data()) {
-              keyArray.push(JSON.stringify(key).replace(/[ˆ0-9]+/g, ''));
-              keyArrayWithNum.push(key);
-              normalkey = JSON.stringify(key).replace(/[ˆ0-9]+/g, '');
-              normalkey = normalkey.replace(/['"]+/g, '');
-              
-              snapshot.docs.forEach(doc => {
-              datatype.push(doc.data()[key]);  
-              });
-
-
-              var label = document.createElement("label");
-              if(datatype.length > 0){
-                datatype = datatype.filter(unique);
-                datatype.forEach(attribute => {   
-                  if(!(attribute === undefined || attribute == "" )){
-                    
-                    if(!(normalkey == "categories" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems" || normalkey == "effort" || normalkey == "timeframe" || normalkey == "date")){
-                      
-                    var description = document.createTextNode("  " + attribute + "   ");
-                    var checkbox = document.createElement("input");
-                    
-      
-                    checkbox.type = "checkbox";    // make the element a checkbox
-                    checkbox.name = "slct[]";      // give it a name we can check on the server side
-                    checkbox.value = attribute;         // make its value "pair"
-                    checkbox.style.padding = "20px";
-                    checkbox.style.backgroundColor = "red";
-      
-                    
-                    checkbox.style.left =  "20px";
-                    checkbox.style.bottom=  "20px";
-                    checkbox.style.width = "20px";
-                    checkbox.style.height = "20px";
-                    checkbox.style.border = "solid white";
-                    checkbox.style.borderWidth = "20px";
-                    label.style.padding = "5px";
-                    
-                    
-                    
-      
-                    label.appendChild(checkbox);   // add the box to the element
-                    label.appendChild(description);// add the description to the element
-                    //label.title = "test";
-      
-                    // add the label element to your div
-                    }
-                    if(normalkey == "effort"){
-                      if(alreadyeffortFrame) return;
-
-                    
-                    var slider = document.createElement("input");
-                    slider.type = "range";
-                    slider.max = "10";
-                    slider.min = "1";
-                    label.appendChild(slider);   // add the box to the element
-                    alreadyeffortFrame = true;
-                    
-                      
-                    }
-                    if(normalkey == "timeframe"){
-                      if(alreadytimeframe) return;
-                    var slider = document.createElement("input");
-                    slider.type = "range";
-                    slider.max = "10";
-                    slider.min = "1";
-                    label.appendChild(slider);   // add the box to the element
-                                   
-                    alreadytimeframe = true;
-                    }
-                  }
-                  // if(normalkey == "timeframe"){
-                  //   alreadytimeframe = true;
-                  //   console.log("c");
-                  // }
-                  });
-                  if(!(normalkey == "categories" || normalkey == "date" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems" )){   
-                  var div = document.createElement('div');
-                  div.id = 'container';
-                  div.innerHTML = normalkey;
-                  //div.className = 'border pad';
-                  div.style.fontFamily =    "Arial, Helvetica, sans-serif";
-                  div.style.fontSize =  "20px";
-                  div.style.fontWeight =    "bold";
-                  
-                  selection.appendChild(div);
-                  selection.appendChild(label); 
-
-                  
-                  
-                  }
-                  
-                
-                    
-              }
-            
-              datatype = [];
-            }
-
-            for(let x=0; x<keyArray.length; x++){
-              // The index of the title, description and date keys is pushed to indexArr
-              // Using splice ensures that title is pushed to index 0, description to index 1, etc
-              if(keyArray[x] == '"title"'){
-                indexArr.splice(0, 0, x);
-              }
-              else if(keyArray[x] == '"description"'){
-                indexArr.splice(1, 0, x);
-              }
-              else if(keyArray[x] == '"date"'){
-                indexArr.splice(2, 0, x);
-              }
-              else if(keyArray[x] == '"categories"'){
-                indexArr.splice(3, 0, x);
-                catKeyName = keyArrayWithNum[x];
-              }
-            }
-
-            // indexArr at index 0 stores the index of the title key in the original keyArr
-            title = indexArr[0];
-            description = indexArr[1];
-            date = indexArr[2];
-            categories = indexArr[3];
-
-            // Getting the title, description and date for the documents
-            let docdata = [`${doc.data()[Object.keys(doc.data())[title]]}`, `${doc.data()[Object.keys(doc.data())[description]]}`, `${doc.data()[Object.keys(doc.data())[date]]}`];
-
-            // Pushing docdata to data array to populate the table
-            data.push(docdata);
-
-            // Populating the category array
-            snapshot.docs.forEach(doc => {   
-              
-              catArray.push(doc.data()["6categories"]);;
-            });
-
+            datatype.push(doc.data()[key]);
           });
-      });
-    
 
-  await delay();
+
+          var label = document.createElement("label");
+          if (datatype.length > 0) {
+            datatype = datatype.filter(unique);
+            datatype.forEach(attribute => {
+              if (!(attribute === undefined || attribute == "")) {
+
+                let normalkeys = ["categories", "title", "description", "author", "created", "lessonslearned", "problems", "effort", "timeframe", "date"]
+                if (!(normalkeys.includes(normalkey))) {
+
+                  var description = document.createTextNode("  " + attribute + "   ");
+                  var checkbox = document.createElement("input");
+
+                  checkbox.type = "checkbox";  // make the element a checkbox
+                  checkbox.name = "slct[]";    // give it a name we can check on the server side
+                  checkbox.value = attribute;   // make its value "pair"
+                  checkbox.style.padding = "20px";
+                  checkbox.style.backgroundColor = "red";
+                  checkbox.style.left = "20px";
+                  checkbox.style.bottom = "20px";
+                  checkbox.style.width = "20px";
+                  checkbox.style.height = "20px";
+                  checkbox.style.border = "solid white";
+                  checkbox.style.borderWidth = "20px";
+                  label.style.padding = "5px";
+
+                  label.appendChild(checkbox);   // add the box to the element
+                  label.appendChild(description);// add the description to the element
+
+
+                  // add the label element to your div
+                }
+              }
+
+            });
+            if (!(normalkey == "categories" || normalkey == "date" || normalkey == "title" || normalkey == "description" || normalkey == "author" || normalkey == "created" || normalkey == "lessonslearned" || normalkey == "problems")) {
+              var div = document.createElement('div');
+              div.id = 'container';
+              div.innerHTML = normalkey;
+              div.style.fontFamily = "Arial, Helvetica, sans-serif";
+              div.style.fontSize = "20px";
+              div.style.fontWeight = "bold";
+            }
+          }
+          datatype = [];
+        }
+
+        for (let x = 0; x < keyArray.length; x++) {
+          // The index of the title, description and date keys is pushed to indexArr
+          // Using splice ensures that title is pushed to index 0, description to index 4, etc
+          //Keep in mind that this order should resemble the models numerical order.
+
+
+          if (keyArray[x] == '"title"') {
+            indexArr.splice(0, 0, x);
+          }
+
+          else if (keyArray[x] == '"university"') {
+            indexArr.splice(1, 0, x);
+          }
+
+          else if (keyArray[x] == '"date"') {
+            indexArr.splice(2, 0, x);
+          }
+          else if (keyArray[x] == '"introduction"') {
+            indexArr.splice(3, 0, x);
+          }
+          else if (keyArray[x] == '"process"') {
+            indexArr.splice(4, 0, x);
+          }
+          else if (keyArray[x] == '"outcome"') {
+            indexArr.splice(5, 0, x);
+          }
+          else if (keyArray[x] == '"conclusion"') {
+            indexArr.splice(6, 0, x);
+          }
+
+          else if (keyArray[x] == '"learnmore"') {
+            indexArr.splice(7, 0, x);
+          }
+        }
+
+        // indexArr at index 0 stores the index of the title key in the original keyArr
+        // the order below determines the column order of the table
+
+
+
+        title = indexArr[0];
+        date = indexArr[2];
+        university = indexArr[1];
+        introduction = indexArr[3];
+        proces = indexArr[4];
+        outcome = indexArr[5];
+        conclusion = indexArr[6];
+        //description = indexArr[8]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
+
+        //ORDERING OF THE TABLE COLUMNS
+        // Getting the title, description and date for the documents
+        let docdata = [
+          `${doc.data()[Object.keys(doc.data())[title]]}`,
+          `${doc.data()[Object.keys(doc.data())[date]]}`,
+          `${doc.data()[Object.keys(doc.data())[university]]}`,
+          `${doc.data()[Object.keys(doc.data())[introduction]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[proces]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[outcome]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[conclusion]].substring(0, 150) + '.....'}`
+        ];
+
+        // Pushing docdata to data array to populate the table
+        data.push(docdata);
+
+
+        for (let key in doc.data())
+          // Populating the category array           
+          if (key.replace(/[ˆ0-9]+/g, '') == "categories") {
+            snapshot.docs.forEach(doc => {
+              catArray.push(doc.data()[key]);
+            });
+          }
+      });
+    });
   callback();
 }
 
 
-// Populating the category selection box
-function populateCat() {
-
-  const categorySelect = document.querySelector('#category-select');
-  const uniqueCat = catArray.filter(unique);
-
-  // Iterating over the categories of retrieved BPs
-  uniqueCat.forEach(categoryElement => {
-
-    if(!(categoryElement === undefined || categoryElement == "")){
-
-      var label = document.createElement("label");
-      var description = document.createTextNode("  " + categoryElement + "   ");
-      var checkbox = document.createElement("input");
-      
-      // Creates the checkboxes for categories in the filter modal
-      checkbox.type = "checkbox";    
-      checkbox.name = "slct" + categoryElement;      
-      checkbox.value = categoryElement;         
-      checkbox.style.padding = "20px";
-      checkbox.style.left =  "20px";
-      checkbox.style.bottom=  "20px";
-      checkbox.style.width = "20px";
-      checkbox.style.height = "20px";
-      checkbox.style.border = "solid white";
-      checkbox.style.borderWidth = "20px";
-      label.style.padding = "5px";
-
-      label.appendChild(checkbox);   // add the box to the element
-      label.appendChild(description);// add the description to the element
-  
-      // add the label element to your div
-      document.getElementById('some_div').appendChild(label);
-      
-      }
-
-
-    let category = document.createElement('option');
-    category.setAttribute('value', categoryElement);
-    category.textContent = categoryElement;
-
-    categorySelect.appendChild(category);
-
-  });
-
-}
 
 $("#some_div").on("click", ".checkboxes", function () {
-  var value=$(this).attr("value");
+  var value = $(this).attr("value");
   alert(value);
 });
 
-// When a category is selected
-$("#category-select").change(function() {
 
-  docIDs = [];
-  const selectedCat = document.getElementById("category-select").value;
-
-  if(selectedCat == ''){
-    initTable();
-  }
-  else{
-    let bpPath = findPath(collectionPaths, 'bestpractices');
-    db.collection(`${bpPath}`)
-        .where(catKeyName, "array-contains", `${selectedCat}`)
-        .get().then((snapshot) => {
-
-            //Empty the data array
-            data = [];
-            snapshot.docs.forEach(doc => {
-
-                // Pushing data to docdata array to populate the table
-                let docdata = [`${doc.data()[Object.keys(doc.data())[title]]}`, `${doc.data()[Object.keys(doc.data())[description]]}`, `${doc.data()[Object.keys(doc.data())[date]]}`];
-                data.push(docdata);
-                docIDs.push(doc.id);
-            });
-
-            // DataTable needs to be destroyed before reinitializing
-            $('#dataTable').DataTable().destroy();
-
-            $('#dataTable').DataTable( {
-              data: data,
-              // createdRow is a function that adds data to the rows created
-              "createdRow": function( row, data, dataIndex ) {
-                // docIDs stores the document id's of the retrieved best practices
-                for(i = 0; i < docIDs.length; i++){
-                  // dataIndex is the internal index of the rows in the dataTable > can therefore be linked to index in docIDs 
-                  if(dataIndex == i){
-                    $(row).attr( 'doc-id', `${docIDs[i]}` )
-                    .attr('onClick', 'tableClick(event)')
-                    .addClass('bp-row');
-                  }
-                }
-              }
-            } );
-            
-
-        });
-  }
-  catArray = [];
-});
-
-btnfilter.onclick = function() {
-  modalfilter.style.display = "block";
+function apply() {
+  datatype = [];
 }
 
-  function apply(){
-    datatype = [];
-  }
-
-  function setValue(key){
-    // bpPath is the collection path to the bestpractices sub-collection
-    if(datatype.length < 1){
+function setValue(key) {
+  // bpPath is the collection path to the bestpractices sub-collection
+  if (datatype.length < 1) {
     let bpPath = findPath(collectionPaths, 'bestpractices');
     //Getting all best practice documents
     db.collection(`${bpPath}`)
-    .where("created", "==", "true")
-        .get().then((snapshot) => {
-            snapshot.docs.forEach(doc => {
-              datatype.push(doc.data()[key]);                       
-          });
+      .where("created", "==", "true")
+      .get().then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+          datatype.push(doc.data()[key]);
         });
-      } 
+      });
+  }
 
-        var selectsection = document.getElementById("selectionsection");
-        datatype = datatype.filter(unique);
-        document.getElementById("selectionsection").innerHTML = "";
-  
-        if(!(datatype === undefined)){
-            datatype.forEach(attribute => {
-              if(!(attribute === undefined || attribute == "")){
-              
-                var label = document.createElement("label");
-                var description = document.createTextNode("  " + attribute + "   ");
-                var checkbox = document.createElement("input");
-                
-                checkbox.type = "checkbox";   
-                checkbox.name = "slct" + attribute;    
-                checkbox.value = attribute;   
-                checkbox.style.padding = "20px";
-                checkbox.style.left =  "20px";
-                checkbox.style.bottom=  "20px";
-                checkbox.style.width = "20px";
-                checkbox.style.height = "20px";
-                checkbox.style.border = "solid white";
-                checkbox.style.borderWidth = "20px";
-                label.style.padding = "5px";
-                
-                label.appendChild(checkbox);    // add the box to the element
-                label.appendChild(description); // add the description to the element
-             
-                selectsection.appendChild(label); 
-            }
-          }
-        )
+  var selectsection = document.getElementById("selectionsection");
+  datatype = datatype.filter(unique);
+  document.getElementById("selectionsection").innerHTML = "";
+
+  if (!(datatype === undefined)) {
+    datatype.forEach(attribute => {
+      if (!(attribute === undefined || attribute == "")) {
+
+        var label = document.createElement("label");
+        var description = document.createTextNode("  " + attribute + "   ");
+        var checkbox = document.createElement("input");
+
+        checkbox.type = "checkbox";
+        checkbox.name = "slct" + attribute;
+        checkbox.value = attribute;
+        checkbox.style.padding = "20px";
+        checkbox.style.left = "20px";
+        checkbox.style.bottom = "20px";
+        checkbox.style.width = "20px";
+        checkbox.style.height = "20px";
+        checkbox.style.border = "solid white";
+        checkbox.style.borderWidth = "20px";
+        label.style.padding = "5px";
+
+        label.appendChild(checkbox);    // add the box to the element
+        label.appendChild(description); // add the description to the element
+
+        selectsection.appendChild(label);
       }
     }
-
-  spanfilter.onclick = function() {
-    modalfilter.style.display = "none";
+    )
   }
+}
+

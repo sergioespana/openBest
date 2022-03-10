@@ -112,7 +112,7 @@ h1 {
 }
 
 /* The Modal (background) */
-.bp-modal, .bp-view-modal, .model-modal {
+.bp-modal, .bp-view-modal, .model-modal, .user-modal, .author-modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -126,7 +126,7 @@ h1 {
 }
 
 /* Modal Content */
-.bp-modal-content, .model-modal-content {
+.bp-modal-content, .model-modal-content, .user-modal-content, .author-modal-content {
   position: relative;
   background-color: white;
   margin: auto;
