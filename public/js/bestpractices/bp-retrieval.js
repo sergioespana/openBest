@@ -43,16 +43,16 @@ $(document).ready(function () {
 
 //the below function guards the functions from firing premature.
 //this could better be done using async and await but unfortunately this didnt seem to work.
-function waitFordomainjson_retrieval(){
+function waitFordomainjson_retrieval() {
   //if domain is already loaded:
-  if(typeof domainjson !== "undefined"){
-       // First initialization of datatable before BPs are retrieved from database
-      $('#dataTable').DataTable();
-      initTable();    
+  if (typeof domainjson !== "undefined") {
+    // First initialization of datatable before BPs are retrieved from database
+    $('#dataTable').DataTable();
+    initTable();
   }
-   //else wait and try again:
-  else{
-      setTimeout(waitFordomainjson_retrieval, 250);
+  //else wait and try again:
+  else {
+    setTimeout(waitFordomainjson_retrieval, 250);
   }
 }
 
@@ -125,7 +125,7 @@ async function initTable() {
           },
 
 
-          
+
 
           //
           //Custom filter assignment
@@ -239,7 +239,7 @@ async function initTable() {
           // },
 
           //advanced filters
-         //dom: 'QlfrtiBp',
+          //dom: 'QlfrtiBp',
           // columnDefs: [{
           //     searchBuilderTitle: 'date',
           //     targets: [1]
@@ -346,7 +346,7 @@ async function getDocData(callback) {
           // Using splice ensures that title is pushed to index 0, description to index 4, etc
           //Keep in mind that this order should resemble the models numerical order.
 
-          
+
           if (keyArray[x] == '"title"') {
             indexArr.splice(0, 0, x);
           }

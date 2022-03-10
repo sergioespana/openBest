@@ -21,7 +21,7 @@ var addConceptHTML;
 
 // Initializing tooltips
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip({ container: 'body'})
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
 })
 
 // Displaying the ratings dropdown when ratings is checked

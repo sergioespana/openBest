@@ -26,7 +26,7 @@ let choicespan = document.getElementById("makeauthor");
 
 // ############################################
 
-    
+
 
 
 
@@ -37,15 +37,15 @@ if (userbtn) {
     }
 }
 
-document.getElementById("store-user-btn").addEventListener("click",async function () {
+document.getElementById("store-user-btn").addEventListener("click", async function () {
     let values = [emailspan.value, namespan.value, rolespan.value]
-    if (values.includes('')){alert('Please fill in all fields')}
-    else{
+    if (values.includes('')) { alert('Please fill in all fields') }
+    else {
         addUser()
-        if (choicespan = "affirmative"){
+        if (choicespan = "affirmative") {
             addauthor_()
         }
-        
+
     }
 })
 
@@ -54,7 +54,7 @@ userspan.onclick = function () {
     usermodal.style.display = "none";
 }
 
-function addUser(){
+function addUser() {
     extractJSON(domainjson, 0, '');
     userpath = findPath(collectionPaths, 'users') + '/'
     console.log(userpath)
@@ -63,13 +63,13 @@ function addUser(){
         name: namespan.value,
         role: rolespan.value
     }).then(
-       console.log('user posted'),
-       alert('User added'),
-       addactivity(userEmail, 'added user', 'noBP involved', getcurrentDateTime())
+        console.log('user posted'),
+        alert('User added'),
+        addactivity(userEmail, 'added user', 'noBP involved', getcurrentDateTime())
     )
 }
 
-function addauthor_(){
+function addauthor_() {
     extractJSON(domainjson, 0, '');
     authorpath = findPath(collectionPaths, 'authors') + '/'
     db.collection(authorpath).add({
@@ -77,9 +77,9 @@ function addauthor_(){
         name: namespan.value,
         relationship: []
     }).then(
-       console.log('author posted'),
-       alert('Author added'),
-       addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
+        console.log('author posted'),
+        alert('Author added'),
+        addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
     )
 }
 

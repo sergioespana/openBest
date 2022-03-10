@@ -92,28 +92,28 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
 
                         //Iterating over the key-value pairs of the documents in which features should be displayed
                         for (let [key, value] of docdata) {
-                          
-                            
-
-                                // Before features are instantiated, we need to be able to populate docref dropdowns
-                                if (typeof (value[0]) == "object") {
-
-                                    let keyText = key.replace(/[0-9]/g, '');
-                                    // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
-                                    // This requires the subcollection that is pointed to with the docref to have the same name as the key
-                                    // E.g. if 4author is a document reference, the document should be stored in a subcollection named author or authors
-                                    let docrefPath = findPath(collectionPaths, keyText);
-
-                                    // Getting the docrefArray based on the path to the referenced subcollection
-                                    // Await the result of the async getDocRef function; otherwise there might be no data in docrefPath
-                                    docrefArray = await getDocRef(docrefPath);
-                                }
 
 
-                                // Calling instantiateFeatures with the docrefArray that corresponds to the current key
-                                instantiateFeatures(key, value, coll, doc, docrefArray);
 
-                            
+                            // Before features are instantiated, we need to be able to populate docref dropdowns
+                            if (typeof (value[0]) == "object") {
+
+                                let keyText = key.replace(/[0-9]/g, '');
+                                // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
+                                // This requires the subcollection that is pointed to with the docref to have the same name as the key
+                                // E.g. if 4author is a document reference, the document should be stored in a subcollection named author or authors
+                                let docrefPath = findPath(collectionPaths, keyText);
+
+                                // Getting the docrefArray based on the path to the referenced subcollection
+                                // Await the result of the async getDocRef function; otherwise there might be no data in docrefPath
+                                docrefArray = await getDocRef(docrefPath);
+                            }
+
+
+                            // Calling instantiateFeatures with the docrefArray that corresponds to the current key
+                            instantiateFeatures(key, value, coll, doc, docrefArray);
+
+
                         }
                     })
                 })
@@ -264,16 +264,16 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
 
             label.textContent = upperKey;
             input.textContent = value;
-            if (keyText != 'author'){
-            // HTML code block for adding another element to the form group
-            let addOtherHTML =
-                "<a style=\"margin-top: 10px; display: block; width: fit-content\" id=\"addItem-" + `${key}` + "\" class=\"btn btn-light btn-icon-split\"\>\
+            if (keyText != 'author') {
+                // HTML code block for adding another element to the form group
+                let addOtherHTML =
+                    "<a style=\"margin-top: 10px; display: block; width: fit-content\" id=\"addItem-" + `${key}` + "\" class=\"btn btn-light btn-icon-split\"\>\
                     <span class=\"icon text-gray-600\"\>\
                     <i class=\"fas fa-plus\"></i\>\
                     </span\>\
                     <span class=\"text\">"+ `${upperKey}` + "</span\>\
                 </a>"
-            addOther.innerHTML = addOtherHTML;
+                addOther.innerHTML = addOtherHTML;
             }
             // HTML code block for adding another docref drowpdown to the form group
             let addExistingHTML =
@@ -330,7 +330,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                 }
 
 
-            
+
                 // Larger text fields
                 else if (value == 'text') {
                     conceptDiv.appendChild(label);
@@ -432,9 +432,9 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                         }
                     }
                     //Current entries already exist > we create a dropdown
-                    else{
+                    else {
                         // Iterating over the relationship names, in the case there are multiple relationships for which elements need to be created
-                        for(let relname = 0; relname < value.length; relname++){
+                        for (let relname = 0; relname < value.length; relname++) {
 
                             let keyText = key.replace(/[0-9]/g, '');
                             let docrefPath = findPath(collectionPaths, keyText);
@@ -450,14 +450,14 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             conceptDiv.appendChild(referenceSelect);
 
                             // Adding the values of the docrefArray to the dropdown
-                            docrefArray.sort(function(a, b) { return a - b; }).forEach(docref => {
+                            docrefArray.sort(function (a, b) { return a - b; }).forEach(docref => {
                                 let option = document.createElement('option');
                                 option.setAttribute('value', docref[0]);
                                 option.setAttribute('docname', docref[1]);
                                 option.setAttribute('colpath', docref[2]);
                                 option.setAttribute('key', key);
                                 // Adding the current docref as the self attribute
-                                option.setAttribute('self', coll+'/'+doc.id);
+                                option.setAttribute('self', coll + '/' + doc.id);
                                 // Adding the relationship name
                                 option.setAttribute('rel-name', value[relname].name);
                                 option.textContent = docref[0];
@@ -477,14 +477,14 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             addExRel.setAttribute('key', key);
                             addExRel.setAttribute('add-type', 'docref');
                             addExRel.setAttribute('class', 'addEx');
-                            addExRel.setAttribute('self', coll+'/'+doc.id);
+                            addExRel.setAttribute('self', coll + '/' + doc.id);
                             addExRel.setAttribute('rel-name', value[relname].name);
                             conceptDiv.appendChild(addExRel);
 
                             // Adding a button to add a new docref (input field)
                             let addOtherRel = document.createElement('a');
                             addOtherRel.innerHTML = addOther.innerHTML;
-                            addOtherRel.setAttribute('id', 'addItem-'+(`${value[relname].name}`).replace(' ', ''));
+                            addOtherRel.setAttribute('id', 'addItem-' + (`${value[relname].name}`).replace(' ', ''));
                             addOtherRel.setAttribute('add-type', 'docref');
                             addOtherRel.setAttribute('class', 'addOther');
                             addOtherRel.setAttribute('rel-name', value[relname].name);
@@ -493,10 +493,10 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             addOtherRel.setAttribute('colpath', input.getAttribute('colpath'));
                             addOtherRel.setAttribute('key', input.getAttribute('key'));
                             addOtherRel.setAttribute('docname', input.getAttribute('docname'));
-                            addOtherRel.setAttribute('self', coll+'/'+doc.id);
-                            addOtherRel.setAttribute('docrefpath', docrefPath+'/'+doc.id+'-'+relname);
+                            addOtherRel.setAttribute('self', coll + '/' + doc.id);
+                            addOtherRel.setAttribute('docrefpath', docrefPath + '/' + doc.id + '-' + relname);
                             addOtherRel.setAttribute('docrefcoll', docrefPath);
-                            addOtherRel.setAttribute('docref-docname', doc.id+'-'+relname);
+                            addOtherRel.setAttribute('docref-docname', doc.id + '-' + relname);
                             conceptDiv.appendChild(addOtherRel);
                         }
                     }

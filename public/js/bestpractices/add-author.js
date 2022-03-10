@@ -21,7 +21,7 @@ let authoremailspan = document.getElementById("input-author-email");
 
 // ############################################
 
-    
+
 //displaying the modal
 if (authorbtn) {
     authorbtn.onclick = function () {
@@ -31,8 +31,8 @@ if (authorbtn) {
 
 document.getElementById("store-author-btn").addEventListener("click", function () {
     let values = [authoremailspan.value, authornamespan.value]
-    if (values.includes('')){alert('Please fill in all fields')}
-    else(addauthor())
+    if (values.includes('')) { alert('Please fill in all fields') }
+    else (addauthor())
 })
 
 //Closing the modal
@@ -40,7 +40,7 @@ authorspan.onclick = function () {
     authormodal.style.display = "none";
 }
 
-function addauthor(){
+function addauthor() {
     extractJSON(domainjson, 0, '');
     authorpath = findPath(collectionPaths, 'authors') + '/'
     console.log(authorpath)
@@ -49,9 +49,9 @@ function addauthor(){
         name: authornamespan.value,
         relationship: []
     }).then(
-       console.log('author posted'),
-       alert('Author added'),
-       addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
+        console.log('author posted'),
+        alert('Author added'),
+        addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
     )
 }
 

@@ -22,7 +22,6 @@ var domainInstantiated;
 
 // ############################################
 
-
 function toggleMenu() {
   var x = document.getElementById("dropdown-content");
   if (x.style.display === "none") {
@@ -38,25 +37,25 @@ $(document).ready(function () {
 
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-      userEmail     = user.email;
-      userName      = user.displayName;
-      let usercard  = document.getElementById("user-card");
+      userEmail = user.email;
+      userName = user.displayName;
+      let usercard = document.getElementById("user-card");
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
 
       checkUser(
-        
-      async function () {
-        // Checking if this person an administrator
-        if (dName) {
-          await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc){
+
+        async function () {
+          // Checking if this person an administrator
+          if (dName) {
+            await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc) {
               // Setting the domain name
               domainName.innerHTML = doc.data().name;
               // check if person is administrator
               if (userRole === 'administrator' || administrators.includes(userEmail)) {
 
                 let admincard = document.getElementById("administrator-card");
-                let usercard  = document.getElementById("user-card");
+                let usercard = document.getElementById("user-card");
 
                 if (admincard) {
                   admincard.style.display = "inline-block";
@@ -65,39 +64,39 @@ $(document).ready(function () {
               }
             });
 
-          // If dName is null, then the user belongs to no domain
-          // Otherwise, display the user actions
-          if (dName && usercard) {
-            domainInstantiated = true;
-            usercard.style.display = "inline-block";
+            // If dName is null, then the user belongs to no domain
+            // Otherwise, display the user actions
+            if (dName && usercard) {
+              domainInstantiated = true;
+              usercard.style.display = "inline-block";
+            }
+            if (dName) {
+              let menuItemBP = document.getElementById("menu-bp-item");
+              //  let menuItemToc = document.getElementById("menu-toc-item");
+              menuItemBP.style.display = "inline";
+              //  menuItemToc.style.display = "inline";
+            }
           }
-          if (dName) {
-            let menuItemBP = document.getElementById("menu-bp-item");
-          //  let menuItemToc = document.getElementById("menu-toc-item");
-            menuItemBP.style.display = "inline";
-          //  menuItemToc.style.display = "inline";
-          }
-        }
-        let developercard = document.getElementById("developer-card");
-        if (developers.includes(userEmail) && dName && developercard){
-         
-          developercard.style.display = "inline-block";
-        }
+          let developercard = document.getElementById("developer-card");
+          if (developers.includes(userEmail) && dName && developercard) {
 
-        // If the user belongs to no domain
-        if (!(dName)) {
-          domainInstantiated = false;
-          if (admincard || admintext) {
-            admincard.style.display = "inline-block";
-            admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+            developercard.style.display = "inline-block";
           }
 
-          // If the user belongs to no domain, refer to the index page
-          if (window.location.pathname == '/bestpractices.html'){ //|| window.location.pathname == '/toc.html') {
-            window.location.replace("/index.html");
+          // If the user belongs to no domain
+          if (!(dName)) {
+            domainInstantiated = false;
+            if (admincard || admintext) {
+              admincard.style.display = "inline-block";
+              admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+            }
+
+            // If the user belongs to no domain, refer to the index page
+            if (window.location.pathname == '/bestpractices.html') { //|| window.location.pathname == '/toc.html') {
+              window.location.replace("/index.html");
+            }
           }
-        }
-      });
+        });
     }
   });
 
@@ -109,14 +108,14 @@ async function checkUser(callback) {
   // Regardless of the domain
   // This collection group index is manually created in the Firebase console
   //all users...
-  await db.collectionGroup('users').get().then(async function (snapshot) {  
+  await db.collectionGroup('users').get().then(async function (snapshot) {
     snapshot.docs.forEach(doc => {
-    let localemail    = String(userEmail).valueOf().replaceAll(" ", "")
-    let  serveremail  =  String(doc.data().email).valueOf().replaceAll(" ", "")
-    if (localemail === serveremail){
-      userPath = doc.ref.parent.path;
-      userRole = doc.data().role
-    }
+      let localemail = String(userEmail).valueOf().replaceAll(" ", "")
+      let serveremail = String(doc.data().email).valueOf().replaceAll(" ", "")
+      if (localemail === serveremail) {
+        userPath = doc.ref.parent.path;
+        userRole = doc.data().role
+      }
     });
     //new authorization
     //if a user exists, get the path to the domain and retrieve the domain model string and replace the reference string with the model string. Hence overwriting the static model with a dynamic model fitting the users domain.
@@ -140,14 +139,14 @@ function delay() {
 }
 
 
-function waitFordomainjson_app(){
+function waitFordomainjson_app() {
   //if domain is already loaded:
-  if(typeof domainjson !== "undefined"){
-    return new Promise(resolve => setTimeout(resolve,1));
+  if (typeof domainjson !== "undefined") {
+    return new Promise(resolve => setTimeout(resolve, 1));
   }
-   //else wait and try again:
-  else{
-      setTimeout(waitFordomainjson_app, 250);
+  //else wait and try again:
+  else {
+    setTimeout(waitFordomainjson_app, 250);
   }
 }
 

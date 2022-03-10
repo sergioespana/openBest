@@ -25,9 +25,9 @@ var authoremails = []
 var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
-const starturl = 'http://localhost:5000/bestpractices.html'
+const starturl    = window.location.href
 const queryString = window.location.search;
-var urlParams = new URLSearchParams(queryString);
+var urlParams     = new URLSearchParams(queryString);
 //this is used to get the actual user
 auth.onAuthStateChanged(function (user) {
     if (user) {
@@ -46,12 +46,12 @@ setTimeout(function () {
         startupComments(selectedbpid);
         startupRatings(selectedbpid);
         storeID(selectedbpid);
-        if (qr){
+        if (qr) {
             addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
         }
-        else{
+        else {
             addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
-    }
+        }
     }
 }, 3000);
 
@@ -110,9 +110,9 @@ async function retrieveBPinfo(BPid) {
         text: starturl + window.location.search + '?' + "BPid=" + BPid + "QR=true",
         width: 110,
         height: 110,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
     });
 
     // PART 1: displaying general best practice info 

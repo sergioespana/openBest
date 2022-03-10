@@ -4,21 +4,21 @@ let domainstate
 
 
 window.onload = function () {
-    waitFordomainjson_edit()  
+    waitFordomainjson_edit()
 }
 
-async function waitFordomainjson_edit(){
+async function waitFordomainjson_edit() {
     //if domain is already loaded:
-    if(typeof domainjson !== "undefined"){
-         // First initialization of datatable before BPs are retrieved from database
+    if (typeof domainjson !== "undefined") {
+        // First initialization of datatable before BPs are retrieved from database
         extractJSON(domainjson, 0, '');
         domainstate = await findPath(documentPaths, 'domainstate') + '/'
     }
-     //else wait and try again:
-    else{
+    //else wait and try again:
+    else {
         setTimeout(waitFordomainjson_edit, 250);
     }
-  }
+}
 
 
 function storeID(BPid) {
@@ -40,9 +40,9 @@ cancel_BP_edit.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"  fa f
 cancel_BP_edit.setAttribute('class', 'btn btn-light btn-icon-split');
 cancel_BP_edit.style.display = "none";
 cancel_BP_edit.style.marginRight = '15px';
-cancel_BP_edit.addEventListener("click", function () { 
-    
-    cancelBPEditing() 
+cancel_BP_edit.addEventListener("click", function () {
+
+    cancelBPEditing()
     addactivity(userEmail, 'cancel edit', bpid, getcurrentDateTime())
 
 });
@@ -59,7 +59,7 @@ function editBP(listofContainers) {
     }
     for (item of listofContainers) {
         //if container consists of lists of containers
-        let arraycontainers = ['theme','sustainability dimension']
+        let arraycontainers = ['theme', 'sustainability dimension']
         if (arraycontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
@@ -114,8 +114,8 @@ function confirmBPEditing() {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
                 if (c.innerText != item.content) {
-                   amtchanges += 1;
-                   changes.push(c)
+                    amtchanges += 1;
+                    changes.push(c)
                 }
                 allcontent.push(c.innerText);
             }
@@ -124,15 +124,15 @@ function confirmBPEditing() {
         else {
             item.container.toggleAttribute("contentEditable");
             if (item.container.innerText != item.content) {
-               amtchanges += 1;
-               changes.push(item)
+                amtchanges += 1;
+                changes.push(item)
             }
             item.currencontent = item.container.innerText;
         }
-     
+
     }
     if (amtchanges > 0) {
-        editBPs(bpid,changes);
+        editBPs(bpid, changes);
         $('#dataTable').DataTable();
         initTable();
         alert('The BP has been updated');
@@ -140,7 +140,7 @@ function confirmBPEditing() {
     }
 }
 
-async function editBPs(BPid,listofcontainers) {
+async function editBPs(BPid, listofcontainers) {
     let path = domainstate + 'bestpractices' + '/';
     for (item of listofcontainers) {
         if (item.name.replace(/[ˆ0-9]+/g, '') != "theme" || item.name.replace(/[ˆ0-9]+/g, '') != "sustainability dimension") {

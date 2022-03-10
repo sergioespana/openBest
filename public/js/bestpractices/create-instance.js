@@ -46,7 +46,7 @@ var jsontest_ = {
                     "17outcome": "text",
                     "18conclusion": "text",
                     "19learnmore": "text",
-                    
+
                     //collection
                     "comments": {
                         "commentdocument": {
@@ -95,8 +95,8 @@ var jsontest_ = {
                     "4name": "string"
                 }
             },
-             //collection
-             "activitylogs": {
+            //collection
+            "activitylogs": {
                 //document
                 "activitylog": {
                     "1displayfeature": false,
@@ -123,7 +123,7 @@ if (document.getElementById("create-instance-btn")) {
         console.log(jsontest_);
         extractJSON(jsontest_, 0, '');
         extractFields();
-      
+
     })
 };
 
@@ -209,8 +209,8 @@ function extractFields() {
 
         var docPath = documentPaths[x];
         // Passing the doc info and collection path to writeDB to instantiate
-        if (docPath){
-        writeDB(collectionPaths[x], docInfo, docPath);
+        if (docPath) {
+            writeDB(collectionPaths[x], docInfo, docPath);
         }
     }
     writeModel()
@@ -252,8 +252,8 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
     callback();
 }
 
-async function writeModel (){
-    let domain      = documentPaths[0].split("/")[0]
+async function writeModel() {
+    let domain = documentPaths[0].split("/")[0]
     let domainstate = documentPaths[0].split("/")[1]
     await db.collection(domain).doc(domainstate).update({
         model: jsontest_

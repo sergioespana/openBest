@@ -38,7 +38,7 @@ popbutton1.style.marginRight = '10px';
 
 var popbutton2 = document.createElement("a");
 popbutton2.type = "button";
-popbutton2.addEventListener("click", async function () {});
+popbutton2.addEventListener("click", async function () { });
 popbutton2.setAttribute('class', 'btn btn-light btn-icon-split');
 popbutton2.appendChild(createspan('Populate Themes'));
 popbutton2.style.marginRight = '10px';
@@ -322,7 +322,7 @@ async function createRatingDocs(path) {
     await db.collection(path + 'ratings').doc('ratingdocument').set(data);
 }
 
-function createspan(text){
+function createspan(text) {
     span = document.createElement('span')
     span.innerText = text
     span.setAttribute('class', 'text')
