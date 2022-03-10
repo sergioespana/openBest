@@ -346,7 +346,6 @@ async function getDocData(callback) {
           // Using splice ensures that title is pushed to index 0, description to index 4, etc
           //Keep in mind that this order should resemble the models numerical order.
 
-
           if (keyArray[x] == '"title"') {
             indexArr.splice(0, 0, x);
           }
@@ -379,8 +378,6 @@ async function getDocData(callback) {
         // indexArr at index 0 stores the index of the title key in the original keyArr
         // the order below determines the column order of the table
 
-
-
         title = indexArr[0];
         date = indexArr[2];
         university = indexArr[1];
@@ -388,8 +385,7 @@ async function getDocData(callback) {
         proces = indexArr[4];
         outcome = indexArr[5];
         conclusion = indexArr[6];
-        //description = indexArr[8]; //this indexArr is also used in bp-viewing.js so be sure to update it there when it changes here
-
+       
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [

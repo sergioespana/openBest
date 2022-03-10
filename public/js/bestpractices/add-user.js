@@ -61,7 +61,8 @@ function addUser() {
     db.collection(userpath).add({
         email: emailspan.value,
         name: namespan.value,
-        role: rolespan.value
+        role: rolespan.value,
+        hasaccessed: 'false'
     }).then(
         console.log('user posted'),
         alert('User added'),

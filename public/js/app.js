@@ -13,6 +13,8 @@ var userName;
 // userPath and dName are used to determine the domain of the current user
 var userPath;
 var userRole;
+var hasAcessed;
+var userDocID;
 var dName;
 // domainjson is the domain model of the domain of the user retrieved from the db
 var domainjson;
@@ -44,8 +46,28 @@ $(document).ready(function () {
       let admintext = document.getElementById("admin-text");
 
       checkUser(
-
         async function () {
+          if (hasAcessed == "false") {
+
+            let newusermodal = document.getElementById("new-user-modal");
+            let accept = document.getElementById("accept-btn")
+            let decline = document.getElementById("decline-btn");
+
+
+            newusermodal.style.display = 'block';
+            accept.onclick = function () {
+              newusermodal.style.display = "none";
+              extractJSON(domainjson, 0, '');
+              userpath = findPath(collectionPaths, 'users') + '/'
+              db.collection(userpath).doc(userDocID).update({
+                hasaccessed: "true"
+              })
+            }
+            decline.onclick = function () {
+              logOut()
+            }
+          }
+
           // Checking if this person an administrator
           if (dName) {
             await db.collection(`${dName[0]}`).doc(`${dName[1]}`).onSnapshot(function (doc) {
@@ -91,6 +113,16 @@ $(document).ready(function () {
               admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
             }
 
+
+            if (window.location.pathname == '/bestpractices.html/?') {
+              
+              let selectedbpid_ = urlParams.get('BPid')
+              let qr_ = urlParams.get('QR')
+              console.log(selectedbpid_)
+              await delay()
+              window.location.replace("/index.html");
+            }
+
             // If the user belongs to no domain, refer to the index page
             if (window.location.pathname == '/bestpractices.html') { //|| window.location.pathname == '/toc.html') {
               window.location.replace("/index.html");
@@ -101,20 +133,20 @@ $(document).ready(function () {
   });
 
 });
-
-
 async function checkUser(callback) {
   // A collection group query is used to search across the WHOLE DATABASE for the "email" field in a "users" subcollection
   // Regardless of the domain
   // This collection group index is manually created in the Firebase console
-  //all users...
+  // all users...
   await db.collectionGroup('users').get().then(async function (snapshot) {
     snapshot.docs.forEach(doc => {
       let localemail = String(userEmail).valueOf().replaceAll(" ", "")
       let serveremail = String(doc.data().email).valueOf().replaceAll(" ", "")
       if (localemail === serveremail) {
-        userPath = doc.ref.parent.path;
-        userRole = doc.data().role
+        userPath   = doc.ref.parent.path
+        userRole   = doc.data().role
+        hasAcessed = doc.data().hasaccessed
+        userDocID  = doc.id
       }
     });
     //new authorization
@@ -130,7 +162,7 @@ async function checkUser(callback) {
       //user does not exist yet...
     }
   })
-  await delay()
+  
   callback();
 }
 

@@ -79,7 +79,7 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
         collectionPaths.forEach(coll => {
             db.collection(coll)
                 // Documents that match the current uniqueDocID OR are rating documents are the documents for which features need to be displayed
-                .where(firebase.firestore.FieldPath.documentId(), "in", [uniqueDocID.toString(), "ratingdocument"])
+                .where(firebase.firestore.FieldPath.documentId(), "in", [uniqueDocID.toString()])//, "ratingdocument"])
                 .get().then(snapshot => {
 
                     snapshot.docs.forEach(async doc => {
@@ -186,9 +186,9 @@ const unique = (value, index, self) => {
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray) {
 
-    if (key == '2ratingtype') {
-        ratingType = value[0];
-    }
+    // if (key == '2ratingtype') {
+    //     ratingType = value[0];
+    // }
 
     // Adding a div for each NEW concept by checking the collectionpath
     if (check != coll) {
@@ -201,12 +201,12 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
     // Don't display the displayfeature field
     // Don't display the values that drive the rating mechanism
     if (key != '1displayfeature' && key != '5scale' && key != '6stepsize' && key != '2ratingtype') {
-
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
 
         let grouptitle = document.createElement('div');
         let label = document.createElement('label');
         let input = document.createElement('input');
+        let date  = document.createElement('input');
         let textarea = document.createElement('textarea');
         let addOther = document.createElement('div');
         let addEx = document.createElement('div');
@@ -224,38 +224,6 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
             conceptDiv.appendChild(groupdesc);
         }
 
-        // This code can be used to create checkboxes with options gained from predefined / already existing values
-        else if (false) {
-            let keyText = key.replace(/[0-9]/g, '');
-            label.textContent = keyText.charAt(0).toUpperCase() + keyText.substring(1);
-            conceptDiv.append(label);
-            var divvie = document.createElement('div');
-            conceptDiv.append(divvie);
-
-            datatype2 = await getExisting(key);
-
-            datatype2.forEach(attribute => {
-                if (!(attribute == "string" || attribute == "" || attribute == undefined)) {
-                    let optionButton = document.createElement("input");
-                    optionButton.type = "checkbox";
-                    optionButton.name = "slct[]";
-                    optionButton.value = attribute;
-                    optionButton.style.padding = "20px";
-                    optionButton.style.left = "20px";
-                    optionButton.style.bottom = "20px";
-                    optionButton.style.width = "20px";
-                    optionButton.style.height = "20px";
-                    optionButton.style.border = "solid white";
-                    optionButton.style.borderWidth = "20px";
-
-                    optionButton.value = attribute;
-                    divvie.append(optionButton);
-                    var description = document.createTextNode("  " + attribute + "  ");
-                    divvie.append(description);
-                }
-            });
-            conceptDiv.append(document.createElement('div'));
-        }
         // Every other key-value pair
         else {
             // Removing numbers from the key + capitalize first letter
@@ -264,6 +232,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
 
             label.textContent = upperKey;
             input.textContent = value;
+
             if (keyText != 'author') {
                 // HTML code block for adding another element to the form group
                 let addOtherHTML =
@@ -288,6 +257,10 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
             // Styling of the input fields
             input.setAttribute('class', 'form-control bg-light border-0 small');
             input.setAttribute('type', 'value');
+
+            date.setAttribute('class', 'form-control bg-light border-0 small');
+            date.setAttribute('type', 'value');
+
             textarea.setAttribute('class', 'form-control bg-light border-0 small');
             textarea.setAttribute('type', 'value');
 
@@ -296,6 +269,12 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
             input.setAttribute('colpath', coll);
             input.setAttribute('docname', doc.id);
             input.setAttribute('key', key);
+
+            date.setAttribute('colpath', coll);
+            date.setAttribute('docname', doc.id);
+            date.setAttribute('key', key);
+
+
             textarea.setAttribute('colpath', coll);
             textarea.setAttribute('docname', doc.id);
             textarea.setAttribute('key', key);
@@ -308,9 +287,15 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     input.setAttribute('type', 'array');
                 }
             }
+            //console.log('kom ik hier?', keyText)
+            if(keyText == 'date'){
+                date.setAttribute('type', 'date');
+            }
             else {
+
                 input.setAttribute('type', 'field');
                 textarea.setAttribute('type', 'field');
+                
             }
 
 
@@ -329,7 +314,10 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     conceptDiv.appendChild(addOther);
                 }
 
-
+                else if (keyText == 'date'){
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(date);
+                }
 
                 // Larger text fields
                 else if (value == 'text') {
@@ -825,7 +813,7 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
 
                     // Regular fields
                     if (entryType === 'field') {
-                        if (entryKey == '7date') {                      // automatically set the date, rather than taking user input
+                        if (entryKey.replace(/[0-9]/g, '') == 'Date') { // automatically set the date, rather than taking user input
                             let currentDate = new Date();
                             let cDay = currentDate.getDate();
                             let cMonth = currentDate.getMonth() + 1;
@@ -1095,48 +1083,51 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
         }
     }
 
-    let ratingtype = [];
-    let dimension = [];
-    let dimdesc = [];
-    let scale = [];
-    let stepsize = [];
+    let ratingtype = ['stars'];
+    let dimension = ['Overall'];
+    let dimdesc = ['Overall score'];
+    let scale = [5];
+    let stepsize = [1];
 
-    // WRITING RATING INFORMATION
-    for (let rating = 0; rating < filledBPform.length; rating++) {
-        let collection = filledBPform.elements[rating].getAttribute('colpath').split('/');
-        if (collection[collection.length - 1] == 'ratings') {
+    //WRITING RATING INFORMATION
+    // for (let rating = 0; rating < filledBPform.length; rating++) {
+    //     let collection = filledBPform.elements[rating].getAttribute('colpath').split('/');
+    //     if (collection[collection.length - 1] == 'ratings') {
 
-            if (filledBPform.elements[rating].getAttribute('key') == '3dimension') {
-                dimension.push(filledBPform.elements[rating].value);
+    //         if (filledBPform.elements[rating].getAttribute('key') == '3dimension') {
+    //             dimension.push(filledBPform.elements[rating].value);
 
-                // Finding the info that is already stored in the database
-                let origRating = findPath(collectionPaths, 'ratings');
-                let ratingInfo = await db.collection(origRating).doc('ratingdocument').get();
-                for ([key, value] of Object.entries(ratingInfo.data())) {
-                    if (key == '2ratingtype') {
-                        ratingtype.push(value[0]);
-                    }
-                    else if (key == '5scale') {
-                        scale.push(value[0]);
-                    }
-                    else if (key == '6stepsize') {
-                        stepsize.push(value[0]);
-                    }
-                }
-            }
-            else if (filledBPform.elements[rating].getAttribute('key') == '4dimension description') {
-                dimdesc.push(filledBPform.elements[rating].value);
-            }
-        }
-    }
+    //             // Finding the info that is already stored in the database
+    //             let origRating = findPath(collectionPaths, 'ratings');
+    //             let ratingInfo = await db.collection(origRating).doc('ratingdocument').get();
+    //             for ([key, value] of Object.entries(ratingInfo.data())) {
+    //                 if (key == '2ratingtype') {
+    //                     ratingtype.push(value[0]);
+    //                 }
+    //                 else if (key == '5scale') {
+    //                     scale.push(value[0]);
+    //                 }
+    //                 else if (key == '6stepsize') {
+    //                     stepsize.push(value[0]);
+    //                 }
+    //             }
+    //         }
+    //         else if (filledBPform.elements[rating].getAttribute('key') == '4dimension description') {
+    //             dimdesc.push(filledBPform.elements[rating].value);
+    //         }
+    //     }
+    // }
 
-    // Writing the rating arrays to the ratingdocument of this best practice
-    for (colpath of colpathArray) {
-        let cpSplit = colpath.split('/');
-        if (cpSplit[cpSplit.length - 1] == 'ratings') {
-            db.doc(colpath + '/ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize });
-        }
-    }
+   // Writing the rating arrays to the ratingdocument of this best practice
+    //for (colpath of colpathArray) {
+        //let cpSplit = colpath.split('/');
+        //if (cpSplit[cpSplit.length - 1] == 'ratings') {
+          //  db.doc(colpath + '/ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize });
+      //  }
+    //}
+
+    //add standard bp
+    db.collection(entryColPath+ '/' + entryDocName + '/ratings').doc('ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize })
 
     // Closing the modal
     modal.style.display = "none";

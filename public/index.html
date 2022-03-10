@@ -149,9 +149,16 @@
         <div class="container-fluid" id="test">
 
           <!-- Page Heading -->
-          <p>*Note that this tool is part of active research and activities are being monitored*</p>
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1>Welcome</h1>
+          </div>
+
+          <div id="research-card" style="width: fit-content;" class="col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                    <p> OpenBest is part of active research and activities are being monitored.<br> For information on the research please have a look at <a href="https://drive.google.com/file/d/1UY0LL2qJKyM2CsUtfmX4jBhohYQflcLS/view">this information document</a></p>
+              </div>
+            </div>
           </div>
 
           <p>
@@ -264,6 +271,65 @@
 
     </div>
     <!-- End of Page Wrapper -->
+     <!-- The Modal for new users -->
+     <div id="new-user-modal" style="display:none;" id="wrapper" class="new-user-modal container-fluid">
+      <div class="row" style="margin: 0px">
+
+        <!-- Modal content -->
+        <div class="new-user-modal-content">
+          <div class="col-sm-10 col-lg-6 col-centered">
+            <div class="new-user-modal-body">
+              <h1>Welcome to OpenBest <i class="fas fa-leaf"></i></h1>
+              <div class="card card-margin border-left-success shadow">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <p style="padding-right: 12px">
+                        OpenBest is a tool that is part of active research into the influence of best practice repositories on knowledge sharing among networks of organizations.
+                        in OpenBest activities and interactions are being monitored. This monitoring includes logging of actions along with your emailadress and timestamps. The data will be anonymized once collected and processed only for research purposes.
+                        For information on the research please have a look at the information document found <a href="https://drive.google.com/file/d/1UY0LL2qJKyM2CsUtfmX4jBhohYQflcLS/view?usp=sharing">here</a>. 
+                        <br>
+                      </p>
+                      <p>
+                        By pressing the accept button you confirm that you have read the terms and conditions layed out in the document and confirm that you allow the interaction data to be collected.
+                        <br>
+                      </p>
+                      <p>
+                        For questions reach out to: 
+                        <br>
+                        Main researcher:  Stefan van der Pijl (stefanvanderpijl@students.uu.nl) <br>
+                        Supervisor:       Sergio España (s.espana@uu.nl) <br>
+                        Daily supervisor: Vijanti Ramautar (v.d.ramautar@uu.nl) <br>
+                      </p>   
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-edit fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <a id="decline-btn" style="margin-right: 20px;" class="btn btn-light btn-icon-split">
+                <span class="icon text-gray-600">
+                  <i class="fas fa-times"></i>
+                </span>
+                <span class="text">Decline</span>
+              </a>
+
+              <a id="accept-btn" class="btn btn-light btn-icon-split">
+                <span class="icon text-gray-600">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="text">Accept</span>
+              </a>
+            </div>
+          </div>
+          <!-- End of modal content -->
+        </div>
+
+      </div>
+    </div>
 
     <!-- The Modal for entering a BP -->
     <div id="bp-modal" style="display:none" id="wrapper" class="bp-modal container-fluid">
@@ -284,12 +350,11 @@
                       </div>
                       <div style="padding-right: 12px" class="p">Use this form to store a best practice.
                         <br>
-                        Note that currently we do not support new (white)lines so please avoid them.
+                        Currently we do not support enters and other special characters like tab, adding these will not change the lay out. After submitting the Best practice this can be edited when viewing the document.
                         <br>
-                        For the image you need to provide a direct link to the image like so:
-                        https://study-eu.s3.amazonaws.com/uploads/university/utrecht-university-275-logo.png
+                        Next to this, we do not support uploading images to openBest. You will need to store them externally and provide a link to the image; for example: https://study-eu.s3.amazonaws.com/uploads/university/utrecht-university-275-logo.png
                         <br>
-                        If you have any questions about the contents of this form, contact your domain administrator!
+                        If you have any questions about the contents of this form, contact your domain administrator (Stefan van der Pijl stefanvanderpijl@gmail.com)!
                       </div>
                     </div>
                     <div class="col-auto">
@@ -556,6 +621,8 @@
       </div>
     </div>
 
+
+   
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

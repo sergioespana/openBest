@@ -37,20 +37,20 @@ auth.onAuthStateChanged(function (user) {
 
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
-setTimeout(function () {
+setTimeout(async function () {
     var selectedbpid = urlParams.get('BPid')
     var qr = urlParams.get('QR')
     if (selectedbpid) {
         modal.style.display = "block";
-        retrieveBPinfo(selectedbpid);
-        startupComments(selectedbpid);
-        startupRatings(selectedbpid);
-        storeID(selectedbpid);
+        await retrieveBPinfo(selectedbpid);
+        await startupComments(selectedbpid);
+        await startupRatings(selectedbpid);
+        await storeID(selectedbpid);
         if (qr) {
-            addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+           await  addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
         }
         else {
-            addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+           await addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
         }
     }
 }, 3000);
@@ -351,9 +351,9 @@ async function retrieveBPinfo(BPid) {
     }
     //make the remove and edit functionalities available to the domain administrator, BP author, and developer
     if (userRole == 'administrator' || authoremails.includes(currenteamail) || developers.includes(currenteamail)) {
-        console.log('administrator', userRole == 'administrator')
-        console.log('author email', authoremails.includes(currenteamail))
-        console.log('developer', developers.includes(currenteamail))
+        // console.log('administrator', userRole == 'administrator')
+        // console.log('author email', authoremails.includes(currenteamail))
+        // console.log('developer', developers.includes(currenteamail))
         remove.appendChild(remove_BP);
         edit.appendChild(edit_BP);
     }
