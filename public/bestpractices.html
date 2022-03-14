@@ -167,40 +167,41 @@
             <div class="card-body">
 
               <b>Toggle column:</b>
-              <a class="toggle-vis" data-column="0">Title</a> -
+              <div id = togglebuttons></div>
+              <!-- <a class="toggle-vis" data-column="0">Title</a> -
               <a class="toggle-vis" data-column="1">Date</a> -
               <a class="toggle-vis" data-column="2">University</a> -
               <a class="toggle-vis" data-column="3">Introduction</a> -
               <a class="toggle-vis" data-column="4">Process</a> -
               <a class="toggle-vis" data-column="5">Outcome</a> -
-              <a class="toggle-vis" data-column="6">Conclusion</a>
+              <a class="toggle-vis" data-column="6">Conclusion</a> -->
 
               <p style="margin-top: 15px;">For filtering on the table please refer to the custom search builder below
               </p>
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
-                    <tr>
-                      <th>Title</th>
+                    <tr id = 'top'>
+                      <!-- <th>Title</th>
                       <th>Date</th>
                       <th>University</th>
                       <th>Introduction</th>
                       <th>Process</th>
                       <th>Outcome</th>
-                      <th>Conclusion</th>
+                      <th>Conclusion</th> -->
 
                     </tr>
                   </thead>
                   <!--Here should be the table rows...-->
-                  <tfoot>
-                    <tr>
-                      <th>Title</th>
+                  <tfoot >
+                    <tr id = 'bottom'>
+                      <!-- <th>Title</th>
                       <th>Date</th>
                       <th>University</th>
                       <th>Introduction</th>
                       <th>Process</th>
                       <th>Outcome</th>
-                      <th>Conclusion</th>
+                      <th>Conclusion</th> -->
                     </tr>
                   </tfoot>
                 </table>
@@ -234,13 +235,9 @@
           <div class="col-sm-10 col-lg-6 col-centered">
             <div id="bp-modal" class="bp-modal-body">
               <h1 id="bp-title">Best practice</h1>
+              
               <span style="float: right;" id="qr_code"></span>
-              <div class="row general-info">
-                <div class="col-sm-2">
-                  <p style="display: inline">University: </p>
-                </div>
-                <div class="col-sm-10" style="display: inline" id="bp-university"></div>
-              </div>
+              <div id = 'topbuttons'></div>
 
 
               <div class="row general-info authors-info" id="bp-authors"></div>
@@ -256,12 +253,9 @@
                 <div class="col-sm-10" style="display: inline" id="bp-image"></div>
               </div>
 
+              <div id="bp-other-sections"></div>
 
-              <div id="bp-other-sections">
-              </div>
-
-              <div id="bp-core-content">
-              </div>
+              <div id="bp-core-content"></div>
 
               <div class="card border-left-success shadow" style="margin-top: 15px;">
                 <div class="card-body">

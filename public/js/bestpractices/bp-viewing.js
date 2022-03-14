@@ -15,7 +15,7 @@ var span = document.getElementsByClassName("close")[0];
 var checkedDR = [];
 var checkedSC = [];
 var checkedREL = [];
-let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort', 'university'];
+let textcontents = ['title', 'author', 'categories', 'date', 'created', 'image', "ECGTheme", 'audience', 'timeframe', 'effort', 'university', 'major dimension', 'sub dimension', 'question', 'front image','front image licence'];
 var listofContainers = []
 // ############################################
 
@@ -25,9 +25,9 @@ var authoremails = []
 var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
-const starturl    = window.location.href
+const starturl = window.location.href
 const queryString = window.location.search;
-var urlParams     = new URLSearchParams(queryString);
+var urlParams = new URLSearchParams(queryString);
 //this is used to get the actual user
 auth.onAuthStateChanged(function (user) {
     if (user) {
@@ -47,10 +47,10 @@ setTimeout(async function () {
         await startupRatings(selectedbpid);
         await storeID(selectedbpid);
         if (qr) {
-           await  addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+            await addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
         }
         else {
-           await addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+            await addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
         }
     }
 }, 3000);
@@ -106,14 +106,14 @@ async function retrieveBPinfo(BPid) {
 
 
     //QR code
-    let qrcode = new QRCode("qr_code", {
-        text: starturl + window.location.search + '?' + "BPid=" + BPid + "QR=true",
-        width: 110,
-        height: 110,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    // let qrcode = new QRCode("qr_code", {
+    //     text: starturl + window.location.search + '?' + "BPid=" + BPid + "QR=true",
+    //     width: 110,
+    //     height: 110,
+    //     colorDark: "#000000",
+    //     colorLight: "#ffffff",
+    //     correctLevel: QRCode.CorrectLevel.H
+    // });
 
     // PART 1: displaying general best practice info 
     // Categories, authors, date, etc
@@ -134,15 +134,7 @@ async function retrieveBPinfo(BPid) {
             "content": `${doc.data()[Object.keys(doc.data())[title]]}`
         })
 
-
-
-        let UniversityArea = document.getElementById("bp-university");
         let dateArea = document.getElementById("bp-date");
-
-        //ADDED//
-        let imageArea = document.getElementById("bp-image");
-        imageArea.style.marginLeft = "auto";
-        imageArea.style.marginRight = "auto";
 
         // let audienceArea = document.getElementById("bp-audience");
 
@@ -191,7 +183,7 @@ async function retrieveBPinfo(BPid) {
 
                         let relName = document.createElement('p');
                         relName.style.display = "inline";
-                        relName.textContent = value[rel].name;
+                        relName.textContent = value[rel].name + ':';
                         $(relNameDiv).append(relName);
 
                         let authorDoc = await db.collection(value[rel].related.parent.path).doc(value[rel].related.id).get();
@@ -217,8 +209,46 @@ async function retrieveBPinfo(BPid) {
             }
 
 
-            // Displaying university
-            if (key.replace(/[ˆ0-9]+/g, '') == 'university') {
+            if (key.replace(/[ˆ0-9]+/g, '') == 'question') {
+                let questionArea = document.getElementById("bp-title");
+                let question = document.createElement('h2')
+                question.innerText = value
+                questionArea.after(question)
+                question.setAttribute('class', 'OICT');
+                listofContainers.push({
+                    "name": key,
+                    "container": question,
+                    "content": value
+                })
+
+            }
+
+
+
+            let topArea = document.getElementById('topbuttons')
+            // Displaying topelements (university, category, dimension etc.)
+            topelements = ['unversity', 'sub dimension', 'major dimension']
+            if (topelements.includes(key.replace(/[ˆ0-9]+/g, ''))) {
+
+                let generalinforow = document.createElement('div')
+                generalinforow.setAttribute('class', 'row general-info', 'topfield');
+                topArea.append(generalinforow)
+
+                let generalcolumn = document.createElement('div')
+                generalcolumn.setAttribute('class', 'col-sm-2');
+                generalinforow.appendChild(generalcolumn)
+
+                let vlabel = document.createElement('p')
+                vlabel.style.display = 'inline'
+                let labeltext = key.replace(/[ˆ0-9]+/g, '')
+                vlabel.innerText = labeltext[0].toUpperCase() + labeltext.substring(1) + ':'
+                generalcolumn.appendChild(vlabel)
+
+                let valuearea = document.createElement('div')
+                valuearea.setAttribute('class', 'col-sm-10');
+                valuearea.style.display = "inline"
+                valuearea.id = 'bp-' + key
+                generalinforow.appendChild(valuearea)
 
                 // Populating the general info section (authors, date, categories)
 
@@ -228,7 +258,7 @@ async function retrieveBPinfo(BPid) {
                 span.innerText = value;
                 themeButton.appendChild(span);
                 themeButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                UniversityArea.appendChild(themeButton);
+                valuearea.appendChild(themeButton);
 
                 listofContainers.push({
                     "name": key,
@@ -236,10 +266,8 @@ async function retrieveBPinfo(BPid) {
                     "content": value
                 })
             }
-
-
             // Displaying date
-            if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
+            else if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
                 // Populating the general info section (authors, date, categories)
                 let dateButton = document.createElement('a');
                 let span1 = document.createElement('span');
@@ -261,20 +289,37 @@ async function retrieveBPinfo(BPid) {
                     "content": value
                 })
             }
-            //ADDED//
-            // Displaying image
-            if (key.replace(/[ˆ0-9]+/g, '') == 'image') {
+            // Displaying top image
+            let imagefields = ['image', 'front image']
+            if (imagefields.includes(key.replace(/[ˆ0-9]+/g, ''))) {
                 // Populating the general info section 
                 if (value != '') {
+                    let imageArea = document.getElementById("bp-image");
+                    imageArea.style.marginLeft = "auto";
+                    imageArea.style.marginRight = "auto";
+
+                    let fig = document.createElement('figure')
+                    fig.id = 'topfigure'
+
                     let picture = document.createElement("img");
                     picture.src = value;
                     picture.style.width = 'calc(100%)';
-                    imageArea.appendChild(picture);
+
+                    fig.appendChild(picture)
+                    imageArea.appendChild(fig);
                 }
+            }
+
+            let captions = ['front image licence']
+            if (captions.includes(key.replace(/[ˆ0-9]+/g, ''))) {
+                let fig = document.getElementById('topfigure')
+                let figcap = document.createElement('figcaption')
+                figcap.innerText = 'Licence: ' + value
+                fig.appendChild(figcap)
 
             }
 
-            if (key.replace(/[ˆ0-9]+/g, '') == 'audience') {
+            else if (key.replace(/[ˆ0-9]+/g, '') == 'audience') {
                 let audienceButton = document.createElement('a');
                 audienceButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 let span1 = document.createElement('span');
@@ -285,33 +330,28 @@ async function retrieveBPinfo(BPid) {
                 let span2 = document.createElement('span');
                 span2.setAttribute('class', 'text');
                 span2.innerText = value;
-
                 audienceButton.appendChild(span1);
                 audienceButton.appendChild(span2);
                 audienceArea.appendChild(audienceButton);
+
                 listofContainers.push({
                     "name": key,
                     "container": span2,
                     "content": value
                 })
-
-
             }
 
-            if (key.replace(/[ˆ0-9]+/g, '') == 'effort') {
+            else if (key.replace(/[ˆ0-9]+/g, '') == 'effort') {
                 let effortButton = document.createElement('a');
                 effortButton.setAttribute('class', 'btn btn-light btn-icon-split');
-
                 let span1 = document.createElement('span');
                 span1.setAttribute('class', 'icon text-gray-600');
                 let icon = document.createElement('i');
                 icon.setAttribute('class', 'fa fa-hammer');
                 span1.appendChild(icon);
-
                 let span2 = document.createElement('span');
                 span2.setAttribute('class', 'text');
                 span2.innerText = value;
-
                 effortButton.appendChild(span1);
                 effortButton.appendChild(span2);
                 effortArea.appendChild(effortButton);
@@ -323,7 +363,7 @@ async function retrieveBPinfo(BPid) {
                 })
             }
 
-            if (key.replace(/[ˆ0-9]+/g, '') == 'timeframe') {
+            else if (key.replace(/[ˆ0-9]+/g, '') == 'timeframe') {
                 let timeframeButton = document.createElement('a');
                 timeframeButton.setAttribute('class', 'btn btn-light btn-icon-split');
                 let span1 = document.createElement('span');
@@ -331,7 +371,6 @@ async function retrieveBPinfo(BPid) {
                 let icon = document.createElement('i');
                 icon.setAttribute('class', 'fa fa-clock');
                 span1.appendChild(icon);
-
 
                 let span2 = document.createElement('span');
                 span2.setAttribute('class', 'text');
@@ -351,9 +390,6 @@ async function retrieveBPinfo(BPid) {
     }
     //make the remove and edit functionalities available to the domain administrator, BP author, and developer
     if (userRole == 'administrator' || authoremails.includes(currenteamail) || developers.includes(currenteamail)) {
-        // console.log('administrator', userRole == 'administrator')
-        // console.log('author email', authoremails.includes(currenteamail))
-        // console.log('developer', developers.includes(currenteamail))
         remove.appendChild(remove_BP);
         edit.appendChild(edit_BP);
     }
@@ -371,7 +407,7 @@ async function retrieveBPinfo(BPid) {
 
 // Retrieving info for the documents linked to this best practice
 async function retrieveDocInfo(docPath, docId, div) {
-
+    console.log('retrieveDocInfo')
     let bpOther = document.getElementById("bp-other-sections");
 
     // PART 1: displaying all text contents for this document
@@ -411,9 +447,12 @@ async function retrieveDocInfo(docPath, docId, div) {
                             div.appendChild(sectionTitle);
                         }
                     }
+
+        
+
+                    
                     // Regular text
-                    else {
-                        // Adding the attribute value as regular text
+                    else {// Adding the attribute value as regular text
                         let p = document.createElement('p');
                         p.innerText = value;
                         p.style.marginTop = '15px';
@@ -425,25 +464,66 @@ async function retrieveDocInfo(docPath, docId, div) {
             else if (keyText != 'description') {
                 if (typeof (value) != 'object') {
 
+                        // Image
+                       if (keyText == 'figure one' || keyText == 'figure two') {
+                        // Populating the general info section 
+                        if (value != '') {
+                            let figDiv = document.createElement('div');
+                            figDiv.setAttribute('class', 'col-sm-10');
+                            figDiv.style.marginLeft = 'auto';
+                            figDiv.style.marginRight = 'auto';
+                            figDiv.style.marginTop = '10px';
+
+                            let fig = document.createElement('figure')
+                            fig.id = 'topfigure ' + keyText
+
+                            let picture = document.createElement("img");
+                            picture.src = value;
+                            picture.style.width = 'calc(100%)';
+
+                            fig.appendChild(picture)
+                            figDiv.appendChild(fig)
+                            div.appendChild(figDiv);
+                        }
+                    }
+                    else if (keyText == 'figure one caption' || keyText == 'figure two caption'){
+                        if (value != '') {
+                            let fig
+                            if (keyText == 'figure one caption'){
+                              fig =  document.getElementById('topfigure figure one')
+                            }  
+                            else if (keyText == 'figure two caption'){
+                              fig =  document.getElementById('topfigure figure two')
+                            }
+
+                       
+
+                        let figcap = document.createElement('figcaption')
+                        figcap.innerText = 'Caption: '+ value
+                        fig.appendChild(figcap)
+
+                        listofContainers.push({
+                            "name": key,
+                            "container": figcap,
+                            "content": value
+                        })
+                        }
+                    }
+                    else{
                     let l1 = document.createElement('div');
                     l1.setAttribute("class", "card border-left-success shadow");
                     l1.style.marginTop = '15px';
-
                     let l2 = document.createElement('div');
                     l2.setAttribute("class", "card-body");
-
                     let l3 = document.createElement('div');
                     l3.setAttribute("class", "row no-gutters align-items-center");
-
                     let l4 = document.createElement('div');
                     l4.setAttribute("class", "col mr-2");
-
                     //title
                     let h = document.createElement('div');
                     h.innerHTML = keyText;
                     h.setAttribute('class', "text-xs font-weight-bold text-success text-uppercase mb-1");
                     l4.appendChild(h);
-
                     // Adding the attribute value as regular text
                     let p = document.createElement('p');
                     p.innerText = value;
@@ -458,6 +538,7 @@ async function retrieveDocInfo(docPath, docId, div) {
                     l2.appendChild(l3);
                     l1.appendChild(l2);
                     div.appendChild(l1);
+                }
                 }
             }
         }
@@ -572,7 +653,7 @@ function closeModal() {
     let Removebutton = document.getElementById("removeBP");
     let Editbutton = document.getElementById("editBP");
     let QRSection = document.getElementById("qr_code");
-    let UniversityArea = document.getElementById("bp-university");
+    let topArea = document.getElementById('topbuttons')
     let authorArea = document.getElementById("bp-authors");
     let dateArea = document.getElementById("bp-date");
     let imageArea = document.getElementById("bp-image");
@@ -589,10 +670,8 @@ function closeModal() {
     while (QRSection.hasChildNodes()) {
         QRSection.removeChild(QRSection.firstChild);
     }
-
-
-    while (UniversityArea.hasChildNodes()) {
-        UniversityArea.removeChild(UniversityArea.firstChild);
+    while (topArea.hasChildNodes()) {
+        topArea.removeChild(topArea.firstChild);
     }
     while (authorArea.hasChildNodes()) {
         authorArea.removeChild(authorArea.firstChild);
@@ -608,6 +687,14 @@ function closeModal() {
     }
     while (otherSections.hasChildNodes()) {
         otherSections.removeChild(otherSections.firstChild);
+    }
+
+
+    ///
+    var paras = document.getElementsByClassName('OICT');
+
+    while (paras[0]) {
+        paras[0].parentNode.removeChild(paras[0]);
     }
     //reset URL
     window.history.replaceState("", "", starturl);

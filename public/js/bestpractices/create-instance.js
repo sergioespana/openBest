@@ -33,19 +33,25 @@ var jsontest_ = {
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "10title": "string",
-                    "11university": "string",
-                    "12image": "string",
-                    "13author": [{
+                    "11question": "string",
+                    "12quote": "string",
+                    "13major dimension": "string",
+                    "14sub dimension": "string",
+                    "15date": "string",
+                    "16front image": "string",
+                    "17front image licence": "string",
+                    "18author": [{
                         "name": "Written by",
                         "self": "document reference",
                         "related": "document reference"
                     }],
-                    "14date": "string",
-                    "15introduction": "text",
-                    "16process": "text",
-                    "17outcome": "text",
-                    "18conclusion": "text",
-                    "19learnmore": "text",
+                    
+                    "19text": "text",
+                    "20figure one": "string",
+                    "21figure one caption": "string",
+                    "22figure two": "string",
+                    "23figure two caption": "string",
+                
 
                     //collection
                     "comments": {

@@ -2,6 +2,7 @@
 // Retrieves best practices from the repository
 // ########################
 
+
 // Create firestore (database) object
 var db = firebase.firestore();
 
@@ -30,6 +31,14 @@ var datatype = [];
 var alreadytimeframe;
 var alreadyeffortFrame;
 
+//note that the table viewing module has not been generalized properly, hence different versions are shown based on different domains and their domain strings
+//originally the table contained only title, date and description. This was because these elements where deemed to be present in all domains. 
+//in practice this proved to be untrue so varying versions where required to have sufficient detail in the table without plainly showing all columns which is also not wishable
+//because we dont want to show fields like image etc. in the column. like this there are more. Proper generalization should be pursued or return to the basis.
+//for the case studies a tailored version is preferred.
+var greenofficedomains = ['Greenoffice UU showcase','Generic domain','Generic other domain']
+var oictdomains       = ['OICT']
+
 const unique = (value, index, self) => {
   return self.indexOf(value) === index;
 };
@@ -47,6 +56,14 @@ function waitFordomainjson_retrieval() {
   //if domain is already loaded:
   if (typeof domainjson !== "undefined") {
     // First initialization of datatable before BPs are retrieved from database
+    let columns = []
+    if (greenofficedomains.includes(dName[0])){columns =  ['Title','Date','University','Introduction','Process','Outcome','Conclusion']}
+    if (oictdomains.includes(dName[0])){columns =  ['Title','Date','Question','Quote','Major dimension','Sub dimension','Text']}
+    
+    for ([i,col] of columns.entries()){
+      createth(col)
+      createRef(i,col)
+    }
     $('#dataTable').DataTable();
     initTable();
   }
@@ -114,7 +131,7 @@ async function initTable() {
             this.api().columns().every(function () {
               let column = this;
               let columnname = column.header().textContent
-              let initiallyinvisible = ['Audience', 'Effort', 'Timeframe', 'Quote'];
+              let initiallyinvisible = ['Audience', 'Effort', 'Timeframe','quote'];
               let alwaysinvisible = ['Image', 'Author']
 
               if (initiallyinvisible.includes(columnname) || alwaysinvisible.includes(columnname)) {
@@ -124,11 +141,8 @@ async function initTable() {
             )
           },
 
-
-
-
           //
-          //Custom filter assignment
+          //Custom filter assignment this can be used as basis for defining custom column based filters, this is now taken over by the custom search builder plugin
           //
           // initComplete: function (table) {
           //   var api = this.api();
@@ -340,7 +354,124 @@ async function getDocData(callback) {
           }
           datatype = [];
         }
+        if (greenofficedomains.includes(dName[0])){
+          console.log('greenoffice domain')
+        for (let x = 0; x < keyArray.length; x++) {
+          // The index of the title, description and date keys is pushed to indexArr
+          // Using splice ensures that title is pushed to index 0, description to index 4, etc
+          //Keep in mind that this order should resemble the models numerical order.
 
+          if (keyArray[x] == '"title"') {
+            indexArr.splice(0, 0, x);
+          }
+          else if (keyArray[x] == '"university"') {
+            indexArr.splice(1, 0, x);
+          }
+          else if (keyArray[x] == '"date"') {
+            indexArr.splice(2, 0, x);
+          }
+          else if (keyArray[x] == '"introduction"') {
+            indexArr.splice(3, 0, x);
+          }
+          else if (keyArray[x] == '"process"') {
+            indexArr.splice(4, 0, x);
+          }
+          else if (keyArray[x] == '"outcome"') {
+            indexArr.splice(5, 0, x);
+          }
+          else if (keyArray[x] == '"conclusion"') {
+            indexArr.splice(6, 0, x);
+          }
+          else if (keyArray[x] == '"learnmore"') {
+            indexArr.splice(7, 0, x);
+          }
+        }
+
+        // indexArr at index 0 stores the index of the title key in the original keyArr
+        // the order below determines the column order of the table
+
+        title = indexArr[0];
+        date = indexArr[2];
+        university = indexArr[1];
+        introduction = indexArr[3];
+        proces = indexArr[4];
+        outcome = indexArr[5];
+        conclusion = indexArr[6];
+       
+        //ORDERING OF THE TABLE COLUMNS
+        // Getting the title, description and date for the documents
+        let docdata = [
+          `${doc.data()[Object.keys(doc.data())[title]]}`,
+          `${doc.data()[Object.keys(doc.data())[date]]}`,
+          `${doc.data()[Object.keys(doc.data())[university]]}`,
+          `${doc.data()[Object.keys(doc.data())[introduction]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[proces]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[outcome]].substring(0, 150) + '.....'}`,
+          `${doc.data()[Object.keys(doc.data())[conclusion]].substring(0, 150) + '.....'}`
+        ];
+      
+        // Pushing docdata to data array to populate the table
+        data.push(docdata);
+      }
+      if (oictdomains.includes(dName[0])){
+        console.log('oictdomain')
+        for (let x = 0; x < keyArray.length; x++) {
+          // The index of the title, description and date keys is pushed to indexArr
+          // Using splice ensures that title is pushed to index 0, description to index 4, etc
+          //Keep in mind that this order should resemble the models numerical order.
+
+          if (keyArray[x] == '"title"') {
+            indexArr.splice(0, 0, x);
+          }
+          else if (keyArray[x] == '"question"') {
+            indexArr.splice(1, 0, x);
+          }
+          else if (keyArray[x] == '"quote"') {
+            indexArr.splice(2, 0, x);
+          }
+          else if (keyArray[x] == '"major dimension"') {
+            indexArr.splice(3, 0, x);
+          }
+          else if (keyArray[x] == '"sub dimension"') {
+            indexArr.splice(4, 0, x);
+          }
+          else if (keyArray[x] == '"date"') {
+            indexArr.splice(5, 0, x);
+          }
+          else if (keyArray[x] == '"text"') {
+            indexArr.splice(6, 0, x);
+          }       
+        }
+
+        // indexArr at index 0 stores the index of the title key in the original keyArr
+        // the order below determines the column order of the table
+
+        title = indexArr[0];
+        date = indexArr[5];
+        question = indexArr[1];
+        quote = indexArr[2];
+        major = indexArr[3];
+        sub = indexArr[4];
+        text = indexArr[6];
+       
+        //ORDERING OF THE TABLE COLUMNS
+        // Getting the title, description and date for the documents
+        let docdata = [
+          `${doc.data()[Object.keys(doc.data())[title]]}`,
+          `${doc.data()[Object.keys(doc.data())[date]]}`,
+          `${doc.data()[Object.keys(doc.data())[question]]}`,
+          `${doc.data()[Object.keys(doc.data())[quote]]}`,
+          `${doc.data()[Object.keys(doc.data())[major]]}`,
+          `${doc.data()[Object.keys(doc.data())[sub]]}`,
+          `${doc.data()[Object.keys(doc.data())[text]].substring(0, 150) + '.....'}`
+        ];
+      
+        // Pushing docdata to data array to populate the table
+        data.push(docdata);
+      }
+
+
+      if (dName[0] == 'else'){
         for (let x = 0; x < keyArray.length; x++) {
           // The index of the title, description and date keys is pushed to indexArr
           // Using splice ensures that title is pushed to index 0, description to index 4, etc
@@ -397,10 +528,10 @@ async function getDocData(callback) {
           `${doc.data()[Object.keys(doc.data())[outcome]].substring(0, 150) + '.....'}`,
           `${doc.data()[Object.keys(doc.data())[conclusion]].substring(0, 150) + '.....'}`
         ];
-
+      
         // Pushing docdata to data array to populate the table
         data.push(docdata);
-
+      }
 
         for (let key in doc.data())
           // Populating the category array           
@@ -474,3 +605,22 @@ function setValue(key) {
   }
 }
 
+
+function createth(header){
+  let top     = document.getElementById('top')
+  let bottom  = document.getElementById('bottom')
+  for (loc of [top,bottom]){
+    let th = document.createElement('th')
+    th.innerHTML = header
+    loc.appendChild(th);
+  }
+}
+
+function createRef(i,header){
+  let refloc     = document.getElementById('togglebuttons')
+  let toggle = document.createElement('a');
+  toggle.setAttribute('class', 'toggle-vis');
+  toggle.setAttribute('data-column', i);
+  toggle.innerHTML = header + '-';
+  refloc.append(toggle)
+}
