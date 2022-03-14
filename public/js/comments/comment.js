@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     collapsible();
 });
 
-function startupComments(BPID) {
+async function startupComments(BPID) {
     //Set BPid to the BP id of the selected BP
     BPid = BPID;
     //get amount of comments for the toptext
@@ -19,7 +19,10 @@ function startupComments(BPID) {
     // create comment input bar
     create_comment_input(comment_input_location, "false");
     // get all comments from the database and draw them in the comment section
-    fetchComments(BPid)
+    await fetchComments(BPid)
+    return new Promise((resolve)=>{
+        resolve();
+    });
 }
 
 //function to collapse the rules container

@@ -19,6 +19,9 @@ async function startupRatings(Bpid) {
     }
     //draw all individual ratings
     createAllRatings(individualratinglocation, ratinglist, transposedInfo, Bpid);
+    return new Promise((resolve)=>{
+        resolve();
+    });
 }
 
 function setUpRatingSection(transposedInfo, root) {

@@ -25,7 +25,7 @@ var authoremails = []
 var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
-const starturl = window.location.href
+
 const queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
 //this is used to get the actual user
@@ -34,6 +34,15 @@ auth.onAuthStateChanged(function (user) {
         currenteamail = user.email
     }
 })
+
+var starturl
+if (location.hostname === "localhost"){
+   starturl = 'http://localhost:5000/bestpractices.html'
+}
+else{
+    starturl = 'https://green-repo.web.app/bestpractices.html';
+}
+
 
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
@@ -45,24 +54,25 @@ setTimeout(async function () {
         await retrieveBPinfo(selectedbpid);
         await startupComments(selectedbpid);
         await startupRatings(selectedbpid);
-        await storeID(selectedbpid);
+        await delay();
+        storeID(selectedbpid);
         if (qr) {
-            await addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+         addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
         }
         else {
-            await addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+         addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
         }
     }
-}, 3000);
+}, 2000);
 
 //start the bp based on the selected row in the BP table
-function tableClick(e) {
+async function tableClick(e) {
     let clickedRow = e.target.parentElement;
     let BPid = clickedRow.getAttribute('doc-id');
     modal.style.display = "block";
-    retrieveBPinfo(BPid);
-    startupComments(BPid);
-    startupRatings(BPid);
+    await retrieveBPinfo(BPid);
+    await startupComments(BPid);
+    await startupRatings(BPid);
     storeID(BPid);
     window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
     addactivity(userEmail, 'open', BPid, getcurrentDateTime())
@@ -70,6 +80,10 @@ function tableClick(e) {
 
 async function retrieveBPinfo(BPid) {
     // bpPath is the collection path to the bestpractices sub-collection
+    if (typeof collectionPaths[0] === "undefined"){
+    extractJSON(domainjson, 0, '');
+    await delay()
+    }
     let bpPath = findPath(collectionPaths, 'bestpractices');
 
     // Adding this path to checkedSC to prevent checking the bpdocument again as part of a docref
@@ -402,14 +416,16 @@ async function retrieveBPinfo(BPid) {
         closeModal()
         addactivity(userEmail, 'close', bpid, getcurrentDateTime())
     }
+    await delay()
+    return new Promise((resolve)=>{
+            resolve();
+    });
 }
 
 
 // Retrieving info for the documents linked to this best practice
 async function retrieveDocInfo(docPath, docId, div) {
-    console.log('retrieveDocInfo')
     let bpOther = document.getElementById("bp-other-sections");
-
     // PART 1: displaying all text contents for this document
     let currentDoc = await db.collection(docPath).doc(docId).get();
     for (let [key, value] of Object.entries(currentDoc.data())) {

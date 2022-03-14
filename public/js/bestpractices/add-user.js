@@ -42,7 +42,7 @@ document.getElementById("store-user-btn").addEventListener("click", async functi
     if (values.includes('')) { alert('Please fill in all fields') }
     else {
         addUser()
-        if (choicespan = "affirmative") {
+        if (choicespan == "affirmative") {
             addauthor_()
         }
 
