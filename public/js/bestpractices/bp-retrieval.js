@@ -471,7 +471,8 @@ async function getDocData(callback) {
       }
 
 
-      if (dName[0] == 'else'){
+      else{
+        //this was the original abstraction. all domains where believed to at least feature a title, date and description. So refer back to this if needed.
         for (let x = 0; x < keyArray.length; x++) {
           // The index of the title, description and date keys is pushed to indexArr
           // Using splice ensures that title is pushed to index 0, description to index 4, etc
@@ -481,28 +482,12 @@ async function getDocData(callback) {
             indexArr.splice(0, 0, x);
           }
 
-          else if (keyArray[x] == '"university"') {
+          else if (keyArray[x] == '"date"') {
             indexArr.splice(1, 0, x);
           }
 
-          else if (keyArray[x] == '"date"') {
+          else if (keyArray[x] == '"description"') {
             indexArr.splice(2, 0, x);
-          }
-          else if (keyArray[x] == '"introduction"') {
-            indexArr.splice(3, 0, x);
-          }
-          else if (keyArray[x] == '"process"') {
-            indexArr.splice(4, 0, x);
-          }
-          else if (keyArray[x] == '"outcome"') {
-            indexArr.splice(5, 0, x);
-          }
-          else if (keyArray[x] == '"conclusion"') {
-            indexArr.splice(6, 0, x);
-          }
-
-          else if (keyArray[x] == '"learnmore"') {
-            indexArr.splice(7, 0, x);
           }
         }
 
@@ -510,23 +495,15 @@ async function getDocData(callback) {
         // the order below determines the column order of the table
 
         title = indexArr[0];
-        date = indexArr[2];
-        university = indexArr[1];
-        introduction = indexArr[3];
-        proces = indexArr[4];
-        outcome = indexArr[5];
-        conclusion = indexArr[6];
+        date = indexArr[1];
+        description = indexArr[2];
        
         //ORDERING OF THE TABLE COLUMNS
         // Getting the title, description and date for the documents
         let docdata = [
           `${doc.data()[Object.keys(doc.data())[title]]}`,
           `${doc.data()[Object.keys(doc.data())[date]]}`,
-          `${doc.data()[Object.keys(doc.data())[university]]}`,
-          `${doc.data()[Object.keys(doc.data())[introduction]].substring(0, 150) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[proces]].substring(0, 150) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[outcome]].substring(0, 150) + '.....'}`,
-          `${doc.data()[Object.keys(doc.data())[conclusion]].substring(0, 150) + '.....'}`
+          `${doc.data()[Object.keys(doc.data())[description]].substring(0, 150) + '.....'}`
         ];
       
         // Pushing docdata to data array to populate the table
