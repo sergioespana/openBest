@@ -25,9 +25,13 @@ var authoremails = []
 var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
+<<<<<<< HEAD
 
 var lock = false
 
+=======
+const starturl = window.location.href
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
 const queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
 //this is used to get the actual user
@@ -37,15 +41,6 @@ auth.onAuthStateChanged(function (user) {
     }
 })
 
-var starturl
-if (location.hostname === "localhost"){
-   starturl = 'http://localhost:5000/bestpractices.html'
-}
-else{
-    starturl = 'https://green-repo.web.app/bestpractices.html';
-}
-
-
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
  
@@ -54,6 +49,7 @@ $(document).ready(async function () {
     var selectedbpid = urlParams.get('BPid')
     var qr = urlParams.get('QR')
     if (selectedbpid) {
+<<<<<<< HEAD
         if (qr) {
             addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime());
         }
@@ -65,11 +61,24 @@ $(document).ready(async function () {
         await startupComments(selectedbpid);
         for (let i = 0; i < (amountOfComments / 3); i++) {
             await delay();
+=======
+        modal.style.display = "block";
+        await retrieveBPinfo(selectedbpid);
+        await startupComments(selectedbpid);
+        await startupRatings(selectedbpid);
+        await storeID(selectedbpid);
+        if (qr) {
+            await addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+        }
+        else {
+            await addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
         }
         await startupRatings(selectedbpid);
         storeID(selectedbpid);
 
     }
+<<<<<<< HEAD
 })
 
 
@@ -84,6 +93,18 @@ async function tableClick(e) {
     modal.style.display = "block";
     await startupComments(BPid);
     await startupRatings(BPid);
+=======
+}, 3000);
+
+//start the bp based on the selected row in the BP table
+function tableClick(e) {
+    let clickedRow = e.target.parentElement;
+    let BPid = clickedRow.getAttribute('doc-id');
+    modal.style.display = "block";
+    retrieveBPinfo(BPid);
+    startupComments(BPid);
+    startupRatings(BPid);
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
     storeID(BPid);
     window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
     addactivity(userEmail, 'open', BPid, getcurrentDateTime())
@@ -94,7 +115,10 @@ async function tableClick(e) {
 
 async function retrieveBPinfo(BPid) {
     // bpPath is the collection path to the bestpractices sub-collection
+<<<<<<< HEAD
     await awaitforVar_colpath()
+=======
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
     let bpPath = findPath(collectionPaths, 'bestpractices');
   
     // Adding this path to checkedSC to prevent checking the bpdocument again as part of a docref
@@ -429,15 +453,20 @@ async function retrieveBPinfo(BPid) {
         closeModal();
         addactivity(userEmail, 'close', bpid, getcurrentDateTime());
     }
+<<<<<<< HEAD
     return new Promise((resolve)=>{
             resolve();
     });
+=======
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
 }
 
 
 // Retrieving info for the documents linked to this best practice
 async function retrieveDocInfo(docPath, docId, div) {
+    console.log('retrieveDocInfo')
     let bpOther = document.getElementById("bp-other-sections");
+
     // PART 1: displaying all text contents for this document
     let currentDoc = await db.collection(docPath).doc(docId).get();
     for (let [key, value] of Object.entries(currentDoc.data())) {

@@ -20,9 +20,11 @@ async function waitFordomainjson_edit() {
     }
 }
 
+
 function storeID(BPid) {
     bpid = BPid;
 }
+
 let anchor1 = document.getElementById('editconfirm');
 
 let confirm_BP_edit = document.createElement('a');

@@ -18,10 +18,14 @@ async function startupRatings(Bpid) {
         createRatingAggregation(transposedScores, transposedInfo);
     }
     //draw all individual ratings
+<<<<<<< HEAD
     await createAllRatings(individualratinglocation, ratinglist, transposedInfo, Bpid);
     return new Promise((resolve)=>{
         resolve();
     });
+=======
+    createAllRatings(individualratinglocation, ratinglist, transposedInfo, Bpid);
+>>>>>>> parent of 0339bf7 (Small changes to enhance concurrency)
 }
 
 function setUpRatingSection(transposedInfo, root) {
