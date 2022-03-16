@@ -1,6 +1,7 @@
 var db = firebase.firestore();
 var amountOfComments = 0;
 
+
 async function fetchComments(Bpid) {
     //fetch all the comments from the database
     let comments = await getComments(BPid);

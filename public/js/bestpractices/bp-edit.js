@@ -119,6 +119,14 @@ function confirmBPEditing() {
             }
             item.currencontent = allcontent;
         }
+        else if (item.name.replace(/[ˆ0-9]+/g, '') == "figure one caption" || item.name.replace(/[ˆ0-9]+/g, '') == "figure two caption" ) {
+            item.container.toggleAttribute("contentEditable");
+            if (item.container.innerHTML != item.content) {
+                amtchanges += 1;
+                changes.push(item)
+            }
+            item.currencontent = item.container.innerHTML;
+        }
         else {
             item.container.toggleAttribute("contentEditable");
             if (item.container.innerText != item.content) {

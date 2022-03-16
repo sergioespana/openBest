@@ -76,6 +76,15 @@ $(document).ready(function () {
               // check if person is administrator
               if (userRole === 'administrator' || administrators.includes(userEmail)) {
 
+               
+                let usermanagement = document.getElementById("administrator-card_");
+                if (usermanagement) {
+                  usermanagement.style.display = "inline-block";
+                  usermanagement.setAttribute('class', 'col-lg-6 mb-4');
+                }
+              }
+              if (administrators.includes(userEmail)) {
+
                 let admincard = document.getElementById("administrator-card");
                 let usercard = document.getElementById("user-card");
 
@@ -85,6 +94,9 @@ $(document).ready(function () {
                 }
               }
             });
+
+
+            
 
             // If dName is null, then the user belongs to no domain
             // Otherwise, display the user actions

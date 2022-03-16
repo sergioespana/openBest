@@ -43,7 +43,6 @@ authorspan.onclick = function () {
 function addauthor() {
     extractJSON(domainjson, 0, '');
     authorpath = findPath(collectionPaths, 'authors') + '/'
-    console.log(authorpath)
     db.collection(authorpath).add({
         email: authoremailspan.value,
         name: authornamespan.value,

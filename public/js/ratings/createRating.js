@@ -18,7 +18,7 @@ async function startupRatings(Bpid) {
         createRatingAggregation(transposedScores, transposedInfo);
     }
     //draw all individual ratings
-    createAllRatings(individualratinglocation, ratinglist, transposedInfo, Bpid);
+    await createAllRatings(individualratinglocation, ratinglist, transposedInfo, Bpid);
     return new Promise((resolve)=>{
         resolve();
     });
@@ -47,7 +47,7 @@ function setUpRatingSection(transposedInfo, root) {
         iconinstantiation.classList.add('fas', 'fa-sort-down');
         icon.appendChild(iconinstantiation);
 
-        var dimname = document.createElement('p');
+        var dimname = document.createElement('h5');
         dimname.innerText = "Give your rating here!";
         dimname.style.width = '25%';
         dimname.style.marginLeft = '10%';
@@ -106,8 +106,10 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
     var ratingcontainer = document.createElement("div");
     ratingcontainer.classList.add("wrapper");
 
-    var ratinglabel = document.createElement('p');
-    ratinglabel.innerText = "Scores (required)";
+    let divider = document.createElement("hr");
+    root.appendChild(divider)
+    var ratinglabel = document.createElement('h5');
+    ratinglabel.innerText = "Give your rating below";
     ratinglabel.style.marginBottom = '0px';
     ratinglabel.style.marginLeft = '10%';
     ratingcontainer.appendChild(ratinglabel);
@@ -118,7 +120,7 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
         ratingdimensions.push(rating);
     }
     //textlabel 'Explaination (optional)'
-    var textlabel = document.createElement('p');
+    let textlabel = document.createElement('p');
     textlabel.innerText = "Explaination (optional)";
     textlabel.style.marginBottom = '0px';
     textlabel.style.marginLeft = '10%';
@@ -128,11 +130,10 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
     textinput = createTextArea();
 
     //create submitbutton
-    submitbutton = document.createElement("button");
+    let submitbutton = document.createElement("button");
     submitbutton.innerText = "Submit";
-    submitbutton.style.marginLeft = '70%';
-    submitbutton.style.width = '20%';
-    submitbutton.style.marginRight = 'auto';
+    submitbutton.style.float = 'right';
+    submitbutton.style.marginBottom = '1em';
     submitbutton.classList.add("btn", "btn-light");
 
     submitbutton.addEventListener("click", async function () {
@@ -150,9 +151,17 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
             alert("Your review has been posted! refresh this page to see its impact on the ratings average score");
         }
     })
-    ratingcontainer.appendChild(textinput);
-    ratingcontainer.appendChild(submitbutton);
+
+    let textinput_ = document.createElement("div");
+    textinput_.style.marginBottom = '1em';
+    textinput_.style.height = 'auto';
+    textinput_.style.width = '80%';
+    textinput_.style.margin = 'auto';
+    
+    textinput_.appendChild(textinput);
+    textinput_.appendChild(submitbutton);
     root.appendChild(ratingcontainer);
+    root.appendChild(textinput_);
 }
 function removeRating(BPid, RatingID, RatingContainer) {
     startstring = findPath(collectionPaths, 'bestpractices') + '/';
@@ -295,6 +304,8 @@ function createRating(root, name, dimension, scale, type, step, value, descr) {
     container.classList.add("ratingcontainer");
     container.style.marginLeft = '10%';
     container.style.display = 'flex';
+    container.style.flexDirection = 'row';
+    container.style.flexWrap = 'wrap';
 
     var info = document.createElement("div");
     info.classList.add("far", "fa-question-circle", "questionicon", "couponcode");
@@ -342,7 +353,7 @@ function createRating(root, name, dimension, scale, type, step, value, descr) {
 }
 //function to draw all ratings recorded in the database
 //this function calls drawRating to draw all ratings
-function createAllRatings(root, ratinglist, transposedInfo, BPid) {
+async function createAllRatings(root, ratinglist, transposedInfo, BPid) {
     for (rating of ratinglist) {
         let name = rating[0];
         let date = rating[1];
@@ -353,6 +364,9 @@ function createAllRatings(root, ratinglist, transposedInfo, BPid) {
         let text = rating[6];
         drawRating(name, date, score, img, id, BPid, isSame(email), root, transposedInfo, text);
     }
+    return new Promise((resolve)=>{
+        resolve();
+    });
 }
 
 //function to draw one instance of a rating, this rating has the same interface as the comments from comment.js
@@ -361,10 +375,6 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     var rating_wrapper = document.createElement("DIV");
     rating_wrapper.id = ratingid;
     rating_wrapper.classList.add("comment_wrapper");
-
-    //picture wrapper
-    var picture_wrapper = document.createElement("DIV");
-    picture_wrapper.classList.add("picture_wrapper");
 
     //content wrapper
     var content_wrapper = document.createElement("DIV");
@@ -378,6 +388,10 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     var meta_info_wrapper = document.createElement("DIV");
     meta_info_wrapper.classList.add("meta_info");
 
+    //meta info wrapper, name, date, etc.
+    var meta_info_wrapper_img = document.createElement("DIV");
+    meta_info_wrapper_img.classList.add("meta_info_wrapper");
+
     //toolbar wrapper, delete, edit, flag, etc.
     var toolbar_wrapper = document.createElement("DIV");
     toolbar_wrapper.classList.add("toolbar_wrapper");
@@ -390,8 +404,7 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     var picture = document.createElement("img");
     picture.src = img;
     picture.classList.add("picture");
-    picture_wrapper.appendChild(picture);//plak de afbeelding in de picture wrapping
-
+  
     //author name
     var name_text = document.createElement("p");
     name_text.classList.add("name");
@@ -406,16 +419,7 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     var comment_text = document.createElement("p");
     comment_text.innerText = ratingtext;
 
-    //allow a user to flag a rating if rating in not from current logged in user
-    if (isSame == "false") {
-        //flagging component
-        var flag_comment = document.createElement("i");
-        flag_comment.classList.add("far", "fa-flag", "flag_button", "dropbtn");
-        flag_comment.addEventListener("mouseover", function () { changeflag(flag_comment); })
-        flag_comment.addEventListener("mouseleave", function () { changeflag(flag_comment); })
-        toolbar_wrapper.appendChild(flag_comment);
-    }
-
+    
     //if current user is the same as the rater he can remove or edit the rating
     if (isSame == "true") {
         //remove rating component
@@ -434,8 +438,11 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     meta_info_wrapper.appendChild(name_text);
     meta_info_wrapper.appendChild(date_posted_text);
 
+    meta_info_wrapper_img.appendChild(picture);
+    meta_info_wrapper_img.appendChild(meta_info_wrapper)
+
     //add meta info and the toolbar to the topbar
-    topbar_wrapper.appendChild(meta_info_wrapper);
+    topbar_wrapper.appendChild(meta_info_wrapper_img);
     topbar_wrapper.appendChild(toolbar_wrapper);
 
     //add topbar in the content wrapper
@@ -447,12 +454,11 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
     if (ratingtext) {
         content_wrapper.appendChild(comment_text);
     }
-    //paste picture wrapper in the comment wrapper
-    rating_wrapper.appendChild(picture_wrapper);
     //paste content into the comment wrapper
     rating_wrapper.appendChild(content_wrapper);
     root.appendChild(rating_wrapper);
 }
+
 //function to get occurences of ratings 
 function organizelist(arr, max, stepsize, type) {
     var a = [], b = [], prev, pos = [], neg = [];
@@ -510,10 +516,8 @@ function createUserRatingDisplay(root, scores, dimension) {
 
     var dimname = document.createElement('p');
     dimname.innerText = "Average score";
-    dimname.style.width = '25%';
-    dimname.style.textAlign = 'initial'
-    dimname.style.marginBottom = 'auto';
-    dimname.style.marginTop = 'auto';
+    dimname.style.marginBottom = '0px';
+    dimname.style.marginRight = '1em';
 
 
     if (scores.length > 1) {
@@ -555,10 +559,7 @@ function createUserRatingDisplay(root, scores, dimension) {
                 var ratingavg = document.createElement('p');
                 // below the amount of stars on 1 decimal is calculated
                 ratingavg.innerText = Math.round((arrAvg(list) * 5) * 10) / 10 + ' / ' + 5;
-                ratingavg.style.width = '25%';
-                ratingavg.style.marginRight = 'auto';
-                ratingavg.style.marginBottom = 'auto';
-                ratingavg.style.marginTop = 'auto';
+                ratingavg.style.marginBottom = '0px';
                 ratingCollapsible.appendChild(ratingavg);
                 break;
             case 'binstars':
@@ -590,9 +591,8 @@ function createUserRatingDisplay(root, scores, dimension) {
 
             var dimensionlabel = document.createElement('p');
             dimensionlabel.innerText = dimensionname;
-            dimensionlabel.style.marginBottom = 'auto';
-            dimensionlabel.style.marginTop = 'auto';
-            dimensionlabel.style.width = '25%';
+            dimensionlabel.style.marginRight = '1em';
+ 
             div.appendChild(dimensionlabel);
 
             switch (ratingtype) {
@@ -629,9 +629,11 @@ function createUserRatingDisplay(root, scores, dimension) {
     else {
 
         var ratingCollapsible = document.createElement('div');
-        ratingCollapsible.style.justifyContent = 'left';
-        ratingCollapsible.style.width = '100%';
+        ratingCollapsible.style.justifyContent = 'center';
         ratingCollapsible.style.display = 'flex';
+        ratingCollapsible.style.flexWrap = 'wrap';
+        ratingCollapsible.style.flexDirection = 'row';
+        ratingCollapsible.style.bottom = '1em';
         ratingCollapsible.appendChild(dimname);
         root.appendChild(ratingCollapsible);
 
@@ -647,22 +649,16 @@ function createUserRatingDisplay(root, scores, dimension) {
                 createbarrating(ratingCollapsible, 0, maxval, step, score, "readOnly");
                 var ratingavg = document.createElement('p');
                 ratingavg.innerText = score + ' / ' + maxval;
-                ratingavg.style.width = '25%';
-                ratingavg.style.marginRight = 'auto';
-                ratingavg.style.marginBottom = 'auto';
-                ratingavg.style.marginTop = 'auto';
+                ratingavg.style.marginBottom = '0px';
                 ratingCollapsible.appendChild(ratingavg);
                 break;
             case 'stars':
                 stars = starRatingResult(ratingCollapsible, (score / maxval) * 100, 5);
-                stars.style.marginRight = '5%';
+                stars.style.marginRight = '1em';
                 var ratingavg = document.createElement('p');
                 // below the amount of stars on 1 decimal is calculated
                 ratingavg.innerText = score + ' / ' + 5;
-                ratingavg.style.width = '25%';
-                ratingavg.style.marginRight = 'auto';
-                ratingavg.style.marginBottom = 'auto';
-                ratingavg.style.marginTop = 'auto';
+                ratingavg.style.marginBottom = '0px';
                 ratingCollapsible.appendChild(ratingavg);
                 break;
             case 'binstars':
@@ -733,9 +729,8 @@ function displayAggregation(root, listofscores, dimension, scale, step, type) {
 
     var dimname = document.createElement('p');
     dimname.innerText = dimension;
-    dimname.style.width = '25%';
-    dimname.style.marginBottom = 'auto';
-    dimname.style.marginTop = 'auto';
+    dimname.style.marginBottom = '0';
+    dimname.style.marginRight = '1em';
     ratingCollapsible.appendChild(dimname);
     if (type == 'slider') {
         createbarrating(ratingCollapsible, 0, max, step, Math.round(avg), "readOnly");
@@ -927,10 +922,6 @@ function createTextArea() {
     textarea.type = "field";
     textarea.classList.add("form-control", "bg-light", "border-0", "small");
     textarea.style.marginTop = '0px';
-    textarea.style.marginBottom = '15px';
-    textarea.style.height = 'auto';
-    textarea.style.width = '80%';
-    textarea.style.margin = 'auto';
     return textarea;
 }
 //function for creating the total aggregation of a BP's rating to allow for quick insight into the ratings without looking into individual ratings or aggregations within the dimensions
@@ -997,28 +988,30 @@ function createTotalAggregation(root, transposedScores, transposedInfo) {
 
     var wrapper = document.createElement('div');
     wrapper.style.display = 'flex';
-    wrapper.style.border = '1px solid black';
-    wrapper.style.marginTop = '10px';
-    wrapper.style.marginBottom = '10px';
+    wrapper.style.marginTop = '1%';
+    wrapper.style.marginBottom = '1%';
+    wrapper.style.flexDirection = 'row';
+    wrapper.style.flexWrap = 'wrap';
+    wrapper.style.justifyContent = 'flex-start';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.marginLeft = '10%'
+    wrapper.style.flexFlow = 'row wrap'
 
-    var label = document.createElement('p');
+  
+    var label = document.createElement('h5');
     label.innerText = "Overall rating";
     label.style.marginBottom = 'auto';
     label.style.marginTop = 'auto';
+    label.style.marginLeft = '10%'
 
     var avglabel = document.createElement('p');
-    avglabel.style.marginBottom = 'auto';
-    avglabel.style.marginTop = 'auto';
-    avglabel.style.width = '20%';
-    avglabel.style.textAlign = 'center';
-    wrapper.appendChild(label);
+    avglabel.style.marginBottom = '0';
+    avglabel.style.marginRight = '1em';
 
     var amtlabel = document.createElement('p');
     amtlabel.innerText = roundScore(lengte_) + ' ratings';
-    amtlabel.style.marginBottom = 'auto';
-    amtlabel.style.marginTop = 'auto';
-    amtlabel.style.width = '20%';
-    amtlabel.style.textAlign = 'center';
+    amtlabel.style.marginBottom = '0';
+    amtlabel.style.marginRight = '1em';
 
     //Mechanism dependent styling and elements
     switch (type) {
@@ -1036,11 +1029,6 @@ function createTotalAggregation(root, transposedScores, transposedInfo) {
             wrapper.appendChild(avglabel);
             break;
         case 'stars':
-            label.style.marginLeft = '10%';
-            label.style.marginRight = 'auto';
-            label.style.width = '23%';
-            label.style.marginRight = '0px';
-
             starRatingResult(wrapper, Math.round(score), 5);
             avglabel.innerText = Math.round(score / 100 * 5 * 10) / 10 + ' / ' + 5;
             wrapper.appendChild(avglabel);
@@ -1155,6 +1143,7 @@ function createTotalAggregation(root, transposedScores, transposedInfo) {
     }
 
     wrapper.appendChild(amtlabel);
+    root.appendChild(label)
     root.appendChild(wrapper);
 }
 //supporting function to round of scores to powers of 1000 (1k) or 1000000 (1m)

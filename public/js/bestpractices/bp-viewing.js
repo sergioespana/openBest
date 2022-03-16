@@ -26,6 +26,8 @@ var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
 
+var lock = false
+
 const queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
 //this is used to get the actual user
@@ -46,46 +48,55 @@ else{
 
 //start the bp if present in the url, this happens when directly searching for one, or scanning a QR
 //Note that the timeout of 3000 may need to be increased when the Bps become larger and that an asynchronous solution would be better
-setTimeout(async function () {
+ 
+
+$(document).ready(async function () {
     var selectedbpid = urlParams.get('BPid')
     var qr = urlParams.get('QR')
     if (selectedbpid) {
-        modal.style.display = "block";
-        await retrieveBPinfo(selectedbpid);
-        await startupComments(selectedbpid);
-        await startupRatings(selectedbpid);
-        await delay();
-        storeID(selectedbpid);
         if (qr) {
-         addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime())
+            addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime());
         }
         else {
-         addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime())
+            addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime());
         }
+        await retrieveBPinfo(selectedbpid);
+        modal.style.display = "block";
+        await startupComments(selectedbpid);
+        for (let i = 0; i < (amountOfComments / 3); i++) {
+            await delay();
+        }
+        await startupRatings(selectedbpid);
+        storeID(selectedbpid);
+
     }
-}, 2000);
+})
+
 
 //start the bp based on the selected row in the BP table
 async function tableClick(e) {
+    //make sure that buttonclick can only be done once at the time
+    if (lock == false){
+    lock = true;
     let clickedRow = e.target.parentElement;
     let BPid = clickedRow.getAttribute('doc-id');
-    modal.style.display = "block";
     await retrieveBPinfo(BPid);
+    modal.style.display = "block";
     await startupComments(BPid);
     await startupRatings(BPid);
     storeID(BPid);
     window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
     addactivity(userEmail, 'open', BPid, getcurrentDateTime())
+    lock = false;
+}
+
 }
 
 async function retrieveBPinfo(BPid) {
     // bpPath is the collection path to the bestpractices sub-collection
-    if (typeof collectionPaths[0] === "undefined"){
-    extractJSON(domainjson, 0, '');
-    await delay()
-    }
+    await awaitforVar_colpath()
     let bpPath = findPath(collectionPaths, 'bestpractices');
-
+  
     // Adding this path to checkedSC to prevent checking the bpdocument again as part of a docref
     checkedSC.push(bpPath);
 
@@ -118,10 +129,9 @@ async function retrieveBPinfo(BPid) {
         editBP(listofContainers);
     })
 
-
     //QR code
     // let qrcode = new QRCode("qr_code", {
-    //     text: starturl + window.location.search + '?' + "BPid=" + BPid + "QR=true",
+    //     text: starturl + '?' + "BPid=" + BPid + "&QR=true",
     //     width: 110,
     //     height: 110,
     //     colorDark: "#000000",
@@ -136,6 +146,9 @@ async function retrieveBPinfo(BPid) {
 
         let BPtitle = document.getElementById("bp-title");
         // indexArr is instantiated in bp-retrieval when dataTable is initially loaded
+
+        await awaitforVar_indexarr()
+
         let title = indexArr[0];
         BPtitle.innerText = `${doc.data()[Object.keys(doc.data())[title]]}`;
         //add the element to the listofcontainers. 
@@ -241,7 +254,7 @@ async function retrieveBPinfo(BPid) {
 
             let topArea = document.getElementById('topbuttons')
             // Displaying topelements (university, category, dimension etc.)
-            topelements = ['unversity', 'sub dimension', 'major dimension']
+            topelements = ['university', 'sub dimension', 'major dimension']
             if (topelements.includes(key.replace(/[ˆ0-9]+/g, ''))) {
 
                 let generalinforow = document.createElement('div')
@@ -413,10 +426,9 @@ async function retrieveBPinfo(BPid) {
     retrieveDocInfo(bpPath, BPid, bpCore);
 
     span.onclick = function () {
-        closeModal()
-        addactivity(userEmail, 'close', bpid, getcurrentDateTime())
+        closeModal();
+        addactivity(userEmail, 'close', bpid, getcurrentDateTime());
     }
-    await delay()
     return new Promise((resolve)=>{
             resolve();
     });
@@ -497,8 +509,8 @@ async function retrieveDocInfo(docPath, docId, div) {
                             picture.src = value;
                             picture.style.width = 'calc(100%)';
 
-                            fig.appendChild(picture)
-                            figDiv.appendChild(fig)
+                            fig.appendChild(picture);
+                            figDiv.appendChild(fig);
                             div.appendChild(figDiv);
                         }
                     }
@@ -506,17 +518,17 @@ async function retrieveDocInfo(docPath, docId, div) {
                         if (value != '') {
                             let fig
                             if (keyText == 'figure one caption'){
-                              fig =  document.getElementById('topfigure figure one')
+                              fig =  document.getElementById('topfigure figure one');
                             }  
                             else if (keyText == 'figure two caption'){
-                              fig =  document.getElementById('topfigure figure two')
+                              fig =  document.getElementById('topfigure figure two');
                             }
 
                        
 
-                        let figcap = document.createElement('figcaption')
-                        figcap.innerText = 'Caption: '+ value
-                        fig.appendChild(figcap)
+                        let figcap = document.createElement('figcaption');
+                        figcap.innerText = value;
+                        fig.appendChild(figcap);
 
                         listofContainers.push({
                             "name": key,
@@ -736,3 +748,27 @@ async function removeBP(BPid) {
 }
 
 
+
+async function awaitforVar_indexarr(){
+    if (typeof indexArr[0] === "undefined"){
+           await delay();
+           awaitforVar_indexarr();
+        }
+    else{
+        return new Promise((resolve)=>{
+            resolve();})
+    }
+   
+}
+
+async function awaitforVar_colpath(){
+    if (typeof collectionPaths[0] === "undefined"){
+           await delay();
+           awaitforVar_colpath();
+        }
+    else{
+        return new Promise((resolve)=>{
+            resolve();})
+    }
+   
+}

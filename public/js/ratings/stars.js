@@ -63,6 +63,7 @@ function starRatingResult(root, percentage, max) {
   score.classList.add("score");
   score.style.marginBottom = 'auto';
   score.style.marginTop = 'auto';
+  score.style.marginRight = '1em';
   var scoreWrap = document.createElement('div');
   scoreWrap.style.textAlign = 'left';
   scoreWrap.classList.add("score-wrap");

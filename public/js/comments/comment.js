@@ -9,7 +9,7 @@ async function startupComments(BPID) {
     //Set BPid to the BP id of the selected BP
     BPid = BPID;
     //get amount of comments for the toptext
-    create_meta_info();
+    await create_meta_info();
     // get comment section location
     let comment_input_location = document.getElementById("searchbar");
     //create 'make your comment below' text
@@ -43,13 +43,16 @@ function collapsible() {
     }
 }
 
-function create_meta_info() {
+async function create_meta_info() {
     var root = document.getElementById("searchbar");
     var comment_counter = document.createElement("p");
     comment_counter.classList.add("comment_counter");
     comment_counter.id = "comment_counter";
     comment_counter.innerText = amountOfComments + " comments";
     root.appendChild(comment_counter);
+    return new Promise((resolve)=>{
+        resolve();
+    });
 }
 //function used for assingen line-clamp class tags, this function enables the shortening of the messages to two lines
 function showtext(see_more, text) {
@@ -190,8 +193,8 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     /////////////////////////////////////////////////////////////////
 
     //picture wrapper
-    var picture_wrapper = document.createElement("DIV");
-    picture_wrapper.classList.add("picture_wrapper");
+  //  var picture_wrapper = document.createElement("DIV");
+  //  picture_wrapper.classList.add("picture_wrapper");
 
     //content wrapper
     var content_wrapper = document.createElement("DIV");
@@ -201,11 +204,16 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     var topbar_wrapper = document.createElement("DIV");
     topbar_wrapper.classList.add("containertopbar");
 
+
     //meta info wrapper, name, date, etc.
     var meta_info_wrapper = document.createElement("DIV");
     meta_info_wrapper.classList.add("meta_info");
 
-    //toolbar wrapper, delete, edit, flag, etc.
+    //meta info wrapper, meta info wrapper + image
+    var meta_info_wrapper_img = document.createElement("DIV");
+    meta_info_wrapper_img.classList.add("meta_info_wrapper");
+
+    //toolbar wrapper, delete, edit, etc.
     var toolbar_wrapper = document.createElement("DIV");
     toolbar_wrapper.classList.add("toolbar_wrapper");
 
@@ -217,7 +225,8 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     var picture = document.createElement("img");
     picture.classList.add("picture");
     picture.src = comment.img;
-    picture_wrapper.appendChild(picture);//plak de afbeelding in de picture wrapping
+
+    //picture_wrapper.appendChild(picture);//plak de afbeelding in de picture wrapping
 
     //author name
     var name_text = document.createElement("p");
@@ -234,16 +243,6 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     comment_text.classList.add("comment_text", "line-clamp", "line-clamp-2");
     comment_text.innerText = comment.text;
     comment_text.setAttribute("hasbeendrawn", "false");
-
-    //allow a user to flag a comment if comment in not from current logged in user
-    if (comment.isSame == "false") {
-        //flagging component
-        // var flag_comment = document.createElement("i");
-        // flag_comment.classList.add("far", "fa-flag", "flag_button", "dropbtn");
-        // flag_comment.addEventListener("mouseover", function () { changeflag(flag_comment); })
-        // flag_comment.addEventListener("mouseleave", function () { changeflag(flag_comment); })
-        // toolbar_wrapper.appendChild(flag_comment);
-    }
 
     //if current user is the same as the comment writer he can remove or edit the comment
     if (comment.isSame == "true") {
@@ -267,11 +266,20 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     }
 
     //add comment author and date to the meta info wrapper
+   
     meta_info_wrapper.appendChild(name_text);
     meta_info_wrapper.appendChild(date_posted_text);
 
+    meta_info_wrapper_img.appendChild(picture)
+    meta_info_wrapper_img.appendChild(meta_info_wrapper)
+
+
     //add meta info and the toolbar to the topbar
-    topbar_wrapper.appendChild(meta_info_wrapper);
+    
+    topbar_wrapper.appendChild(meta_info_wrapper_img);
+
+
+
     topbar_wrapper.appendChild(toolbar_wrapper);
 
     //add topbar in the content wrapper
@@ -279,7 +287,7 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     //paste the comment text into the content wrapper
     content_wrapper.appendChild(comment_text);
     //paste picture wrapper in the comment wrapper
-    comment_wrapper.appendChild(picture_wrapper);
+    //comment_wrapper.appendChild(picture_wrapper);
     //paste content into the comment wrapper
     comment_wrapper.appendChild(content_wrapper);
 
@@ -323,15 +331,7 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
         displayMore(comment_text, see_more);
     };
 
-    //react button and functionality
-    //if thread nesting is below 3 then the commenters can comment on a nested comment this constraint is to combat endless nesting
-    if (comment.level < 3) {
-        var react_button = document.createElement("p");
-        react_button.classList.add("react_button", "option");
-        react_button.innerText = "React";
-        content_wrapper.appendChild(react_button);
-        react_button.addEventListener("click", function () { create_comment_input(comment_wrapper, "true", comment.id) });
-    }
+
     //see answers button and functionality
     var see_answers = document.createElement("p");
     see_answers.classList.add("see_answers", "option");
@@ -342,11 +342,22 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     //only display the "see more" button if a comment has children
     if (haschildren == true) {
         see_answers.style.display = "block";
+        see_answers.style.float = 'right';
+        see_answers.style.margin = '1%';
     }
     else {
         see_answers.style.display = "none";
     }
 
+        //react button and functionality
+    //if thread nesting is below 3 then the commenters can comment on a nested comment this constraint is to combat endless nesting
+    if (comment.level < 3) {
+        var react_button = document.createElement("p");
+        react_button.classList.add("react_button", "option");
+        react_button.innerText = "React";
+        content_wrapper.appendChild(react_button);
+        react_button.addEventListener("click", function () { create_comment_input(comment_wrapper, "true", comment.id) });
+    }
 }
 function editComment(see_more, comment_text, confirm, cancel, edit) {
     comment_text.toggleAttribute("contentEditable");

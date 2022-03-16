@@ -236,7 +236,7 @@ async function updateBP(authorids, bpid) {
             if (key.replace(/[0-9]/g, '') == 'author') {
                 let currentRefArray = value;
                 currentRefArray.push({ name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related: db.doc(domainstate + 'authors/' + authorid) });
-                db.collection(doelstring).doc(bpid).set({ '14author': currentRefArray }, { merge: true });
+                db.collection(doelstring).doc(bpid).set({ '13author': currentRefArray }, { merge: true });
             }
         }
     }
@@ -266,7 +266,7 @@ async function addBPs() {
         await db.collection(doelstring).add({
             '10title': Bp.Title,
             '11university': Bp.University,
-            '12image': '',
+            '12image': Bp.Image,
             '13author': [],
             '14date': Bp.Date,
             "15introduction": Bp.Introduction,
