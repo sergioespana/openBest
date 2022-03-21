@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     collapsible();
 });
 
-function startupComments(BPID) {
+async function startupComments(BPID) {
     //Set BPid to the BP id of the selected BP
     BPid = BPID;
     //get amount of comments for the toptext

@@ -25,6 +25,10 @@ var authoremails = []
 var domainemail = null
 //change the below url when deployed to: https://green-repo.web.app/bestpractices.html
 //or when locally run to 'http://localhost:5000/bestpractices.html'
+var starturl
+if (location.hostname === "localhost")
+  starturl ='http://localhost:5000/bestpractices.html'
+else{starturl = 'https://green-repo.web.app/bestpractices.html'}
 
 var lock = false
 
@@ -428,7 +432,6 @@ async function retrieveBPinfo(BPid) {
 
 // Retrieving info for the documents linked to this best practice
 async function retrieveDocInfo(docPath, docId, div) {
-    console.log('retrieveDocInfo')
     let bpOther = document.getElementById("bp-other-sections");
 
     // PART 1: displaying all text contents for this document

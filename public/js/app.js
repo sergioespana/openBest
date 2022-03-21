@@ -53,7 +53,6 @@ $(document).ready(function () {
             let accept = document.getElementById("accept-btn")
             let decline = document.getElementById("decline-btn");
 
-
             newusermodal.style.display = 'block';
             accept.onclick = function () {
               newusermodal.style.display = "none";
@@ -209,4 +208,16 @@ function findPath(array, filter) {
 function getcurrentDateTime() {
   var date = new Date();
   return (date.toUTCString());
+}
+
+async function awaitdomainJSON(){
+  if (typeof domainjson === "undefined"){
+         await delay();
+         awaitdomainJSON();
+      }
+  else{
+      return new Promise((resolve)=>{
+          resolve();})
+  }
+ 
 }

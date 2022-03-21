@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest_ = {
     //collection
-    "Greenoffice UU showcase": {
+    "testderp": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "Greenoffice UU (showcase environment)",
+            "name": "derp env (practicum environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -33,19 +33,25 @@ var jsontest_ = {
                     "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "10title": "string",
-                    "11university": "string",
-                    "12image": "string",
-                    "13author": [{
+                    "11question": "string",
+                    "12quote": "string",
+                    "13major dimension": "string",
+                    "14sub dimension": "string",
+                    "15date": "string",
+                    "16front image": "string",
+                    "17front image licence": "string",
+                    "18author": [{
                         "name": "Written by",
                         "self": "document reference",
                         "related": "document reference"
                     }],
-                    "14date": "string",
-                    "15introduction": "text",
-                    "16process": "text",
-                    "17outcome": "text",
-                    "18conclusion": "text",
-                    "19learnmore": "text",
+                    
+                    "19text": "text",
+                    "20figure one": "string",
+                    "21figure one caption": "string",
+                    "22figure two": "string",
+                    "23figure two caption": "string",
+                
 
                     //collection
                     "comments": {
@@ -111,6 +117,7 @@ var jsontest_ = {
     }
 };
 
+
 // Create a DB instance
 if (document.getElementById("create-instance-btn")) {
     document.getElementById("create-instance-btn").addEventListener("click", function () {
@@ -122,10 +129,111 @@ if (document.getElementById("create-instance-btn")) {
         //jsontest = JSONmodel;
         console.log(jsontest_);
         extractJSON(jsontest_, 0, '');
-        extractFields();
+        extractFields_();
+        writeModel();
 
     })
 };
+ 
+function extractFields_() {
+    // For every entry in fieldsArr (key-value pair in the JSON model), we want to get the key-value pairs and corresponding collection path
+    for (var x = 0; x < fieldsArr.length; x++) {
+        // All fields related to this collection 
+        var fields = Object.entries(fieldsArr[x]);
+        // Array of the remaining fields (non-nested objects)
+        var remaining = [];
+
+        // Document info to be written to DB
+        var docInfo = "";
+
+        // For every key-value pair
+        for (let [key, value] of fields) {
+            // We don't want nested objects
+            if (!(typeof value === 'object')) {
+                var fieldsObject = ("\"" + `${key}` + "\"" + ": " + "\"" + `${value}` + "\"");
+                remaining.push(fieldsObject);
+            }
+            // If the key-value pair indicates an array (which is an object type)
+            else if (Array.isArray(value)) {
+                // If this array stores a map object (docref)
+                if (typeof (value) == "object") {
+                    let arrObject = ("\"" + `${key}` + "\"" + ": " + `${JSON.stringify(value)}`);
+                    remaining.push(arrObject);
+                }
+                // Other arrays
+                else {
+                    let arrObject = ("\"" + `${key}` + "\"" + ": " + "[\"" + `${value}` + "\"]");
+                    remaining.push(arrObject);
+                }
+            }
+        }
+
+        // Creating the document set info
+        remaining.forEach(element => {
+            if (remaining[0] === element) {
+                docInfo += ("{" + element + ",");
+            }
+            else if (remaining[remaining.length - 1] === element) {
+                docInfo += (element + "}");
+            }
+            else {
+                docInfo += (element + ",");
+            }
+        });
+
+        var docPath = documentPaths[x];
+        // Passing the doc info and collection path to writeDB to instantiate
+        if (docPath) {
+            writeDB_(collectionPaths[x], docInfo, docPath);
+        }
+    }
+}
+
+// Writing to DB and then reloading the page
+function writeDB_(coll, doci, docp) {
+    let JSONinfo = JSON.parse(doci);
+    // Getting the name of the document related to the fields
+    let x = docp.split("/");
+    let docName = x[x.length - 1];
+
+    // Page refreshed after write to DB if the domain has not been instantiated before
+    writeCallback_(coll, docName, JSONinfo, function () {
+        if (domainInstantiated == false) {
+            location.reload();
+        }
+    })
+}
+
+// Please note that any manually changed data will be overwritten by what's specified in the JSON model
+async function writeCallback_(coll, docName, JSONinfo, callback) {
+    // Writing all documents to the database
+    // >> This info is later also used in create-bp to instantiate featured
+    // >> Info provided by user in create-bp will overwrite this info
+    
+    db.collection(coll).doc(docName).set(JSONinfo);
+    
+    let userPath = findPath(collectionPaths, 'user');
+    // Only writing this info when the domain hasn't been instantiated yet
+    if (domainInstantiated == false) {
+        db.collection(userPath).doc('d-user').set({ 'email': userEmail, 'name': userName, 'role': 'administrator' });
+    }
+    await delay();
+    callback();
+}
+
+function delay() {
+    return new Promise(resolve => setTimeout(resolve, 800));
+}
+
+async function writeModel() {
+    let domain = documentPaths[0].split("/")[0]
+    let domainstate = documentPaths[0].split("/")[1]
+    await db.collection(domain).doc(domainstate).update({
+        model: jsontest_
+    });
+}
+
+//
 
 // Instantiates the collectionPaths and documentPaths arrays
 function extractJSON(obj, int, prev) {
@@ -213,7 +321,6 @@ function extractFields() {
             writeDB(collectionPaths[x], docInfo, docPath);
         }
     }
-    writeModel()
 }
 
 // Writing to DB and then reloading the page
@@ -231,34 +338,21 @@ function writeDB(coll, doci, docp) {
     })
 }
 
-function delay() {
-    return new Promise(resolve => setTimeout(resolve, 800));
-}
-
 
 // Please note that any manually changed data will be overwritten by what's specified in the JSON model
 async function writeCallback(coll, docName, JSONinfo, callback) {
     // Writing all documents to the database
     // >> This info is later also used in create-bp to instantiate featured
     // >> Info provided by user in create-bp will overwrite this info
-    db.collection(coll).doc(docName).set(JSONinfo);
+
+    if (!(docName =='domainstate' || docName == 'activitylog' || docName == 'authordocument' || docName == 'commentdocument' || docName == 'ratingdocument' || docName == 'userdocument')){
+        db.collection(coll).doc(docName).set(JSONinfo);
+    }
     let userPath = findPath(collectionPaths, 'user');
     // Only writing this info when the domain hasn't been instantiated yet
     if (domainInstantiated == false) {
         db.collection(userPath).doc('d-user').set({ 'email': userEmail, 'name': userName, 'role': 'administrator' });
     }
-
     await delay();
     callback();
 }
-
-async function writeModel() {
-    let domain = documentPaths[0].split("/")[0]
-    let domainstate = documentPaths[0].split("/")[1]
-    await db.collection(domain).doc(domainstate).update({
-        model: jsontest_
-    });
-}
-
-
-

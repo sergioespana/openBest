@@ -923,16 +923,19 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
             JSONarray.forEach(element => {
                 if (JSONarray[0] === element) {
                     JSONstring += ("{" + element + ",");
+                   
                 }
                 else if (JSONarray[JSONarray.length - 1] === element) {
-                    JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + "}")
+                    JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + "}");
+                    
                 }
                 else {
-                    JSONstring += (element + ",");
+                    JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + ",");
+                  
                 }
             });
 
-
+            console.log(JSONstring);
             // STEP 4
             // Writing the best practice to the database
             db.collection(entryColPath).doc(entryDocName).set(JSON.parse(JSONstring));
@@ -1165,3 +1168,4 @@ span.onclick = function () {
     // Resetting the counter
     docRefCounter = 0;
 }
+

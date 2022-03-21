@@ -236,7 +236,7 @@ async function updateBP(authorids, bpid) {
             if (key.replace(/[0-9]/g, '') == 'author') {
                 let currentRefArray = value;
                 currentRefArray.push({ name: 'Written by', self: db.doc(domainstate + 'bestpractices/' + bpid), related: db.doc(domainstate + 'authors/' + authorid) });
-                db.collection(doelstring).doc(bpid).set({ '13author': currentRefArray }, { merge: true });
+                db.collection(doelstring).doc(bpid).set({ '14author': currentRefArray }, { merge: true });
             }
         }
     }
@@ -265,16 +265,23 @@ async function addBPs() {
 
         await db.collection(doelstring).add({
             '10title': Bp.Title,
-            '11university': Bp.University,
-            '12image': Bp.Image,
-            '13author': [],
-            '14date': Bp.Date,
-            "15introduction": Bp.Introduction,
-            "16process": Bp.Process,
-            "17outcome": Bp.Outcome,
-            "18conclusion": Bp.Conclusion,
-            "19learnmore": Bp.Learnmore,
+            '11question': Bp.Question,
+            '12quote': Bp.Quote,
+            '13major dimension': Bp['Major dimension'],
+            '14sub dimension': Bp['Sub dimension'],
+            '15date': Bp.Date,
+            '16front image': Bp['Front image'],
+            '17front image licence': Bp['Front image licence'],
+            '18author': [],
+            
+            "19text": Bp.Text,
+            "20figure one": Bp['Figure one'],
+            "21figure one caption": Bp['Figure one caption'],
+            "22figure two": Bp['Figure two'],
+            "23figure two caption": Bp['Figure two caption'],
             created: "true",
+
+
         }).then(docRef => {
             //Assign the relation between the bp and the author on the authors side
             for (authorid of authorids) {
@@ -335,3 +342,100 @@ function splitAuthorinfo(authorinfo) {
     let author = authorinfo.split("(")[0].replace(/\s+$/, '');
     return [author, email]
 }
+
+
+// 
+// 
+// async function addBPs() {
+//     let doelstring = domainstate + 'bestpractices' + '/';
+//     for (Bp of bestpractices) {
+//         console.log(Bp);
+//         let authors = Bp.Written.split(',');
+//         let authorids = [];
+//         for (author of authors) {
+//             let output = await (findAuthor(author));
+
+//             if (output != 'none found') {
+//                 authorids.push(output);
+//                 console.log('author found');
+//             }
+
+//             if (output == 'none found') {
+//                 let authorid = await (addAuthor(author));
+//                 authorids.push(authorid);
+//                 console.log('author added', authorid);
+//             }
+//         }
+
+//         await db.collection(doelstring).add({
+//             '10title': Bp.Title,
+//             '11university': Bp.University,
+//             '12image': '',
+//             '13author': [],
+//             '14date': Bp.Date,
+//             "15introduction": Bp.Introduction,
+//             "16process": Bp.Process,
+//             "17outcome": Bp.Outcome,
+//             "18conclusion": Bp.Conclusion,
+//             "19learnmore": Bp.Learnmore,
+//             created: "true",
+//         }).then(docRef => {
+//             //Assign the relation between the bp and the author on the authors side
+//             for (authorid of authorids) {
+//                 updateAuthor(authorid, docRef.id);
+//             }
+
+//             //Create standard BP subcollections
+//             let path = doelstring + docRef.id + '/';
+//             createCommentDocs(path);
+//             createRatingDocs(path);
+
+
+//             //Assign the relation between the bp and the author,theme and dimension on the bp side
+//             updateBP(authorids, docRef.id);
+
+//             console.log('BP is added under ID ', docRef.id);
+
+//         })
+//     }
+
+// }
+
+// async function createCommentDocs(path) {
+//     let data = {
+//         "displayfeature": false,
+//         "author": "string",
+//         "date": "string",
+//         "email": "string",
+//         "img": "string",
+//         "level": "int",
+//         "parent": "string",
+//         "text": "string"
+//     }
+//     await db.collection(path + 'comments').doc('commentdocument').set(data);
+// }
+
+// async function createRatingDocs(path) {
+//     let data = {
+//         "ratingtype": ["stars"],
+//         "dimension": ["Effort"],
+//         "dimensiondescription": ["Effort describes the effort required for applying the Best Practice"],
+//         "scale": [5],
+//         "stepsize": [1]
+//     }
+//     await db.collection(path + 'ratings').doc('ratingdocument').set(data);
+// }
+
+// function createspan(text) {
+//     span = document.createElement('span')
+//     span.innerText = text
+//     span.setAttribute('class', 'text')
+//     return span
+// }
+
+
+// function splitAuthorinfo(authorinfo) {
+//     let email = authorinfo.substring(authorinfo.indexOf("(") + 1, authorinfo.lastIndexOf(")"));
+//     let author = authorinfo.split("(")[0].replace(/\s+$/, '');
+//     return [author, email]
+// }
