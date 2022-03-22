@@ -49,5 +49,6 @@ function googleLogin() {
 
 // Log out
 function logOut() {
+  addactivity(userEmail, userRole ,'logout', 'domain' ,dName[0], getcurrentDateTime())
   firebase.auth().signOut();
 }

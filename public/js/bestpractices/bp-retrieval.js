@@ -57,9 +57,9 @@ function waitFordomainjson_retrieval() {
   if (typeof domainjson !== "undefined") {
     // First initialization of datatable before BPs are retrieved from database
     let columns = []
-    if (greenofficedomains.includes(dName[0])) { columns = ['Title', 'Date', 'University', 'Introduction', 'Process', 'Outcome', 'Conclusion'] }
-    if (oictdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Question', 'Quote', 'Major dimension', 'Sub dimension', 'Text'] }
-    else if (!(greenofficedomains.includes(dName[0]) || oictdomains.includes(dName[0]))){columns = ['Title', 'Date', 'Description']}
+    if (greenofficedomains.includes(dName[0])) { columns = ['Title', 'Date', 'University', 'Introduction', 'Process', 'Outcome', 'Conclusion'];}
+    if (oictdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Question', 'Quote', 'Major dimension', 'Sub dimension', 'Text'];}
+    else if (!(greenofficedomains.includes(dName[0]) || oictdomains.includes(dName[0]))){columns = ['Title', 'Date', 'Description'];}
 
     for ([i, col] of columns.entries()) {
       createth(col)

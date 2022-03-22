@@ -37,7 +37,7 @@ var urlParams = new URLSearchParams(queryString);
 //this is used to get the actual user
 auth.onAuthStateChanged(function (user) {
     if (user) {
-        currenteamail = user.email
+        currenteamail = user.email;
     }
 })
 
@@ -49,21 +49,21 @@ $(document).ready(async function () {
     var selectedbpid = urlParams.get('BPid')
     var qr = urlParams.get('QR')
     if (selectedbpid) {
-        if (qr) {
-            addactivity(userEmail, 'open by qr', selectedbpid, getcurrentDateTime());
-        }
-        else {
-            addactivity(userEmail, 'open by url', selectedbpid, getcurrentDateTime());
-        }
         await retrieveBPinfo(selectedbpid);
         modal.style.display = "block";
+
+        if (qr) {
+            addactivity(userEmail, userRole, 'open by qr', 'best practice',selectedbpid, getcurrentDateTime());
+        }
+        else {
+            addactivity(userEmail, userRole ,'open by url', 'best practice',selectedbpid, getcurrentDateTime());
+        }
         await startupComments(selectedbpid);
         for (let i = 0; i < (amountOfComments / 3); i++) {
             await delay();
         }
         await startupRatings(selectedbpid);
         storeID(selectedbpid);
-
     }
 })
 
@@ -81,10 +81,9 @@ async function tableClick(e) {
     await startupRatings(BPid);
     storeID(BPid);
     window.history.replaceState("", "", starturl + '?' + "BPid=" + BPid);
-    addactivity(userEmail, 'open', BPid, getcurrentDateTime())
+    addactivity(userEmail, userRole ,'open best practice', 'best practice', BPid, getcurrentDateTime())
     lock = false;
-}
-
+    }
 }
 
 async function retrieveBPinfo(BPid) {
@@ -422,7 +421,7 @@ async function retrieveBPinfo(BPid) {
 
     span.onclick = function () {
         closeModal();
-        addactivity(userEmail, 'close', bpid, getcurrentDateTime());
+        addactivity(userEmail, userRole ,'close best practice', 'best practice', bpid, getcurrentDateTime());
     }
     return new Promise((resolve)=>{
             resolve();
@@ -740,7 +739,7 @@ async function removeBP(BPid) {
     let path = findPath(collectionPaths, 'bestpractices') + '/';
     //delete BP itself
     await (db.collection(path).doc(BPid).delete());
-    addactivity(userEmail, 'remove', BPid, getcurrentDateTime())
+    addactivity(userEmail, userRole,'remove best practice', 'best practice',BPid, getcurrentDateTime())
 }
 
 

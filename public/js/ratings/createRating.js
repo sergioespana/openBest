@@ -138,7 +138,7 @@ function createRatingInput(root, BPid, list, individualratinglocation) {
 
     submitbutton.addEventListener("click", async function () {
         let ratings = collectrating(ratingdimensions)
-        addactivity(userEmail, 'make rating', BPid, getcurrentDateTime())
+        addactivity(userEmail, userRole ,'make rating', 'best practice',BPid, getcurrentDateTime())
         if (ratings.includes(null)) {
             alert("Please select a value for your rating before submitting your rating");
         }
@@ -430,6 +430,7 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
             // ask for confirmation that a user indeed wants to delete his comments
             if (confirm("Are you sure you want to delete this rating?") == true) {
                 removeRating(BP_id, ratingid, rating_wrapper);
+                addactivity(userEmail, userRole ,'remove rating','best practice',BPid, getcurrentDateTime());
             }
         });
     }

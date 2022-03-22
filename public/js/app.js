@@ -44,7 +44,6 @@ $(document).ready(function () {
       let usercard = document.getElementById("user-card");
       let admincard = document.getElementById("administrator-card");
       let admintext = document.getElementById("admin-text");
-
       checkUser(
         async function () {
           if (hasAcessed == "false") {
@@ -108,6 +107,7 @@ $(document).ready(function () {
               //  let menuItemToc = document.getElementById("menu-toc-item");
               menuItemBP.style.display = "inline";
               //  menuItemToc.style.display = "inline";
+    
             }
           }
           let developercard = document.getElementById("developer-card");
@@ -163,11 +163,12 @@ async function checkUser(callback) {
     //new authorization
     //if a user exists, get the path to the domain and retrieve the domain model string and replace the reference string with the model string. Hence overwriting the static model with a dynamic model fitting the users domain.
     if (userPath) {
-      dName = userPath.split("/");
-      let domain = userPath.split("/")[0]
-      let domainstate = userPath.split("/")[1]
-      let domainmodel = await db.collection(domain).doc(domainstate).get()
-      domainjson = domainmodel.data().model
+      dName = userPath.split("/");;
+      let domain = userPath.split("/")[0];
+      let domainstate = userPath.split("/")[1];
+      let domainmodel = await db.collection(domain).doc(domainstate).get();
+      domainjson = domainmodel.data().model;
+      addactivity(userEmail, userRole ,'Open page','page',window.location.pathname, getcurrentDateTime())
     }
     else {
       //user does not exist yet...
@@ -221,3 +222,5 @@ async function awaitdomainJSON(){
   }
  
 }
+
+

@@ -37,12 +37,14 @@ if (userbtn) {
     }
 }
 
+// check if form is complete and if so add user.
+// add author iff the administrator selected make author also
 document.getElementById("store-user-btn").addEventListener("click", async function () {
-    let values = [emailspan.value, namespan.value, rolespan.value]
+    let values = [emailspan.value.toLowerCase(), namespan.value, rolespan.value]
     if (values.includes('')) { alert('Please fill in all fields') }
     else {
         addUser()
-        if (choicespan == "affirmative") {
+        if (choicespan.value == "affirmative") {
             addauthor_()
         }
 
@@ -54,34 +56,56 @@ userspan.onclick = function () {
     usermodal.style.display = "none";
 }
 
-function addUser() {
+// function for adding a user
+async function addUser() {
     extractJSON(domainjson, 0, '');
-    userpath = findPath(collectionPaths, 'users') + '/'
-    console.log(userpath)
-    db.collection(userpath).add({
-        email: emailspan.value,
-        name: namespan.value,
-        role: rolespan.value,
-        hasaccessed: 'false'
-    }).then(
-        console.log('user posted'),
-        alert('User added'),
-        addactivity(userEmail, 'added user', 'noBP involved', getcurrentDateTime())
-    )
+    userpath = findPath(collectionPaths, 'users') + '/';
+    //check if there is already an account for this user
+    await db.collection(userpath).where('email', '==', emailspan.value.toLowerCase()).get().then(snapshot => {
+        amt = snapshot.size;
+    })
+    // if no account exists, create one
+    if (amt == 0) {
+        db.collection(userpath).add({
+            email: emailspan.value.toLowerCase(),
+            name: namespan.value,
+            role: rolespan.value,
+            hasaccessed: 'false'
+        }).then(
+            alert('User added'),
+            addactivity(userEmail, userRole, 'add user', 'user', 'not recorded', getcurrentDateTime())
+        )
+    }
+    // else show that there is already an account for this user
+    else {
+        alert('There is already a user associated with that emailadress');
+    }
 }
 
-function addauthor_() {
+// function for adding an author
+async function addauthor_() {
     extractJSON(domainjson, 0, '');
-    authorpath = findPath(collectionPaths, 'authors') + '/'
-    db.collection(authorpath).add({
-        email: emailspan.value,
-        name: namespan.value,
-        relationship: []
-    }).then(
-        console.log('author posted'),
-        alert('Author added'),
-        addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
-    )
+    authorpath = findPath(collectionPaths, 'authors') + '/';
+    //check if there is already an account for this user
+    await db.collection(authorpath).where('email', '==', emailspan.value.toLowerCase()).get().then(snapshot => {
+        amt = snapshot.size;
+    })
+    // if no account exists, create one
+    if (amt == 0) {
+        db.collection(authorpath).add({
+            email: emailspan.value.toLowerCase(),
+            name: namespan.value,
+            relationship: []
+        }).then(
+            console.log('author posted'),
+            alert('Author added'),
+            addactivity(userEmail, userRole, 'add author', 'author', 'not recorded', getcurrentDateTime())
+        )
+    }
+    // else show that there is already an account for this user
+    else {
+        alert('There is already an author associated with that emailadress');
+    }
 }
 
 

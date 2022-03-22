@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest_ = {
     //collection
-    "testderp": {
+    "OICT": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "derp env (practicum environment)",
+            "name": "OICT (practicum environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -108,9 +108,11 @@ var jsontest_ = {
                 "activitylog": {
                     "1displayfeature": false,
                     "2user": "string",
-                    "3action": "boolean",
-                    "4bpid": "string",
-                    "5date": "string"
+                    "3userrole": "string",
+                    "4action": "string",
+                    "5entitytype": "string",
+                    "6entityid": "string",
+                    "7date": "string"
                 }
             },
         }
@@ -126,7 +128,9 @@ if (document.getElementById("create-instance-btn")) {
         collectionPaths = [];
         documentPaths = [];
         // remove this after dev
-        //jsontest = JSONmodel;
+        if (JSONmodel){
+        jsontest_ = JSONmodel;
+        }
         console.log(jsontest_);
         extractJSON(jsontest_, 0, '');
         extractFields_();

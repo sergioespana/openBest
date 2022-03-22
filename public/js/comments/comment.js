@@ -143,7 +143,7 @@ function masterCancel(buttonbar, text) {
 }
 function masterSubmit(buttonbar, text) {
     var message = text.innerText;
-    addactivity(userEmail, 'make top comment', BPid, getcurrentDateTime())
+    addactivity(userEmail, userRole ,'make top comment','best practice',BPid, getcurrentDateTime())
     if (message.length >= 1) {
         masterCancel(buttonbar, text);
         let comment = new Object;
@@ -395,6 +395,7 @@ function confirmEditing(cancel_edit, confirm_edit, comment_text, text, BPid, mes
     if (text != comment_text.innerText) {
         //function to write changes to the db
         editCommentDB(comment_text.innerText, BPid, messageid);
+        addactivity(userEmail, userRole ,'edit comment','best practice',BPid, getcurrentDateTime())
     }
     edit.classList.remove("selected");
 }
@@ -413,6 +414,7 @@ function cancelEditing(cancel_edit, confirm_edit, see_more, comment_text, text, 
     //make the comment not editable
     comment_text.toggleAttribute("contentEditable");
     edit.classList.remove("selected");
+    addactivity(userEmail, userRole ,'cancel edit comment','best practice',BPid, getcurrentDateTime())
 }
 // function changeflag(element) {
 //     element.classList.toggle("far");
@@ -464,6 +466,7 @@ function getallChildren(level, commentid, see_answers, amountofchildren, reason)
 
 function removeallChildren(level, commentid, BP_id) {
     removeComment(commentid, BP_id, document.getElementById(commentid));
+    addactivity(userEmail, userRole,'remove comment', 'best practice',BPid, getcurrentDateTime())
     for (item of getLevelList(level + 1)) {
         if (item.parent == commentid) {
             getLevelList(level + 1).splice(item, item);
@@ -473,7 +476,7 @@ function removeallChildren(level, commentid, BP_id) {
 }
 function subSubmit(text, parentelem, commentid) {
     var message = text.innerText;
-    addactivity(userEmail, 'make sub comment', BPid, getcurrentDateTime())
+    addactivity(userEmail, userRole,'make sub comment', 'best practice',BPid, getcurrentDateTime())
     if (message.length >= 1) {
         subCancel(text, parentelem);
         let comment = new Object;

@@ -43,7 +43,7 @@ cancel_BP_edit.style.marginRight = '15px';
 cancel_BP_edit.addEventListener("click", function () {
 
     cancelBPEditing()
-    addactivity(userEmail, 'cancel edit', bpid, getcurrentDateTime())
+    addactivity(userEmail, userRole, 'edit best practice', 'best practice', bpid, getcurrentDateTime())
 
 });
 anchor2.appendChild(cancel_BP_edit);
@@ -144,7 +144,7 @@ function confirmBPEditing() {
         $('#dataTable').DataTable();
         initTable();
         alert('The BP has been updated');
-        addactivity(userEmail, 'edit', bpid, getcurrentDateTime())
+        addactivity(userEmail, userRole, 'edit best practice', 'best practice', bpid, getcurrentDateTime())
     }
 }
 

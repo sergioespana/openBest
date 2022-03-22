@@ -30,8 +30,7 @@ if (authorbtn) {
 }
 
 document.getElementById("store-author-btn").addEventListener("click", function () {
-    let values = [authoremailspan.value, authornamespan.value]
-    if (values.includes('')) { alert('Please fill in all fields') }
+    if (authornamespan.value == '') { alert('Please fill in an authorname'); }
     else (addauthor())
 })
 
@@ -40,18 +39,26 @@ authorspan.onclick = function () {
     authormodal.style.display = "none";
 }
 
-function addauthor() {
+async function addauthor() {
     extractJSON(domainjson, 0, '');
     authorpath = findPath(collectionPaths, 'authors') + '/'
+    await db.collection(authorpath).where('email','==', emailspan.value.toLowerCase()).get().then(snapshot => {
+        amt = snapshot.size;
+     })
+    
+    if (amt == 0){
     db.collection(authorpath).add({
-        email: authoremailspan.value,
+        email: authoremailspan.value.toLowerCase(),
         name: authornamespan.value,
         relationship: []
-    }).then(
-        console.log('author posted'),
-        alert('Author added'),
-        addactivity(userEmail, 'added author', 'noBP involved', getcurrentDateTime())
-    )
+    }).then(function(){
+        console.log('author posted');
+        alert('Author added');
+        addactivity(userEmail, userRole, 'add author', 'author', 'not recorded', getcurrentDateTime());
+    })}
+    else{
+        alert('There is already an author associated with that emailadress');
+    }
 }
 
 

@@ -437,16 +437,16 @@
               <form id="user-entry-form">
                 <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
                   <br>
-                  <label>Name of the user</label>
+                  <label>Name of the user *</label>
                   <input required id="input-user-name" class="form-control bg-light border-0 small" type="value"
                     placeholder="Username"></input>
                   <br>
-                  <label>Email of the user</label>
+                  <label>Email of the user *</label>
                   <input required id="input-user-email" class="form-control bg-light border-0 small" type="value"
                     placeholder="example@gmail.com"></input>
                   <br>
 
-                  <label for="role">Role of the user:</label>
+                  <label for="role">Role of the user: *</label>
                   <select required name="role" id="role" class="form-control bg-light border-0 small">
                     <option value="user">user</option>
                     <option value="administrator">administrator</option>
@@ -505,13 +505,13 @@
               <form id="author-entry-form">
                 <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
                   <br>
-                  <label>Name of the user</label>
+                  <label>Name of the author *</label>
                   <input required id="input-author-name" class="form-control bg-light border-0 small" type="value"
                     placeholder="Username"></input>
                   <br>
-                  <label>Email of the user</label>
-                  <input required id="input-author-email" class="form-control bg-light border-0 small" type="value"
-                    placeholder="example@gmail.com"></input>
+                  <label>Email of the author</label>
+                  <p>Not required but please fill in to be able to link an author to a user. This allows the author to edit the Best Practice</p>
+                  <input required id="input-author-email" class="form-control bg-light border-0 small" type="value" placeholder="example@gmail.com"></input>
                 </div>
               </form>
 
@@ -641,9 +641,6 @@
         </div>
       </div>
     </div>
-
-
-   
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

@@ -204,8 +204,9 @@ async function addAuthor(authorinfo) {
 
 async function findAuthor(authorname) {
     let doelstring = domainstate + 'authors' + '/';
+    let name = splitAuthorinfo(authorname)[0]
     let author = null;
-    await db.collection(doelstring).where("name", '==', authorname).get().then(docRef => {
+    await db.collection(doelstring).where("name", '==', name).get().then(docRef => {
         if (docRef.docs.length >= 1) {
             author = docRef.docs[0].id;
         }
@@ -223,8 +224,7 @@ async function updateAuthor(authorid, bpid) {
             name: 'Written by',
             related: db.doc(domainstate + 'bestpractices/' + bpid),
             self: db.doc(domainstate + 'authors/' + authorid)
-        }
-        ]
+        }]
     });
 }
 
@@ -273,7 +273,6 @@ async function addBPs() {
             '16front image': Bp['Front image'],
             '17front image licence': Bp['Front image licence'],
             '18author': [],
-            
             "19text": Bp.Text,
             "20figure one": Bp['Figure one'],
             "21figure one caption": Bp['Figure one caption'],
@@ -344,8 +343,8 @@ function splitAuthorinfo(authorinfo) {
 }
 
 
-// 
-// 
+//
+//
 // async function addBPs() {
 //     let doelstring = domainstate + 'bestpractices' + '/';
 //     for (Bp of bestpractices) {

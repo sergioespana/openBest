@@ -5,18 +5,20 @@
 var db = firebase.firestore();
 let activityloc
 
-async function addactivity(useremail, action, bpid, date) {
+async function addactivity(useremail, userrole ,action, entitytype, entityid, date) {
     extractJSON(domainjson, 0, '');
 
     activityloc = await findPath(collectionPaths, 'activitylogs') + '/'
     await db.collection(activityloc).add({
         "2user": useremail,
-        "3action": action,
-        "4bpid": bpid,
-        "5date": date,
+        "3userrole": userrole,
+        "4action": action,
+        "5entitytype": entitytype,
+        "6entityid": entityid,
+        "7date": date,
 
     }).then(docRef => {
-        console.log('activity logged', useremail, action, bpid, date);
+        console.log('activity logged', useremail, userrole, action, entitytype, entityid, date);
     })
 }
 
@@ -44,16 +46,20 @@ async function CreateExcel() {
     let csvString = "data:text/csv;charset=utf-8," + [
         [
             "user",
+            "userrole",
             "action",
-            "bpid",
+            "entitytype",
+            "entityid",
             "day",
             "date"
         ],
         ...rows.map(item => [
             item["2user"],
-            item["3action"],
-            item["4bpid"],
-            item["5date"]
+            item["3userrole"],
+            item["4action"],
+            item["5entitytype"],
+            item["6entityid"],
+            item["7date"]
         ])
     ]
         .map(e => e.join(","))

@@ -1136,12 +1136,20 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
     modal.style.display = "none";
     // Resetting the counter
     docRefCounter = 0;
-    addactivity(userEmail, 'created', entryDocName, getcurrentDateTime())
+    addactivity(userEmail, userRole,'create best practice','best practice',entryDocName, getcurrentDateTime())
 });
 
 
+window.addEventListener('beforeunload',(event) =>{
+    if (modal.style.display != "none"){
+    closemodal();
+    }
+});
+
 // Closing the modal
-span.onclick = function () {
+span.onclick = function (){closemodal()}
+
+function closemodal () {
     modal.style.display = "none";
 
     let x = span.getAttribute('id');
