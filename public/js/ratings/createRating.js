@@ -213,7 +213,8 @@ async function getratings(BPid) {
             rating_email = doc.data().email;
             rating_id = doc.id;
             text = doc.data().ratingtext;
-            ratinglist.push([rating_author, rating_date, rating_score, rating_img, rating_email, rating_id, text]);
+            postdate = doc.data().date;
+            ratinglist.push([rating_author, rating_date, rating_score, rating_img, rating_email, rating_id, text,postdate]);
         }
         // get rating information on the dimensions
         else {
@@ -225,6 +226,13 @@ async function getratings(BPid) {
             ratinginfo.push([rating_type, rating_dimensions, rating_scale, rating_stepsize, rating_dimensions_descr]);
         }
     })
+
+    ratinglist = ratinglist.sort(function(a, b) {
+        let aDate = new Date(a[7]);
+        let bDate = new Date(b[7]);
+        return aDate - bDate;
+      });
+ 
     return [ratinglist, ratinginfo[0]];
 }
 //function for creating ther fitting aggregation per dimension (links to ratingaggregationswitch)

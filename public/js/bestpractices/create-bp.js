@@ -92,28 +92,21 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
 
                         //Iterating over the key-value pairs of the documents in which features should be displayed
                         for (let [key, value] of docdata) {
-
-
-
                             // Before features are instantiated, we need to be able to populate docref dropdowns
                             if (typeof (value[0]) == "object") {
 
                                 let keyText = key.replace(/[0-9]/g, '');
                                 // keyText (e.g. authors) is used to find the path to the subcollection that requires a docref
                                 // This requires the subcollection that is pointed to with the docref to have the same name as the key
-                                // E.g. if 4author is a document reference, the document should be stored in a subcollection named author or authors
+                                // E.g. if author is a document reference, the document should be stored in a subcollection named author or authors
                                 let docrefPath = findPath(collectionPaths, keyText);
 
                                 // Getting the docrefArray based on the path to the referenced subcollection
                                 // Await the result of the async getDocRef function; otherwise there might be no data in docrefPath
                                 docrefArray = await getDocRef(docrefPath);
                             }
-
-
                             // Calling instantiateFeatures with the docrefArray that corresponds to the current key
-                            instantiateFeatures(key, value, coll, doc, docrefArray);
-
-
+                            instantiateFeatures(key, value, coll, doc, docrefArray.sort());
                         }
                     })
                 })
@@ -160,7 +153,7 @@ async function getDocRef(drp) {
             docrefArray.push(docData);
         }
     }
-    return docrefArray;
+    return docrefArray.sort();
 }
 
 // This function will return a unique array of every element that is already present in the DB for a given key.
@@ -185,10 +178,6 @@ const unique = (value, index, self) => {
 
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray) {
-
-    // if (key == '2ratingtype') {
-    //     ratingType = value[0];
-    // }
 
     // Adding a div for each NEW concept by checking the collectionpath
     if (check != coll) {

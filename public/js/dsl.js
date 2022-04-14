@@ -437,7 +437,8 @@ document.getElementById("dsl-create").addEventListener("click", async function (
             \"1displayfeature\": false,\
             \"2email\": \"string\",\
             \"3name\": \"string\",\
-            \"4role\": \"string\"\
+            \"4role\": \"string\",\
+            \"5hasaccesed\":\"string\"\
         \}\
     \},\
     \"authors\": \{\

@@ -36,9 +36,10 @@ var alreadyeffortFrame;
 //in practice this proved to be untrue so varying versions where required to have sufficient detail in the table without plainly showing all columns which is also not wishable
 //because we dont want to show fields like image etc. in the column. like this there are more. Proper generalization should be pursued or return to the basis.
 //for the case studies a tailored version is preferred.
-var greenofficedomains = ['Greenoffice UU showcase', 'Generic domain', 'Generic other domain']
-var oictdomains = ['OICT']
-
+var greenofficedomains = ['Greenoffice UU showcase', 'Generic domain', 'Generic other domain'];
+var oictdomains = ['OICT','OICT showcase'];
+//oict is intern
+//oict showcase is the showcase domain based on the oict template
 const unique = (value, index, self) => {
   return self.indexOf(value) === index;
 };
@@ -58,7 +59,7 @@ function waitFordomainjson_retrieval() {
     // First initialization of datatable before BPs are retrieved from database
     let columns = []
     if (greenofficedomains.includes(dName[0])) { columns = ['Title', 'Date', 'University', 'Introduction', 'Process', 'Outcome', 'Conclusion'];}
-    if (oictdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Question', 'Quote', 'Major dimension', 'Sub dimension', 'Text'];}
+    if (oictdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Major dimension', 'Sub dimension','Question', 'Quote', 'Text'];}
     else if (!(greenofficedomains.includes(dName[0]) || oictdomains.includes(dName[0]))){columns = ['Title', 'Date', 'Description'];}
 
     for ([i, col] of columns.entries()) {
@@ -141,7 +142,7 @@ async function initTable() {
             }
             )
           },
-
+          "autoWidth": true,
           //
           //Custom filter assignment this can be used as basis for defining custom column based filters, this is now taken over by the custom search builder plugin
           //
@@ -457,10 +458,10 @@ async function getDocData(callback) {
           let docdata = [
             `${doc.data()[Object.keys(doc.data())[title]]}`,
             `${doc.data()[Object.keys(doc.data())[date]]}`,
-            `${doc.data()[Object.keys(doc.data())[question]]}`,
-            `${doc.data()[Object.keys(doc.data())[quote]]}`,
             `${doc.data()[Object.keys(doc.data())[major]]}`,
             `${doc.data()[Object.keys(doc.data())[sub]]}`,
+            `${doc.data()[Object.keys(doc.data())[question]]}`,
+            `${doc.data()[Object.keys(doc.data())[quote]]}`,
             `${doc.data()[Object.keys(doc.data())[text]].substring(0, 150) + '.....'}`
           ];
 

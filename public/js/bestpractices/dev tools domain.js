@@ -320,8 +320,8 @@ async function createCommentDocs(path) {
 async function createRatingDocs(path) {
     let data = {
         "ratingtype": ["stars"],
-        "dimension": ["Effort"],
-        "dimensiondescription": ["Effort describes the effort required for applying the Best Practice"],
+        "dimension": ["Overall"],
+        "dimensiondescription": ["Overall describes the overall qualities of the Best Practice"],
         "scale": [5],
         "stepsize": [1]
     }
@@ -329,9 +329,9 @@ async function createRatingDocs(path) {
 }
 
 function createspan(text) {
-    span = document.createElement('span')
-    span.innerText = text
-    span.setAttribute('class', 'text')
+    span = document.createElement('span');
+    span.innerText = text;
+    span.setAttribute('class', 'text');
     return span
 }
 

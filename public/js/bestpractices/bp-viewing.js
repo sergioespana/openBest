@@ -332,12 +332,13 @@ async function retrieveBPinfo(BPid) {
             }
 
             let captions = ['front image licence']
-            if (captions.includes(key.replace(/[ˆ0-9]+/g, ''))) {
-                let fig = document.getElementById('topfigure')
-                let figcap = document.createElement('figcaption')
-                figcap.innerText = 'Licence: ' + value
-                fig.appendChild(figcap)
-
+            if (captions.includes(key.replace(/[ˆ0-9]+/g, '')) ) {
+                let fig = document.getElementById('topfigure');
+                if (fig){
+                let figcap = document.createElement('figcaption');
+                figcap.innerText = 'Licence: ' + value;
+                fig.appendChild(figcap);
+                }
             }
 
             else if (key.replace(/[ˆ0-9]+/g, '') == 'audience') {
@@ -518,18 +519,16 @@ async function retrieveDocInfo(docPath, docId, div) {
                             else if (keyText == 'figure two caption'){
                               fig =  document.getElementById('topfigure figure two');
                             }
-
-                       
-
+                        if (fig){
                         let figcap = document.createElement('figcaption');
                         figcap.innerText = value;
                         fig.appendChild(figcap);
-
                         listofContainers.push({
                             "name": key,
                             "container": figcap,
                             "content": value
                         })
+                    }
                         }
                     }
                     else{

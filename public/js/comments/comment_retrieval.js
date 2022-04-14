@@ -11,6 +11,11 @@ async function fetchComments(Bpid) {
     caller();
 }
 
+function toTimeStamp(dateString){
+    return new Date(dateString.split('-').reverse().join('/')).getTime()
+
+}
+
 //function for collecting the comments from the database
 async function getComments(BPid) {
     let commentlist = [];
@@ -19,13 +24,13 @@ async function getComments(BPid) {
     let doelstring = startstring.concat(BPid, endstring);
     let now = getcurrentDateTime();
     // Getting a reference to all documents in the comment sub-collection for a best practice
-    let bpCom = await db.collection(doelstring).orderBy("date").get();
-    // Each document that matches the query is cycled through 
+    let bpCom = await db.collection(doelstring).get();
     for (doc of bpCom.docs) {
         // for every comment get the relevant info
         let comment     = new Object();
         comment.author  = doc.data().author;
         comment.date    = getTimeDifference(now, doc.data().date);
+        comment.postdate = doc.data().date;
         comment.text    = doc.data().text;
         comment.img     = doc.data().img;
         comment.id      = doc.id;
@@ -36,7 +41,15 @@ async function getComments(BPid) {
         comment.isSame  = isSame(comment.email);
         commentlist.push(comment);
     }
-    return commentlist;
+    
+    
+    commentlist = commentlist.sort(function(a, b) {
+        let aDate = new Date(a.postdate);
+        let bDate = new Date(b.postdate);
+        return aDate - bDate;
+      });
+ 
+    return commentlist; 
 }
 
 // splits the list gotten from the database into levels so that not the complete list schould be gone over looking for childs of a comment on a certain level

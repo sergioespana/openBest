@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest_ = {
     //collection
-    "OICT": {
+    "OICT showcase": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "OICT (practicum environment)",
+            "name": "OICT (showcase environment)",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -30,7 +30,7 @@ var jsontest_ = {
                 "bpdocument": {
                     //fields
                     "01grouptitle": "Best practice",
-                    "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
+                    "02groupdesc": "Fill in the Best Practice related fields below",
                     "1displayfeature": true,
                     "10title": "string",
                     "11question": "string",
