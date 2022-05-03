@@ -89,13 +89,6 @@
           <span>Practices</span></a>
       </li>
 
-      <!-- Nav Item - ToC
-      <li id="menu-toc-item" class="nav-item">
-        <a class="nav-link" href="toc.html">
-          <i class="fas fa-ruler-combined"></i>
-          <span>ToC</span></a>
-      </li> -->
-
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -150,7 +143,7 @@
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1>Welcome</h1>
+            <h3>Welcome</h3>
           </div>
 
           <div id="research-card" style="width: fit-content;" class="col-lg-12 mb-4">
@@ -164,6 +157,39 @@
           <p>
             Welcome to the OpenBest platform. Please refer to the actions for your role below.
           </p>
+
+        <div id="applycard"  style="display: none;" class="row userCards">    
+        <div   class="col-lg-6 mb-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="text-success font-weight-bold text-uppercase">Apply here to enter the RCIS domain!</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="text-center">
+                    <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;"
+                      src="resources/images/logoRCIS2022_t.png" alt="">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <p>You are currently not linked to any domains. Using the button below you can register to access the RCIS conference domain! <br> For this your name and email adress associated with your Google account is used</p>
+                  <a style="display: block" id="add-user-btn2" class="btn btn-light btn-icon-split">
+                    <span class="text">Click me to register!</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+          
+
+
+       
+
+
+       
           <div class="row userCards">
             <div id="user-card" class="col-lg-6 mb-4">
               <div class="card shadow mb-4">
@@ -215,13 +241,16 @@
                       </a>
                       <a style="margin-top: 10px; display: block" id="add-author-btn"
                         class="btn btn-light btn-icon-split">
-                        <span class="text">Add Author</span>
+                        <span class="text">Add author</span>
                       </a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+
+         
 
             <div id="administrator-card" class="col-lg-6 mb-4">
               <div class="card shadow mb-4">
@@ -440,13 +469,13 @@
 
               <hr>
               <form id="user-entry-form">
-                <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
+                <div style="padding-left: 20px; padding-right: 20px; margin-bottom: 15px;">
                   <br>
-                  <label>Name of the user *</label>
+                  <label>Name of the user: *</label>
                   <input required id="input-user-name" class="form-control bg-light border-0 small" type="value"
                     placeholder="Username"></input>
                   <br>
-                  <label>Email of the user *</label>
+                  <label>Email of the user: *</label>
                   <input required id="input-user-email" class="form-control bg-light border-0 small" type="value"
                     placeholder="example@gmail.com"></input>
                   <br>
@@ -457,7 +486,7 @@
                     <option value="administrator">administrator</option>
                   </select>
 
-                  <label for="makeauthor">Also make an Author account for this user?</label>
+                  <label for="makeauthor">Also make an author account for this user?</label>
                   <select required name="makeauthor" id="makeauthor" class="form-control bg-light border-0 small">
                     <option value="negative">no</option>
                     <option value="affirmative">yes</option>
@@ -469,7 +498,7 @@
                 <span class="icon text-gray-600">
                   <i class="fas fa-arrow-right"></i>
                 </span>
-                <span class="text">Store User</span>
+                <span class="text">Store user</span>
               </a>
             </div>
           </div>
@@ -508,13 +537,13 @@
 
               <hr>
               <form id="author-entry-form">
-                <div style="padding: 20px; margin-top: 15px; margin-bottom: 15px;">
+                <div style="padding-left: 20px; padding-right: 20px; margin-bottom: 15px;">
                   <br>
-                  <label>Name of the author *</label>
+                  <label>Name of the author: *</label>
                   <input required id="input-author-name" class="form-control bg-light border-0 small" type="value"
                     placeholder="Username"></input>
                   <br>
-                  <label>Email of the author</label>
+                  <label>Email of the author:</label>
                   <p>Not required but please fill in to be able to link an author to a user. This allows the author to edit the Best Practice</p>
                   <input required id="input-author-email" class="form-control bg-light border-0 small" type="value" placeholder="example@gmail.com"></input>
                 </div>
@@ -524,7 +553,7 @@
                 <span class="icon text-gray-600">
                   <i class="fas fa-arrow-right"></i>
                 </span>
-                <span class="text">Store Author</span>
+                <span class="text">Store author</span>
               </a>
             </div>
           </div>
@@ -619,8 +648,6 @@
                 <div class="new-concept">
                   <!-- HTML for adding new concepts is added here -->
                 </div>
-
-
                 <hr>
 
                 <a style="margin-top: 20px; display: inline-block" id="add-concept"
@@ -681,6 +708,8 @@
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+
+    <script src="js/AddUserByButton.js"></script>
 </body>
 
 </html>

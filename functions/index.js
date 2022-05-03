@@ -3,13 +3,13 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-exports.getSubCollections = functions.https.onCall(async (data, context) => {
+// exports.getSubCollections = functions.https.onCall(async (data, context) => {
 
-    const docPath = data.docPath;
+//     const docPath = data.docPath;
 
-    const collections = await admin.firestore().doc(docPath).listCollections();
-    const collectionIds = collections.map(col => col.id);
+//     const collections = await admin.firestore().doc(docPath).listCollections();
+//     const collectionIds = collections.map(col => col.id);
 
-    return { collections: collectionIds };
+//     return { collections: collectionIds };
 
-});
+// });

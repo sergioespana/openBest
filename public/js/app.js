@@ -1,10 +1,9 @@
 // ########################
 // General script for the tool
 // ########################
-
 // Create firestore (database) object
 var db = firebase.firestore();
-
+// Add your name here developer!
 var administrators = ['stefanvanderpijl@gmail.com']
 
 // userEmail is used to match the email of the current user to the database of users
@@ -120,8 +119,12 @@ $(document).ready(function () {
           if (!(dName)) {
             domainInstantiated = false;
             if (admincard || admintext) {
-              admincard.style.display = "inline-block";
-              admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
+
+              applycard.style.display = "inline-block";
+              document.getElementById("domain-name").innerText = 'openBest (no Domain)'
+              // The below has only been disabled to remove the option for serendipitous users, be sure to enable when you need the model editor for programming efforts
+              //admincard.style.display = "inline-block";
+              //admintext.textContent = "You are currently not assigned to any domain. Create a domain here.";
             }
 
 

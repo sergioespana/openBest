@@ -38,6 +38,7 @@ var alreadyeffortFrame;
 //for the case studies a tailored version is preferred.
 var greenofficedomains = ['Greenoffice UU showcase', 'Generic domain', 'Generic other domain'];
 var oictdomains = ['OICT','OICT showcase'];
+var RCISdomains = ['RCIS']
 //oict is intern
 //oict showcase is the showcase domain based on the oict template
 const unique = (value, index, self) => {
@@ -60,6 +61,7 @@ function waitFordomainjson_retrieval() {
     let columns = []
     if (greenofficedomains.includes(dName[0])) { columns = ['Title', 'Date', 'University', 'Introduction', 'Process', 'Outcome', 'Conclusion'];}
     if (oictdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Major dimension', 'Sub dimension','Question', 'Quote', 'Text'];}
+    if (RCISdomains.includes(dName[0])) { columns = ['Title', 'Date', 'Major dimension', 'Sub dimension','Question', 'Description'];}
     else if (!(greenofficedomains.includes(dName[0]) || oictdomains.includes(dName[0]))){columns = ['Title', 'Date', 'Description'];}
 
     for ([i, col] of columns.entries()) {
@@ -469,7 +471,62 @@ async function getDocData(callback) {
           data.push(docdata);
         }
 
-        else if (!oictdomains.includes(dName[0]) && !greenofficedomains.includes(dName[0])) {
+        if (RCISdomains.includes(dName[0])) {
+          console.log('RCISdomain')
+          for (let x = 0; x < keyArray.length; x++) {
+            // The index of the title, description and date keys is pushed to indexArr
+            // Using splice ensures that title is pushed to index 0, description to index 4, etc
+            //Keep in mind that this order should resemble the models numerical order.
+
+            if (keyArray[x] == '"title"') {
+              indexArr.splice(0, 0, x);
+            }
+            else if (keyArray[x] == '"question"') {
+              indexArr.splice(1, 0, x);
+            }
+
+            else if (keyArray[x] == '"major dimension"') {
+              indexArr.splice(2, 0, x);
+            }
+            else if (keyArray[x] == '"sub dimension"') {
+              indexArr.splice(3, 0, x);
+            }
+            else if (keyArray[x] == '"date"') {
+              indexArr.splice(4, 0, x);
+            }
+            else if (keyArray[x] == '"description"') {
+              indexArr.splice(5, 0, x);
+            }
+          }
+
+          // indexArr at index 0 stores the index of the title key in the original keyArr
+          // the order below determines the column order of the table
+
+          title = indexArr[0];
+          date = indexArr[4];
+          question = indexArr[1];
+          major = indexArr[2];
+          sub = indexArr[3];
+          description = indexArr[5];
+
+          //ORDERING OF THE TABLE COLUMNS
+          // Getting the title, description and date for the documents
+          let docdata = [
+            `${doc.data()[Object.keys(doc.data())[title]]}`,
+            `${doc.data()[Object.keys(doc.data())[date]]}`,
+            `${doc.data()[Object.keys(doc.data())[major]]}`,
+            `${doc.data()[Object.keys(doc.data())[sub]]}`,
+            `${doc.data()[Object.keys(doc.data())[question]]}`,
+            `${doc.data()[Object.keys(doc.data())[description]].substring(0, 150) + '.....'}`
+          ];
+
+          // Pushing docdata to data array to populate the table
+          data.push(docdata);
+        }
+
+
+
+        else if (!oictdomains.includes(dName[0]) && !greenofficedomains.includes(dName[0]) && !RCISdomains.includes(dName[0])) {
           //this was the original abstraction. all domains where believed to at least feature a title, date and description. So refer back to this if needed.
           console.log('other domain type')
           for (let x = 0; x < keyArray.length; x++) {
@@ -593,6 +650,7 @@ function createRef(i, header) {
   let toggle = document.createElement('a');
   toggle.setAttribute('class', 'toggle-vis');
   toggle.setAttribute('data-column', i);
+  toggle.style.cursor = "pointer";
   toggle.innerHTML = header + '-';
   refloc.append(toggle)
 }

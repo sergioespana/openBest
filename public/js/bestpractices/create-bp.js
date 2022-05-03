@@ -118,11 +118,9 @@ document.getElementById("create-BP-btn").addEventListener("click", function () {
     })
 })
 
-
 async function getDocRef(drp) {
 
     let docrefArray = [];
-
     let collection = db.collection(`${drp}`);
     let snapshot = await collection.get();
 
@@ -175,7 +173,6 @@ const unique = (value, index, self) => {
     return self.indexOf(value) === index;
 };
 
-
 // This function is called for each key-value pair in each document that requires features
 async function instantiateFeatures(key, value, coll, doc, docrefArray) {
 
@@ -193,10 +190,11 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
         let conceptDiv = $(BPform).find(`[coll='${coll}']`)[0];
 
         let grouptitle = document.createElement('div');
-        let label = document.createElement('label');
+        let label = document.createElement('b');
         let input = document.createElement('input');
-        let date  = document.createElement('input');
+        let date = document.createElement('input');
         let textarea = document.createElement('textarea');
+        textarea.rows = 5;
         let addOther = document.createElement('div');
         let addEx = document.createElement('div');
 
@@ -263,7 +261,6 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
             date.setAttribute('docname', doc.id);
             date.setAttribute('key', key);
 
-
             textarea.setAttribute('colpath', coll);
             textarea.setAttribute('docname', doc.id);
             textarea.setAttribute('key', key);
@@ -276,16 +273,15 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     input.setAttribute('type', 'array');
                 }
             }
-            //console.log('kom ik hier?', keyText)
-            if(keyText == 'date'){
+
+            if (keyText == 'date') {
                 date.setAttribute('type', 'date');
             }
             else {
-
                 input.setAttribute('type', 'field');
                 textarea.setAttribute('type', 'field');
-                
             }
+
 
 
             // Adding elements that do not require population with DOCUMENT REFERENCES
@@ -303,7 +299,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     conceptDiv.appendChild(addOther);
                 }
 
-                else if (keyText == 'date'){
+                else if (keyText == 'date') {
                     conceptDiv.appendChild(label);
                     conceptDiv.appendChild(date);
                 }
@@ -313,6 +309,52 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     conceptDiv.appendChild(label);
                     conceptDiv.appendChild(textarea);
                 }
+                //image fields
+                //note that this section creates errors when the url provided does not link to a real image, either because the url is unreal or the server does not respond
+                //this error constitutes a missing image and has nothing to do with the functionality of openBest, it can therefore be ignored.
+                else if (['figure one', 'figure two', 'front image'].includes(keyText)) {
+                    //preview image
+                    let imglabel = document.createElement('p');
+                    imglabel.textContent = "Image preview:";
+                    imglabel.style.display = 'none';
+                    let picture = document.createElement("img");
+                    picture.style.width = 'calc(100%)';
+                    picture.style.display = 'none';
+                    picture.style.marginBottom = '20px'
+
+                    let errormessage = document.createElement('p');
+                    errormessage.textContent = "This image link does not work";
+                    errormessage.style.display = 'none';
+
+                    picture.onerror = function handleError() {
+                        picture.style.display = 'none';
+                        errormessage.style.display = 'block';
+                    };
+
+                    conceptDiv.appendChild(label);
+                    conceptDiv.appendChild(input);
+                    conceptDiv.appendChild(imglabel);
+                    conceptDiv.appendChild(picture);
+                    conceptDiv.appendChild(errormessage);
+
+                    input.oninput = function () {
+                        if (input.value.length >= 1) {
+                            
+                            picture.src = input.value;
+                            imglabel.style.display = 'block';
+                            picture.onload = function(){
+                            picture.style.display = 'block';
+                            }
+
+                        }
+                        else {
+                            imglabel.style.display = 'none';
+                            picture.style.display = 'none';
+                            errormessage.style.display = 'none';
+                        }
+                    }
+                }
+
                 // Other
                 else {
                     conceptDiv.appendChild(label);
@@ -375,12 +417,14 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             relInput.setAttribute('colpath', input.getAttribute('colpath'));
                             relInput.setAttribute('docname', input.getAttribute('docname'));
                             relInput.setAttribute('class', input.getAttribute('class'));
+
                             // Setting the path to the docref subcollection as attribute
                             let keyText = key.replace(/[0-9]/g, '');
                             let docrefPath = findPath(collectionPaths, keyText);
                             relInput.setAttribute('docrefpath', docrefPath + '/' + doc.id + '-' + relname);
                             relInput.setAttribute('docrefcoll', docrefPath);
                             relInput.setAttribute('docref-docname', doc.id + '-' + relname);
+
                             // Adding the current docref as the self attribute
                             relInput.setAttribute('self', coll + '/' + doc.id);
                             // Adding the relationship name
@@ -420,7 +464,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                             let referenceSelect = document.createElement('select');
                             referenceSelect.setAttribute('class', 'form-control bg-light border-0 small');
 
-                            let relTitle = document.createElement('p');
+                            let relTitle = document.createElement('b');
                             relTitle.textContent = value[relname].name;
 
                             conceptDiv.appendChild(relTitle);
@@ -661,7 +705,6 @@ function delay() {
     return new Promise(resolve => setTimeout(resolve, 800));
 }
 
-
 // Creates an altered version of the JSON model by inserting the unique doc id's 
 // for the subcollections that have instantiated features
 async function alterJSON(docid, callback) {
@@ -699,7 +742,6 @@ async function alterJSON(docid, callback) {
 
     // Await the delay before firing the callback > long enough to write alteredJSONstring
     await delay();
-
     callback(alteredJSONstring);
 };
 
@@ -912,15 +954,15 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
             JSONarray.forEach(element => {
                 if (JSONarray[0] === element) {
                     JSONstring += ("{" + element + ",");
-                   
+
                 }
                 else if (JSONarray[JSONarray.length - 1] === element) {
                     JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + "}");
-                    
+
                 }
                 else {
                     JSONstring += (element.replace(/(\r\n|\n|\r)/gm, "") + ",");
-                  
+
                 }
             });
 
@@ -1110,35 +1152,35 @@ document.getElementById("store-BP-btn").addEventListener("click", async function
     //     }
     // }
 
-   // Writing the rating arrays to the ratingdocument of this best practice
+    // Writing the rating arrays to the ratingdocument of this best practice
     //for (colpath of colpathArray) {
-        //let cpSplit = colpath.split('/');
-        //if (cpSplit[cpSplit.length - 1] == 'ratings') {
-          //  db.doc(colpath + '/ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize });
-      //  }
+    //let cpSplit = colpath.split('/');
+    //if (cpSplit[cpSplit.length - 1] == 'ratings') {
+    //  db.doc(colpath + '/ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize });
+    //  }
     //}
 
     //add standard bp
-    db.collection(entryColPath+ '/' + entryDocName + '/ratings').doc('ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize })
+    db.collection(entryColPath + '/' + entryDocName + '/ratings').doc('ratingdocument').set({ ratingtype: ratingtype, dimension: dimension, dimensiondescription: dimdesc, scale: scale, stepsize: stepsize })
 
     // Closing the modal
     modal.style.display = "none";
     // Resetting the counter
     docRefCounter = 0;
-    addactivity(userEmail, userRole,'create best practice','best practice',entryDocName, getcurrentDateTime())
+    addactivity(userEmail, userRole, 'create best practice', 'best practice', entryDocName, getcurrentDateTime())
 });
 
 
-window.addEventListener('beforeunload',(event) =>{
-    if (modal.style.display != "none"){
-    closemodal();
+window.addEventListener('beforeunload', (event) => {
+    if (modal.style.display != "none") {
+        closemodal();
     }
 });
 
 // Closing the modal
-span.onclick = function (){closemodal()}
+span.onclick = function () { closemodal() }
 
-function closemodal () {
+function closemodal() {
     modal.style.display = "none";
 
     let x = span.getAttribute('id');

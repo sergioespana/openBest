@@ -239,6 +239,8 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     var comment_text = document.createElement("p");
     comment_text.classList.add("comment_text", "line-clamp", "line-clamp-2");
     comment_text.innerText = comment.text;
+    comment_text.style.marginLeft = "5%";
+    comment_text.style.marginRight = "5%";
     comment_text.setAttribute("hasbeendrawn", "false");
 
     //if current user is the same as the comment writer he can remove or edit the comment

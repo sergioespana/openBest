@@ -5,6 +5,7 @@ const auth = firebase.auth();
 // Current user logged in
 var user = firebase.auth().currentUser;
 // Set administrators, note that this is not the domain administrator but the programmer requiring executive rights.
+// add your name here developer!
 var developers = ['stefanvanderpijl@gmail.com'];
 // Below option determines if the administrators can see the admin options, for showcasing purposes this should be false
 const adminoptionenabled = true
@@ -49,6 +50,6 @@ function googleLogin() {
 
 // Log out
 function logOut() {
-  addactivity(userEmail, userRole ,'logout', 'domain' ,dName[0], getcurrentDateTime())
+  addactivity(userEmail, userRole ,'logout', 'domain' ,dName[0], getcurrentDateTime());
   firebase.auth().signOut();
 }

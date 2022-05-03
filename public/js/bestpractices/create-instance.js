@@ -16,13 +16,13 @@ var fieldsArr = [];
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest_ = {
     //collection
-    "OICT showcase": {
+    "RCIS": {
         //document
         "domainstate": {
             //fields
             "displayfeature": false,
             "model": "string",
-            "name": "OICT (showcase environment)",
+            "name": "RCIS environment",
             "administrator": "stefanvanderpijl@gmail.com",
             //collection
             "bestpractices": {
@@ -30,27 +30,26 @@ var jsontest_ = {
                 "bpdocument": {
                     //fields
                     "01grouptitle": "Best practice",
-                    "02groupdesc": "Fill in the Best Practice related fields below",
+                    "02groupdesc": "Introduce the best practice briefly. Also describe what the solution is.",
                     "1displayfeature": true,
                     "10title": "string",
                     "11question": "string",
-                    "12quote": "string",
-                    "13major dimension": "string",
-                    "14sub dimension": "string",
-                    "15date": "string",
-                    "16front image": "string",
-                    "17front image licence": "string",
-                    "18author": [{
+                    "12major dimension": "string",
+                    "13sub dimension": "string",
+                    "14date": "string",
+                    "15front image": "string",
+                    "16front image licence": "string",
+                    "17author": [{
                         "name": "Written by",
                         "self": "document reference",
                         "related": "document reference"
                     }],
                     
-                    "19text": "text",
-                    "20figure one": "string",
-                    "21figure one caption": "string",
-                    "22figure two": "string",
-                    "23figure two caption": "string",
+                    "18description": "text",
+                    "19figure one": "string",
+                    "20figure one caption": "string",
+                    "21figure two": "string",
+                    "22figure two caption": "string",
                 
 
                     //collection
@@ -108,16 +107,15 @@ var jsontest_ = {
                 "activitylog": {
                     "1displayfeature": false,
                     "2user": "string",
-                    "3userrole": "string",
-                    "4action": "string",
-                    "5entitytype": "string",
-                    "6entityid": "string",
-                    "7date": "string"
+                    "3action": "boolean",
+                    "4bpid": "string",
+                    "5date": "string"
                 }
             },
         }
     }
 };
+
 
 
 // Create a DB instance
@@ -128,8 +126,8 @@ if (document.getElementById("create-instance-btn")) {
         collectionPaths = [];
         documentPaths = [];
         // remove this after dev
-        if (JSONmodel){
-        jsontest_ = JSONmodel;
+        if (JSONmodel) {
+            jsontest_ = JSONmodel;
         }
         console.log(jsontest_);
         extractJSON(jsontest_, 0, '');
@@ -138,7 +136,7 @@ if (document.getElementById("create-instance-btn")) {
 
     })
 };
- 
+
 function extractFields_() {
     // For every entry in fieldsArr (key-value pair in the JSON model), we want to get the key-value pairs and corresponding collection path
     for (var x = 0; x < fieldsArr.length; x++) {
@@ -213,9 +211,9 @@ async function writeCallback_(coll, docName, JSONinfo, callback) {
     // Writing all documents to the database
     // >> This info is later also used in create-bp to instantiate featured
     // >> Info provided by user in create-bp will overwrite this info
-    
+
     db.collection(coll).doc(docName).set(JSONinfo);
-    
+
     let userPath = findPath(collectionPaths, 'user');
     // Only writing this info when the domain hasn't been instantiated yet
     if (domainInstantiated == false) {
@@ -349,7 +347,7 @@ async function writeCallback(coll, docName, JSONinfo, callback) {
     // >> This info is later also used in create-bp to instantiate featured
     // >> Info provided by user in create-bp will overwrite this info
 
-    if (!(docName =='domainstate' || docName == 'activitylog' || docName == 'authordocument' || docName == 'commentdocument' || docName == 'ratingdocument' || docName == 'userdocument')){
+    if (!(docName == 'domainstate' || docName == 'activitylog' || docName == 'authordocument' || docName == 'commentdocument' || docName == 'ratingdocument' || docName == 'userdocument')) {
         db.collection(coll).doc(docName).set(JSONinfo);
     }
     let userPath = findPath(collectionPaths, 'user');

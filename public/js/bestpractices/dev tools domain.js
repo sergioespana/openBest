@@ -69,7 +69,6 @@ fileseleclabel.setAttribute('class', 'btn btn-light btn-icon-split');
 fileseleclabel.appendChild(createspan('Upload Excel'))
 fileseleclabel.style.marginRight = '10px';
 
-
 var probutton = document.createElement("a");
 probutton.type = "button";
 probutton.addEventListener("click", function () { UploadProcess() });
@@ -187,7 +186,6 @@ async function addAuthor(authorinfo) {
     let doelstring = domainstate + 'authors' + '/';
     let author = null;
     let [authorname, authoremail] = splitAuthorinfo(authorinfo)
-    //console.log(authorname, authoremail)
     //write author to db
     await db.collection(doelstring).add({
         name: authorname,

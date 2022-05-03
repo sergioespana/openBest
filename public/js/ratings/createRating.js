@@ -206,13 +206,13 @@ async function getratings(BPid) {
     await documents.docs.forEach((doc) => {
         // for every rating get de relevant info     
         if (doc.id != "ratingdocument") {
-            rating_date = getTimeDifference(now, doc.data().date);
+            rating_date   = getTimeDifference(now, doc.data().date);
             rating_author = doc.data().author;
-            rating_img = doc.data().img;
-            rating_score = doc.data().rating;
-            rating_email = doc.data().email;
-            rating_id = doc.id;
-            text = doc.data().ratingtext;
+            rating_img    = doc.data().img;
+            rating_score  = doc.data().rating;
+            rating_email  = doc.data().email;
+            rating_id     = doc.id;
+            text          = doc.data().ratingtext;
             postdate = doc.data().date;
             ratinglist.push([rating_author, rating_date, rating_score, rating_img, rating_email, rating_id, text,postdate]);
         }
@@ -425,6 +425,8 @@ function drawRating(name, date, text, img, ratingid, BP_id, isSame, root, dimens
 
     //the rating text itself
     var comment_text = document.createElement("p");
+    comment_text.style.marginLeft = '5%';
+    comment_text.style.marginRight = '5%';
     comment_text.innerText = ratingtext;
 
     

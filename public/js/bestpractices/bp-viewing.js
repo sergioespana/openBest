@@ -114,7 +114,7 @@ async function retrieveBPinfo(BPid) {
 
     //Edit BP component
     let edit = document.getElementById('editBP');
-    let edit_BP = document.createElement('a');
+    var edit_BP = document.createElement('a');
     edit_BP.style.marginRight = "15px";
     edit_BP.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"far fa-edit\"></i></span\><span class=\"text\">" + "Edit BP" + "</span\>"
     edit_BP.setAttribute('class', 'btn btn-light btn-icon-split');
@@ -325,9 +325,45 @@ async function retrieveBPinfo(BPid) {
                     let picture = document.createElement("img");
                     picture.src = value;
                     picture.style.width = 'calc(100%)';
+                    
+                    let figurl = document.createElement('input');
+                    figurl.defaultValue = value;
+                    figurl.setAttribute('class', 'form-control bg-light border-0 small');
+                    figurl.setAttribute('type', 'value');
+                    figurl.style.marginTop = '15px';
+                    figurl.id = 'url topimage';
+                    figurl.style.display = 'none';
 
-                    fig.appendChild(picture)
+                    picture.onerror = function handleError() {
+                        picture.style.display = 'none';
+                    
+                    };
+    
+                           
+                    figurl.oninput = function () {
+                        if (figurl.value.length >= 1) {
+                            picture.src = figurl.value;
+                            picture.onload = function(){
+                            picture.style.display = 'block';
+                            }
+                        }
+                        else {
+                            picture.style.display = 'none';
+                        }
+                    }
+
+                    listofContainers.push({
+                        "name": key,
+                        "container": figurl,
+                        "content": value
+                    })
+                        
+
+                 
+                    fig.appendChild(picture);
                     imageArea.appendChild(fig);
+                    imageArea.appendChild(figurl);
+                    
                 }
             }
 
@@ -484,13 +520,12 @@ async function retrieveDocInfo(docPath, docId, div) {
                     }
                 }
             }
-            // Description should not be displayed again for the best practice document
-            else if (keyText != 'description') {
+         
                 if (typeof (value) != 'object') {
 
                         // Image
-                       if (keyText == 'figure one' || keyText == 'figure two') {
-                        // Populating the general info section 
+                       if (keyText.includes('figure') && !keyText.includes('caption')) {
+                           // if an image has been filled in
                         if (value != '') {
                             let figDiv = document.createElement('div');
                             figDiv.setAttribute('class', 'col-sm-10');
@@ -499,18 +534,58 @@ async function retrieveDocInfo(docPath, docId, div) {
                             figDiv.style.marginTop = '10px';
 
                             let fig = document.createElement('figure')
-                            fig.id = 'topfigure ' + keyText
+                            fig.id = 'topfigure ' + keyText;
 
                             let picture = document.createElement("img");
                             picture.src = value;
                             picture.style.width = 'calc(100%)';
 
+                            let urlkey =  document.createElement('b');
+                            urlkey.innerText = 'Image link:'
+                            urlkey.style.marginTop = '15px';
+                            urlkey.id = 'urlkey' 
+                            urlkey.style.display = 'none'
+
+                            let figurl = document.createElement('input');
+                            figurl.defaultValue = value;
+                            figurl.setAttribute('class', 'form-control bg-light border-0 small');
+                            figurl.setAttribute('type', 'value');
+                            figurl.style.marginTop = '15px';
+                            figurl.id = 'url ' + keyText;
+                            figurl.style.display = 'none';
+
+
+                            picture.onerror = function handleError() {
+                                picture.style.display = 'none';
+                            };
+    
+                           
+                            figurl.oninput = function () {
+                                if (figurl.value.length >= 1) {
+                                    picture.src = figurl.value;
+                                    picture.onload = function(){
+                                    picture.style.display = 'block';
+                                    }
+                                }
+                                else {
+                                    picture.style.display = 'none';
+                                }
+                            }
+
                             fig.appendChild(picture);
                             figDiv.appendChild(fig);
+                            figDiv.appendChild(urlkey)
+                            figDiv.appendChild(figurl);
                             div.appendChild(figDiv);
+
+                            listofContainers.push({
+                                "name": key,
+                                "container": figurl,
+                                "content": value
+                            })
                         }
                     }
-                    else if (keyText == 'figure one caption' || keyText == 'figure two caption'){
+                    else if (keyText.includes('figure') && keyText.includes('caption')){
                         if (value != '') {
                             let fig
                             if (keyText == 'figure one caption'){
@@ -562,7 +637,6 @@ async function retrieveDocInfo(docPath, docId, div) {
                     div.appendChild(l1);
                 }
                 }
-            }
         }
     }
 
