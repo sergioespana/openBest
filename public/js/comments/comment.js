@@ -13,8 +13,8 @@ async function startupComments(BPID) {
     // get comment section location
     let comment_input_location = document.getElementById("searchbar");
     //create 'make your comment below' text
-    let encouragement = document.createElement('p');
-    encouragement.innerText = 'Make your comment below.';
+    let encouragement = document.createElement('h5');
+    encouragement.innerText = 'Make your comment below';
     comment_input_location.appendChild(encouragement);
     // create comment input bar
     create_comment_input(comment_input_location, "false");
@@ -244,7 +244,7 @@ function draw_comment(comment, haschildren, amountofchildren, isdrawn) {
     comment_text.setAttribute("hasbeendrawn", "false");
 
     //if current user is the same as the comment writer he can remove or edit the comment
-    if (comment.isSame == "true") {
+    if (comment.isSame == "true" || userRole == "administrator") {
         //editing component
         var edit_comment = document.createElement("i");
         edit_comment.classList.add("far", "fa-edit", "edit_button");

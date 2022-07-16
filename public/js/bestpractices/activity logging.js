@@ -21,23 +21,23 @@ async function addactivity(useremail, userrole ,action, entitytype, entityid, da
     })
 }
 
-if (document.getElementById('popbut')) {
+if (document.getElementById('row_1_data_1_')) {
     var downloadbutton = document.createElement("a");
     downloadbutton.type = "button";
     downloadbutton.addEventListener("click", async function () { await CreateExcel() });
     downloadbutton.setAttribute('class', 'btn btn-light btn-icon-split');
     downloadbutton.appendChild(createspan('Download usage logs'));
     downloadbutton.style.marginRight = '10px';
-    document.getElementById('popbut').appendChild(downloadbutton);
-
-
+    document.getElementById('row_1_data_1_').appendChild(downloadbutton);
+}
+if (document.getElementById('row_1_data_2_')) {
     var bpdownloadbutton = document.createElement("a");
     bpdownloadbutton.type = "button";
     bpdownloadbutton.addEventListener("click", async function () { await CreateBPExcel() });
     bpdownloadbutton.setAttribute('class', 'btn btn-light btn-icon-split');
     bpdownloadbutton.appendChild(createspan('Download bp logs'));
     bpdownloadbutton.style.marginRight = '10px';
-    document.getElementById('popbut').appendChild(bpdownloadbutton)
+    document.getElementById('row_1_data_2_').appendChild(bpdownloadbutton)
 
 
 }

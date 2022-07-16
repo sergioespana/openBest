@@ -50,6 +50,8 @@ function googleLogin() {
 
 // Log out
 function logOut() {
+  if (dName[0]){
   addactivity(userEmail, userRole ,'logout', 'domain' ,dName[0], getcurrentDateTime());
+  }
   firebase.auth().signOut();
 }

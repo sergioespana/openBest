@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>OpenBest</title>
+  <title>openBest</title>
+  <link rel="icon" type="image/png" href="resources/images/favicon.png">
 
   <!-- loading Bootstrap -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -154,9 +155,9 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1>Best Practices</h1>
-          </div>
+          </div> -->
 
           <!-- Begin BP table -->
           <div class="card shadow mb-4">
@@ -166,42 +167,19 @@
 
             <div class="card-body">
 
-              <b>Toggle column:</b>
+              <b>Toggle columns:</b>
               <div id = togglebuttons></div>
-              <!-- <a class="toggle-vis" data-column="0">Title</a> -
-              <a class="toggle-vis" data-column="1">Date</a> -
-              <a class="toggle-vis" data-column="2">University</a> -
-              <a class="toggle-vis" data-column="3">Introduction</a> -
-              <a class="toggle-vis" data-column="4">Process</a> -
-              <a class="toggle-vis" data-column="5">Outcome</a> -
-              <a class="toggle-vis" data-column="6">Conclusion</a> -->
-
-              <p style="margin-top: 15px;">For filtering on the table please refer to the custom search builder below
-              </p>
+              <b>Filtering and Searching:</b>
+              <p>For filtering on columns of the table please refer to the custom search builder; for general searching refer to the searchbar.</p>
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr id = 'top'>
-                      <!-- <th>Title</th>
-                      <th>Date</th>
-                      <th>University</th>
-                      <th>Introduction</th>
-                      <th>Process</th>
-                      <th>Outcome</th>
-                      <th>Conclusion</th> -->
-
                     </tr>
                   </thead>
                   <!--Here should be the table rows...-->
                   <tfoot >
                     <tr id = 'bottom'>
-                      <!-- <th>Title</th>
-                      <th>Date</th>
-                      <th>University</th>
-                      <th>Introduction</th>
-                      <th>Process</th>
-                      <th>Outcome</th>
-                      <th>Conclusion</th> -->
                     </tr>
                   </tfoot>
                 </table>
@@ -234,7 +212,7 @@
 
           <div class="col-sm-10 col-lg-6 col-centered">
             <div id="bp-modal" class="bp-modal-body">
-              <h1 id="bp-title">Best practice</h1>
+              <h1 id="bp-title"></h1>
               
               <span style="float: right;" id="qr_code"></span>
               <div id = 'topbuttons'></div>
@@ -244,7 +222,7 @@
 
               <div class="row general-info">
                 <div class="col-sm-2">
-                  <p style="display: inline">Date: </p>
+                  <p style="display: inline"></p>
                 </div>
                 <div class="col-sm-10" style="display: inline" id="bp-date"></div>
               </div>
@@ -257,7 +235,7 @@
 
               <div id="bp-core-content"></div>
 
-              <div class="card shadow col-sm-11" style="margin: auto; margin-top: 1%;">
+              <div class="card shadow col-sm-11" id="feedbackcard" style="margin: auto; display: none; margin-top: 15px;">
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -385,10 +363,8 @@
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script type="text/javascript"
-      src="https://cdn.datatables.net/v/ju/jq-3.6.0/dt-1.11.4/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/kt-2.6.4/r-2.2.9/sp-1.4.0/datatables.min.js"></script>
+    
+    <script type="text/javascript" src="https://cdn.datatables.net/v/ju/jq-3.6.0/dt-1.11.4/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/kt-2.6.4/r-2.2.9/sp-1.4.0/datatables.min.js"></script>
 
     <script type="text/javascript" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
     <!-- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script> -->

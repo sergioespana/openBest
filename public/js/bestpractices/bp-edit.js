@@ -29,7 +29,7 @@ let confirm_BP_edit = document.createElement('a');
 confirm_BP_edit.innerHTML = "<span class=\"icon text-gray-600\"><i class=\"  fa fa-check  \"></i></span\><span class=\"text\">" + "Confirm edit" + "</span\>"
 confirm_BP_edit.setAttribute('class', 'btn btn-light btn-icon-split');
 confirm_BP_edit.style.display = "none";
-confirm_BP_edit.addEventListener("click", function () {confirmBPEditing()});
+confirm_BP_edit.addEventListener("click", function () { confirmBPEditing() });
 anchor1.appendChild(confirm_BP_edit);
 
 let anchor2 = document.getElementById('editcancel');
@@ -40,45 +40,36 @@ cancel_BP_edit.style.display = "none";
 cancel_BP_edit.style.marginRight = '15px';
 cancel_BP_edit.addEventListener("click", function () {
     cancelBPEditing();
-    addactivity(userEmail, userRole, 'edit best practice', 'best practice', bpid, getcurrentDateTime());
+    addactivity(userEmail, userRole, 'cancel edit best practice', 'best practice', bpid, getcurrentDateTime());
 
 });
 anchor2.appendChild(cancel_BP_edit);
 
 function editBP(listofContainers) {
-    console.log(listofContainers);
-    let editbutton = document.getElementById('edit-BP-btn');
-    for (item of [cancel_BP_edit, confirm_BP_edit]) {
-        if (item.style.display === "none") {
-            item.style.display = "block";
-            editbutton.style.color ='#3a3b45';
-            editbutton.style.background= '#dde2f1';
-            editbutton.style.borderColor ='#d4daed';
-        }
-        else {
-            item.style.display = "none";
-            editbutton.style.color = '#3a3b45';
-            editbutton.style.backgroundColor= '#f8f9fc';
-            editbutton.style.borderColor = '#f8f9fc';
-        }
-    }
-
+    toggle_visibility_edit_buttons();
     for (item of listofContainers) {
         //if container consists of lists of containers
-        let arraycontainers = ['theme', 'sustainability dimension'];    
-        let imagecontainers = ['front image','figure one', 'figure two'];    
+        let arraycontainers = ['theme', 'sustainability dimension'];
+        let imagecontainers = ['front image', 'figure one', 'figure two','image'];
         if (arraycontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
             for (c of item.container) {
                 c.toggleAttribute("contentEditable");
             }
         }
-        
-       else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))){
-        if  (item.container.style.display == "block"){item.container.style.display = "none"}
-        else if (item.container.style.display == "none"){item.container.style.display = "block"}   
-        
-       }
-        
+
+        else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
+            if (item.container.style.display == "block") {
+                item.container.style.display = "none"
+                toggle_visibility('urllabel');
+
+            }
+            else if (item.container.style.display == "none") {
+                item.container.style.display = "block"
+                toggle_visibility('urllabel');
+            }
+
+        }
+
         else {
             item.container.toggleAttribute("contentEditable");
         }
@@ -86,14 +77,14 @@ function editBP(listofContainers) {
 }
 
 function cancelBPEditing() {
-    let imagecontainers = ['front image','figure one', 'figure two'];
+    let imagecontainers = ['front image', 'figure one', 'figure two','image'];
     //hide the cancel and confirm buttons
     cancel_BP_edit.style.display = "none";
     confirm_BP_edit.style.display = "none";
     //restyle the edit button
     let editbutton = document.getElementById('edit-BP-btn');
     editbutton.style.color = '#3a3b45';
-    editbutton.style.backgroundColor= '#f8f9fc';
+    editbutton.style.backgroundColor = '#f8f9fc';
     editbutton.style.borderColor = '#f8f9fc';
     // for each item
     //make the content not editable
@@ -101,34 +92,47 @@ function cancelBPEditing() {
     for (item of listofContainers) {
         if (item.name.replace(/[ˆ0-9]+/g, '') == 'theme' || item.name.replace(/[ˆ0-9]+/g, '') == 'sustainability dimension') {
             for (c of item.container) {
-                c.toggleAttribute("contentEditable");
+              //  c.toggleAttribute("contentEditable");
+                c.removeAttribute("contentEditable");
                 c.innerText = item.content;
             }
         }
         else if (['title', 'description'].includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
-            item.container.toggleAttribute("contentEditable");
+           // item.container.toggleAttribute("contentEditable");
+            item.container.removeAttribute("contentEditable");
             item.container.innerText = item.content;
         }
         else if (['date', 'audience', 'effort', 'timeframe'].includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
-            item.container.toggleAttribute("contentEditable");
+           // item.container.toggleAttribute("contentEditable");
+           item.container.removeAttribute("contentEditable");
             item.container.innerText = item.content;
         }
-        else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))){
-            if  (item.container.style.display == "block"){item.container.style.display = "none"}
+        else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
+            if (item.container.style.display == "block") {
+                item.container.style.display = "none";
+                toggle_visibility('urllabel');
+            }
+            item.image.src = item.content;
             item.container.value = item.content;
         }
         else {
-            item.container.toggleAttribute("contentEditable");
+            // item.container.toggleAttribute("contentEditable");
+            item.container.removeAttribute("contentEditable");
             item.container.innerHTML = item.content;
         }
     }
 }
 
 function confirmBPEditing() {
-    let imagecontainers = ['front image','figure one', 'figure two'];
+    let imagecontainers = ['front image', 'figure one', 'figure two','image'];
     //hide the cancel and confirm buttons
     cancel_BP_edit.style.display = "none";
     confirm_BP_edit.style.display = "none";
+    //restyle the edit button
+    let editbutton = document.getElementById('edit-BP-btn');
+    editbutton.style.color = '#3a3b45';
+    editbutton.style.backgroundColor = '#f8f9fc';
+    editbutton.style.borderColor = '#f8f9fc';
     //make the element not editable
     //check if current content of the element differs from the orginial content
     let amtchanges = 0;
@@ -146,7 +150,7 @@ function confirmBPEditing() {
             }
             item.currencontent = allcontent;
         }
-        else if (item.name.replace(/[ˆ0-9]+/g, '') == "figure one caption" || item.name.replace(/[ˆ0-9]+/g, '') == "figure two caption" ) {
+        else if (item.name.replace(/[ˆ0-9]+/g, '') == "figure one caption" || item.name.replace(/[ˆ0-9]+/g, '') == "figure two caption") {
             item.container.toggleAttribute("contentEditable");
             if (item.container.innerHTML != item.content) {
                 amtchanges += 1;
@@ -155,8 +159,11 @@ function confirmBPEditing() {
             item.currencontent = item.container.innerHTML;
         }
 
-        else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))){
-            if  (item.container.style.display == "block"){item.container.style.display = "none"}
+        else if (imagecontainers.includes(item.name.replace(/[ˆ0-9]+/g, ''))) {
+            if (item.container.style.display == "block") {
+                item.container.style.display = "none";
+                toggle_visibility('urllabel');
+            }
             if (item.container.value != item.content) {
                 amtchanges += 1;
                 changes.push(item);
@@ -206,6 +213,31 @@ async function editBPs(BPid, listofcontainers) {
         }
         item.content = item.currencontent
         item.currencontent = null;
+    }
+}
+
+function toggle_visibility(className) {
+    elements = document.getElementsByClassName(className);
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].style.display = elements[i].style.display == 'inline' ? 'none' : 'inline';
+    }
+}
+
+function toggle_visibility_edit_buttons(){
+    let editbutton = document.getElementById('edit-BP-btn');
+    for (item of [cancel_BP_edit, confirm_BP_edit]) {
+        if (item.style.display === "none") {
+            item.style.display = "block";
+            //make button appear toggable
+            editbutton.style.background = '#dde2f1';
+            editbutton.style.borderColor = '#d4daed';
+        }
+        else {
+            item.style.display = "none";
+            //make button appear toggable
+            editbutton.style.backgroundColor = '#f8f9fc';
+            editbutton.style.borderColor = '#f8f9fc';
+        }
     }
 }
 

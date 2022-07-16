@@ -26,9 +26,15 @@ async function waitFordomainjson_domain() {
 }
 
 var tbl = document.createElement('table');
-let tbody = document.createElement('tbody');
-tbl.appendChild(tbody);
+let theader = document.createElement('th');
+theader.colSpan = 3;
+theader.textContent = 'IN';
+theader.style.textAlign = 'center';
+let headerrow = document.createElement('tr');
+headerrow.appendChild(theader);
+tbl.appendChild(headerrow);
 
+let tbody = document.createElement('tbody');
 var popbutton1 = document.createElement("a");
 popbutton1.type = "button";
 popbutton1.addEventListener("click", async function () { await addAuthors() });
@@ -105,8 +111,43 @@ row_2.appendChild(row_2_data_1);
 row_2.appendChild(row_2_data_2);
 row_2.appendChild(row_2_data_3);
 tbody.appendChild(row_2);
-
+tbl.appendChild(tbody);
 var bestpractices = [];
+
+
+var tblout = document.createElement('table');
+let theader_ = document.createElement('th');
+theader_.colSpan = 3;
+theader_.textContent = 'OUT';
+theader_.style.textAlign = 'center';
+let headerrow_ = document.createElement('tr');
+headerrow_.appendChild(theader_);
+tblout.appendChild(headerrow_);
+
+let tbody_ = document.createElement('tbody');
+
+let row_1_ = document.createElement('tr');
+let row_1_data_1_ = document.createElement('td');
+row_1_data_1_.id = 'row_1_data_1_'
+let row_1_data_2_ = document.createElement('td');
+row_1_data_2_.id = 'row_1_data_2_'
+let row_1_data_3_ = document.createElement('td');
+row_1_data_3_.id = 'row_1_data_3_'
+
+row_1_.appendChild(row_1_data_1_);
+row_1_.appendChild(row_1_data_2_);
+row_1_.appendChild(row_1_data_3_);
+tbody_.appendChild(row_1_);
+tblout.appendChild(tbody_);
+
+document.getElementById('popbut').appendChild(tbl);
+document.getElementById('popbut').appendChild(tblout);
+
+
+
+
+
+
 
 function UploadProcess() {
     //Reference the FileUpload element.
@@ -341,6 +382,67 @@ function splitAuthorinfo(authorinfo) {
 }
 
 
+// if (document.getElementById('row_1_data_3_')) {
+//     let bpexpandeddownloadbutton = document.createElement("a");
+//     bpexpandeddownloadbutton.type = "button";
+//     bpexpandeddownloadbutton.addEventListener("click", async function () { await CreateExpandedBPExcel() });
+//     bpexpandeddownloadbutton.setAttribute('class', 'btn btn-light btn-icon-split');
+//     bpexpandeddownloadbutton.appendChild(createspan('Download bp logs'));
+//     bpexpandeddownloadbutton.style.marginRight = '10px';
+//     document.getElementById('row_1_data_3_').appendChild(bpexpandeddownloadbutton)
+
+
+// }
+
+// async function CreateExpandedBPExcel() {
+//     extractJSON(domainjson, 0, '');
+//     let activityloc = await findPath(collectionPaths, 'bestpractices') + '/'
+//     let rows = [];
+//     await db.collection(activityloc).get().then(async function (snapshot) {
+//         snapshot.docs.forEach(doc =>{
+//             rows.push( Object.assign({"id" : doc.id}, doc.data()));
+//         })
+//     })
+//     let csvString = "data:text/csv;charset=utf-8," + [
+//         [
+//             "10Title",
+//             "11question",
+//             "12quote",
+//             "13major dimension",
+//             "14sub dimension",
+//             "15date",
+//             "16front image",
+//             "17front image licence",
+//             "19text",
+//             "20figure one",
+//             "21figure one caption",
+//             "22figure two",
+//             "23figure two caption"
+       
+//         ],
+//         ...rows.map(item => [
+//             item["10title"],        
+//             item["11question"],
+//             item["12quote"],
+//             item["13major dimension"],
+//             item["14sub dimension"],
+//             item["15date"],
+//             item["16front image"],
+//             item["17front image licence"],
+//             item["19text"],
+//             item["20figure one"],
+//             item["21figure one caption"],
+//             item["22figure two"],
+//             item["23figure two caption"]
+//         ])
+//     ]
+//         .map(e => e.join(",")).join("\n");
+
+//     var encodedUri = encodeURI(csvString);
+//     window.open(encodedUri);
+// }
+
+
 //
 //
 // async function addBPs() {
@@ -436,3 +538,5 @@ function splitAuthorinfo(authorinfo) {
 //     let author = authorinfo.split("(")[0].replace(/\s+$/, '');
 //     return [author, email]
 // }
+
+

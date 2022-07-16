@@ -31,6 +31,9 @@ var datatype = [];
 var alreadytimeframe;
 var alreadyeffortFrame;
 
+//variable for keeping track of table set up progress; this variable is references in bp-viewing
+var tableSetupDone = false;
+
 //note that the table viewing module has not been generalized properly, hence different versions are shown based on different domains and their domain strings
 //originally the table contained only title, date and description. This was because these elements where deemed to be present in all domains. 
 //in practice this proved to be untrue so varying versions where required to have sufficient detail in the table without plainly showing all columns which is also not wishable
@@ -145,6 +148,7 @@ async function initTable() {
             )
           },
           "autoWidth": true,
+          
           //
           //Custom filter assignment this can be used as basis for defining custom column based filters, this is now taken over by the custom search builder plugin
           //
@@ -269,8 +273,16 @@ async function initTable() {
           //   'copy', 'excel', 'pdf'
           // ]
           // without export buttons
-          dom: '<"top"Qlfrti<"clear">>rt<"bottom"Bp<"clear">>'
+         //dom: '<"top"Qlfrti<"clear">>rt<"bottom"p<"clear">>'
+         
+         dom: '<"top"fQ> <"tool" li> <t> <"bottom" p> <"clear">'
         })
+        //align some tool elements
+        $('.dataTables_filter').addClass('pull-left');
+        
+        //$('.dataTables_length').addClass('pull-left_');
+
+        $('.dataTables_info').addClass('toolitem');
 
         $('a.toggle-vis').on('click', function (e) {
           e.preventDefault();
@@ -524,8 +536,6 @@ async function getDocData(callback) {
           data.push(docdata);
         }
 
-
-
         else if (!oictdomains.includes(dName[0]) && !greenofficedomains.includes(dName[0]) && !RCISdomains.includes(dName[0])) {
           //this was the original abstraction. all domains where believed to at least feature a title, date and description. So refer back to this if needed.
           console.log('other domain type')
@@ -576,15 +586,16 @@ async function getDocData(callback) {
       });
     });
   callback();
+  tableSetupDone = true;
 }
 
 
 
 
 
-function apply() {
-  datatype = [];
-}
+// function apply() {
+//   datatype = [];
+// }
 
 function setValue(key) {
   // bpPath is the collection path to the bestpractices sub-collection
@@ -651,6 +662,6 @@ function createRef(i, header) {
   toggle.setAttribute('class', 'toggle-vis');
   toggle.setAttribute('data-column', i);
   toggle.style.cursor = "pointer";
-  toggle.innerHTML = header + '-';
+  toggle.innerHTML = header + '  -  ';
   refloc.append(toggle)
 }

@@ -46,11 +46,14 @@ auth.onAuthStateChanged(function (user) {
  
 
 $(document).ready(async function () {
-    var selectedbpid = urlParams.get('BPid')
-    var qr = urlParams.get('QR')
+    
+    var selectedbpid = urlParams.get('BPid');
+    var qr = urlParams.get('QR');
     if (selectedbpid) {
-        await retrieveBPinfo(selectedbpid);
         modal.style.display = "block";
+        awaitforVar_Tablesetupdone();
+        await retrieveBPinfo(selectedbpid);
+        
 
         if (qr) {
             addactivity(userEmail, userRole, 'open by qr', 'best practice',selectedbpid, getcurrentDateTime());
@@ -58,15 +61,16 @@ $(document).ready(async function () {
         else {
             addactivity(userEmail, userRole ,'open by url', 'best practice',selectedbpid, getcurrentDateTime());
         }
+        //make community based feedback elements visible
+        document.getElementById("feedbackcard").style.display = 'block';
         await startupComments(selectedbpid);
-        for (let i = 0; i < (amountOfComments / 3); i++) {
-            await delay();
-        }
+        // for (let i = 0; i < (amountOfComments / 3); i++) {
+        //     await delay();
+        // }
         await startupRatings(selectedbpid);
         storeID(selectedbpid);
     }
 })
-
 
 //start the bp based on the selected row in the BP table
 async function tableClick(e) {
@@ -77,6 +81,8 @@ async function tableClick(e) {
     let BPid = clickedRow.getAttribute('doc-id');
     await retrieveBPinfo(BPid);
     modal.style.display = "block";
+    //make community based feedback elements visible
+    document.getElementById("feedbackcard").style.display = 'block';
     await startupComments(BPid);
     await startupRatings(BPid);
     storeID(BPid);
@@ -248,7 +254,7 @@ async function retrieveBPinfo(BPid) {
 
             let topArea = document.getElementById('topbuttons')
             // Displaying topelements (university, category, dimension etc.)
-            topelements = ['university', 'sub dimension', 'major dimension']
+            topelements = ['university', 'sub dimension', 'major dimension','date']
             if (topelements.includes(key.replace(/[ˆ0-9]+/g, ''))) {
 
                 let generalinforow = document.createElement('div')
@@ -270,9 +276,9 @@ async function retrieveBPinfo(BPid) {
                 valuearea.style.display = "inline"
                 valuearea.id = 'bp-' + key
                 generalinforow.appendChild(valuearea)
-
+                
+               if (key.replace(/[ˆ0-9]+/g, '') != 'date'){
                 // Populating the general info section (authors, date, categories)
-
                 let themeButton = document.createElement('a');
                 let span = document.createElement('span');
                 span.setAttribute('class', 'text');
@@ -286,30 +292,55 @@ async function retrieveBPinfo(BPid) {
                     "container": span,
                     "content": value
                 })
+                }
+            else{
+
+                    // Populating the general info section (authors, date, categories)
+                    let dateButton = document.createElement('a');
+                    let span1 = document.createElement('span');
+                    span1.setAttribute('class', 'icon text-gray-600');
+                    let icon = document.createElement('i');
+                    icon.setAttribute('class', 'far fa-calendar-alt');
+                    span1.appendChild(icon);
+                    let span2 = document.createElement('span');
+                    span2.setAttribute('class', 'text');
+                    span2.innerText = value;
+                    dateButton.append(span1);
+                    dateButton.append(span2);
+                    dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
+                    valuearea.appendChild(dateButton);
+    
+                    listofContainers.push({
+                        "name": key,
+                        "container": span2,
+                        "content": value
+                    })
+                }
             }
             // Displaying date
-            else if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
-                // Populating the general info section (authors, date, categories)
-                let dateButton = document.createElement('a');
-                let span1 = document.createElement('span');
-                span1.setAttribute('class', 'icon text-gray-600');
-                let icon = document.createElement('i');
-                icon.setAttribute('class', 'far fa-calendar-alt');
-                span1.appendChild(icon);
-                let span2 = document.createElement('span');
-                span2.setAttribute('class', 'text');
-                span2.innerText = value;
-                dateButton.append(span1);
-                dateButton.append(span2);
-                dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
-                dateArea.appendChild(dateButton);
+            //old
+            // else if (key.replace(/[ˆ0-9]+/g, '') == 'date') {
+            //     // Populating the general info section (authors, date, categories)
+            //     let dateButton = document.createElement('a');
+            //     let span1 = document.createElement('span');
+            //     span1.setAttribute('class', 'icon text-gray-600');
+            //     let icon = document.createElement('i');
+            //     icon.setAttribute('class', 'far fa-calendar-alt');
+            //     span1.appendChild(icon);
+            //     let span2 = document.createElement('span');
+            //     span2.setAttribute('class', 'text');
+            //     span2.innerText = value;
+            //     dateButton.append(span1);
+            //     dateButton.append(span2);
+            //     dateButton.setAttribute('class', 'btn btn-light btn-icon-split');
+            //     dateArea.appendChild(dateButton);
 
-                listofContainers.push({
-                    "name": key,
-                    "container": span2,
-                    "content": value
-                })
-            }
+            //     listofContainers.push({
+            //         "name": key,
+            //         "container": span2,
+            //         "content": value
+            //     })
+            // }
             // Displaying top image
             let imagefields = ['image', 'front image']
             if (imagefields.includes(key.replace(/[ˆ0-9]+/g, ''))) {
@@ -325,6 +356,7 @@ async function retrieveBPinfo(BPid) {
                     let picture = document.createElement("img");
                     picture.src = value;
                     picture.style.width = 'calc(100%)';
+                    picture.alt = "This image link does not work";
                     
                     let figurl = document.createElement('input');
                     figurl.defaultValue = value;
@@ -334,27 +366,50 @@ async function retrieveBPinfo(BPid) {
                     figurl.id = 'url topimage';
                     figurl.style.display = 'none';
 
+                    let urllabel = document.createElement('b');                           
+                    urllabel.htmlFor = figurl.id;
+                    urllabel.textContent = 'Topimage URL:';
+                    urllabel.setAttribute('class', 'urllabel')
+                    urllabel.style.display = 'none';
+
+                    let errormessage = document.createElement('p');
+                    errormessage.textContent = "This image link does not work";
+                    errormessage.style.display = 'none';
+
+                    let encouragement = document.createElement('p');
+                    encouragement.textContent = "Please enter an image URL below";
+                    encouragement.style.display = 'none';
+
+
                     picture.onerror = function handleError() {
                         picture.style.display = 'none';
-                    
+                        if (figurl.value.length >= 1) {
+                        errormessage.style.display = 'block';
+                        }
+                        else{
+                            encouragement.style.display = 'block';
+                        }
                     };
-    
-                           
+                   
                     figurl.oninput = function () {
                         if (figurl.value.length >= 1) {
                             picture.src = figurl.value;
                             picture.onload = function(){
                             picture.style.display = 'block';
+                            errormessage.style.display = 'none';
                             }
                         }
                         else {
                             picture.style.display = 'none';
+                            errormessage.style.display = 'none';
                         }
                     }
-
+                       
+                    
                     listofContainers.push({
                         "name": key,
                         "container": figurl,
+                        "image":picture,
                         "content": value
                     })
                         
@@ -362,6 +417,10 @@ async function retrieveBPinfo(BPid) {
                  
                     fig.appendChild(picture);
                     imageArea.appendChild(fig);
+                    imageArea.appendChild(errormessage);
+                    imageArea.appendChild(encouragement);
+                    imageArea.appendChild(urllabel);
+                    
                     imageArea.appendChild(figurl);
                     
                 }
@@ -373,6 +432,7 @@ async function retrieveBPinfo(BPid) {
                 if (fig){
                 let figcap = document.createElement('figcaption');
                 figcap.innerText = 'Licence: ' + value;
+                figcap.style.textAlign = 'center';
                 fig.appendChild(figcap);
                 }
             }
@@ -509,8 +569,6 @@ async function retrieveDocInfo(docPath, docId, div) {
                     }
 
         
-
-                    
                     // Regular text
                     else {// Adding the attribute value as regular text
                         let p = document.createElement('p');
@@ -538,13 +596,10 @@ async function retrieveDocInfo(docPath, docId, div) {
 
                             let picture = document.createElement("img");
                             picture.src = value;
-                            picture.style.width = 'calc(100%)';
-
-                            let urlkey =  document.createElement('b');
-                            urlkey.innerText = 'Image link:'
-                            urlkey.style.marginTop = '15px';
-                            urlkey.id = 'urlkey' 
-                            urlkey.style.display = 'none'
+                            picture.style.width = '80%';
+                            picture.style.display = 'block';
+                            picture.style.marginLeft = 'auto';
+                            picture.style.marginRight = 'auto';
 
                             let figurl = document.createElement('input');
                             figurl.defaultValue = value;
@@ -554,33 +609,58 @@ async function retrieveDocInfo(docPath, docId, div) {
                             figurl.id = 'url ' + keyText;
                             figurl.style.display = 'none';
 
+                            let urllabel = document.createElement('b');                           
+                            urllabel.htmlFor = figurl.id;
+                            urllabel.textContent = keyText + ' URL:';
+                            urllabel.setAttribute('class', 'urllabel')
+                            urllabel.style.display = 'none';
+
+                            let errormessage = document.createElement('p');
+                            errormessage.textContent = "This image link does not work";
+                            errormessage.style.display = 'none';
+        
+                            let encouragement = document.createElement('p');
+                            encouragement.textContent = "Please enter an image URL below";
+                            encouragement.style.display = 'none';
+        
 
                             picture.onerror = function handleError() {
                                 picture.style.display = 'none';
+                                if (figurl.value.length >= 1) {
+                                errormessage.style.display = 'block';
+                                }
+                                else{
+                                    encouragement.style.display = 'block';
+                                }
                             };
-    
                            
                             figurl.oninput = function () {
-                                if (figurl.value.length >= 1) {
+                                if (figurl.value.length >= 1 && urlMask(figurl.value)) {
                                     picture.src = figurl.value;
                                     picture.onload = function(){
                                     picture.style.display = 'block';
+                                    errormessage.style.display = 'none';
                                     }
                                 }
                                 else {
                                     picture.style.display = 'none';
+                                    errormessage.style.display = 'none';
                                 }
                             }
 
                             fig.appendChild(picture);
                             figDiv.appendChild(fig);
-                            figDiv.appendChild(urlkey)
+                            figDiv.appendChild(errormessage);
+                            figDiv.appendChild(encouragement);
+                            figDiv.appendChild(urllabel);
                             figDiv.appendChild(figurl);
+                        
                             div.appendChild(figDiv);
 
                             listofContainers.push({
                                 "name": key,
                                 "container": figurl,
+                                "image":picture,
                                 "content": value
                             })
                         }
@@ -596,6 +676,7 @@ async function retrieveDocInfo(docPath, docId, div) {
                             }
                         if (fig){
                         let figcap = document.createElement('figcaption');
+                        figcap.style.textAlign = 'center';
                         figcap.innerText = value;
                         fig.appendChild(figcap);
                         listofContainers.push({
@@ -610,6 +691,9 @@ async function retrieveDocInfo(docPath, docId, div) {
                     let l1 = document.createElement('div');
                     l1.setAttribute("class", "card border-left-success shadow");
                     l1.style.marginTop = '15px';
+                    l1.style.width = '90%';
+                    l1.style.marginLeft = 'auto';
+                    l1.style.marginRight = 'auto';
                     let l2 = document.createElement('div');
                     l2.setAttribute("class", "card-body");
                     let l3 = document.createElement('div');
@@ -625,6 +709,7 @@ async function retrieveDocInfo(docPath, docId, div) {
                     let p = document.createElement('p');
                     p.innerText = value;
                     p.style.marginTop = '15px';
+                   
                     listofContainers.push({
                         "name": key,
                         "container": p,
@@ -636,7 +721,7 @@ async function retrieveDocInfo(docPath, docId, div) {
                     l1.appendChild(l2);
                     div.appendChild(l1);
                 }
-                }
+            }
         }
     }
 
@@ -738,6 +823,8 @@ function closeModal() {
     remove_comment_elements();
     remove_top_searchbar();
     remove_rating_elements();
+    //reset editing if any
+    cancelBPEditing();
     //reset lists and counters
     authoremails = [];
     commentlist = [];
@@ -785,13 +872,14 @@ function closeModal() {
         otherSections.removeChild(otherSections.firstChild);
     }
 
-
     ///
     var paras = document.getElementsByClassName('OICT');
 
     while (paras[0]) {
         paras[0].parentNode.removeChild(paras[0]);
     }
+    //make feedbackcard invisible
+    document.getElementById("feedbackcard").style.display = 'none';
     //reset URL
     window.history.replaceState("", "", starturl);
 }
@@ -831,6 +919,18 @@ async function awaitforVar_indexarr(){
 
 async function awaitforVar_colpath(){
     if (typeof collectionPaths[0] === "undefined"){
+           await delay();
+           awaitforVar_colpath();
+        }
+    else{
+        return new Promise((resolve)=>{
+            resolve();})
+    }
+   
+}
+
+async function awaitforVar_Tablesetupdone(){
+    if (typeof tableSetupDone === false){
            await delay();
            awaitforVar_colpath();
         }

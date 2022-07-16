@@ -64,7 +64,13 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #858796;
+  /* old colors */
+  /* color: #858796; */
+  /* color: #4b4b4e; */
+  /* color:  #767686; */
+  /* color: #444444 !important; */
+  color: #61616e !important; 
+  
   text-align: left;
   background-color: #fff;
 }
@@ -1368,7 +1374,11 @@ pre code {
 .table {
   width: 100%;
   margin-bottom: 1rem;
-  color: #858796;
+  /* color: #444444 !important; */
+  color: #61616e !important; 
+  /* old color: #858796; */
+  /* color: #4b4b4e; */
+  /* color: #767686; */
 }
 
 .table th,
@@ -1716,7 +1726,9 @@ pre code {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #6e707e;
+  /* color: #6e707e; */
+  /* color: #444444 !important; */
+  color: #61616e !important; 
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #d1d3e2;
@@ -2212,7 +2224,8 @@ textarea.form-control {
 .btn {
   display: inline-block;
   font-weight: 400;
-  color: #858796;
+  /* color: #858796; */
+  /* color: #444444 !important; */
   text-align: center;
   vertical-align: middle;
   -webkit-user-select: none;
@@ -5449,7 +5462,9 @@ a.close.disabled {
 }
 
 .modal-open {
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .modal-open .modal {
@@ -5464,8 +5479,11 @@ a.close.disabled {
   z-index: 1050;
   display: none;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  min-height: 100%;
+  /* overflow: hidden; */
+  overflow-x: hidden;
+  overflow-y: auto;
   outline: 0;
 }
 
@@ -9567,8 +9585,8 @@ a:focus {
 #wrapper {
   display: flex;
   height: 100vh;
-  
-  overflow: scroll;
+  overflow-x: hidden
+  /* overflow: scroll; */
 }
 
 #wrapper #content-wrapper {
@@ -10266,11 +10284,11 @@ a:focus {
     width: 14rem;
   }
   .sidebar .nav-item .nav-link i {
-    font-size: 0.85rem;
+    font-size: 1rem;
     margin-right: 0.25rem;
   }
   .sidebar .nav-item .nav-link span {
-    font-size: 0.85rem;
+    font-size: 1rem;
     display: inline;
   }
   .sidebar .nav-item .nav-link[data-toggle="collapse"]::after {
@@ -10999,4 +11017,30 @@ footer.sticky-footer .copyright {
 
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
+}
+
+.pull-left{
+  float: left !important;
+  width: 100%;
+  text-align: left !important;
+  }
+/* .pull-left_{
+    float: left !important;
+    text-align: left !important;
+    }
+
+.pull-right_{
+  float: right !important;
+  text-align: right !important;
+  } */
+
+.tool{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.toolitem{
+  padding: 0px !important;
 }

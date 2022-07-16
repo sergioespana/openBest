@@ -15,8 +15,8 @@ var fieldsArr = [];
 
 // This variable will be overwritten when a model is created in the dsl class / model creation modal
 var jsontest_ = {
-    //collection
-    "RCIS": {
+     //collection
+     "RCIS": {
         //document
         "domainstate": {
             //fields
@@ -115,6 +115,7 @@ var jsontest_ = {
         }
     }
 };
+
 
 
 

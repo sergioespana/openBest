@@ -1,36 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>OpenBest</title>
+  <title>openBest</title>
+  <link rel="icon" type="image/png" href="resources/images/favicon.png">
 
   <!-- loading Bootstrap -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <!-- regular stylesheet -->
   <link type="text/css" rel="stylesheet" href="css/styling.css" />
   <!-- template stylesheet -->
   <link href="css/template.css" rel="stylesheet">
-  <!-- slidingbar -->
-  <link href="css/slidingbar.css" rel="stylesheet">
-
-  <!-- stars -->
-  <link href="css/stars.css" rel="stylesheet">
-
-  <!-- Ebay -->
-  <link href="css/eBay.css" rel="stylesheet">
-
-  <!-- Binary stars -->
-  <link href="css/bin-stars.css" rel="stylesheet">
-
-  <!-- liking -->
-  <link href="css/liking.css" rel="stylesheet">
-
-  <!-- comment section -->
-  <link href="css/comment-section.css" rel="stylesheet">
 
   <!-- font awesome for icons -->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -234,7 +217,7 @@
                     <div class="col-lg-6">
                       <div class="row">
                         <p style="margin-top: 10px;">As an adminstrator, you add users and authors to the domain using
-                          the buttons below</p>
+                          the buttons below.</p>
                       </div>
                       <a style="display: block" id="add-user-btn" class="btn btn-light btn-icon-split">
                         <span class="text">Add user</span>
@@ -300,9 +283,10 @@
                     <div class="col-lg-6">
                       <div class="row">
                         <p id="developer-text">As a developer, you can populate the repository using data from Excel
-                          files below</p>
+                          files</p>
                         <p>Currently only best practices can be loaded from Excel, others like authors are defined in
                           code and should hence be added in the code of the scripts</p>
+                          <p> Next you can also download some data from the db in Excel files</p>
                       </div>
 
                       <div id='popbut'></div>
@@ -544,7 +528,8 @@
                     placeholder="Username"></input>
                   <br>
                   <label>Email of the author:</label>
-                  <p>Not required but please fill in to be able to link an author to a user. This allows the author to edit the Best Practice</p>
+                  <br>
+                  <i>Not required but please fill in to be able to link an author to a user. This allows the author to edit the best practice</i>
                   <input required id="input-author-email" class="form-control bg-light border-0 small" type="value" placeholder="example@gmail.com"></input>
                 </div>
               </form>
@@ -705,11 +690,12 @@
     <script src="js/bestpractices/add-author.js"></script>
     <script src="js/bestpractices/dev tools domain.js"></script>
     <script src="js/bestpractices/activity logging.js"></script>
+    <script src="js/AddUserByButton.js"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
 
-    <script src="js/AddUserByButton.js"></script>
+    
 </body>
 
 </html>

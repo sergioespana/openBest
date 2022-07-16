@@ -181,7 +181,7 @@ async function checkUser(callback) {
   callback();
 }
 
-function delay() {
+async function delay() {
   return new Promise(resolve => setTimeout(resolve, 600));
 }
 
@@ -226,4 +226,9 @@ async function awaitdomainJSON(){
  
 }
 
-
+//this function is used in the image preview functions.
+//it checks if an url is feasable, the method is of own design so be sure to update if you have a better idea.
+function urlMask(url){
+ if (url.includes('www') || url.includes('http') || url.includes('data:image')){return true}
+ else {return false}
+}

@@ -237,7 +237,7 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     <span class=\"icon text-gray-600\"\>\
                     <i class=\"fas fa-plus\"></i\>\
                     </span\>\
-                    <span class=\"text\">Existing</span\>\
+                    <span class=\"text\">add existing " + `${key.replace(/[0-9]/g, '')}` + "</span\>\
                 </a>"
             addEx.innerHTML = addExistingHTML;
 
@@ -312,7 +312,9 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                 //image fields
                 //note that this section creates errors when the url provided does not link to a real image, either because the url is unreal or the server does not respond
                 //this error constitutes a missing image and has nothing to do with the functionality of openBest, it can therefore be ignored.
-                else if (['figure one', 'figure two', 'front image'].includes(keyText)) {
+                else if (['figure one', 'figure two', 'front image','image'].includes(keyText)) {
+                    //add URL clarification to the fields for the time being
+                    label.textContent = upperKey + ' (URL)';
                     //preview image
                     let imglabel = document.createElement('p');
                     imglabel.textContent = "Image preview:";
@@ -320,7 +322,8 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     let picture = document.createElement("img");
                     picture.style.width = 'calc(100%)';
                     picture.style.display = 'none';
-                    picture.style.marginBottom = '20px'
+                    picture.style.marginBottom = '20px';
+                    picture.alt = "This image link does not work"
 
                     let errormessage = document.createElement('p');
                     errormessage.textContent = "This image link does not work";
@@ -338,12 +341,13 @@ async function instantiateFeatures(key, value, coll, doc, docrefArray) {
                     conceptDiv.appendChild(errormessage);
 
                     input.oninput = function () {
-                        if (input.value.length >= 1) {
+                        if (input.value.length >= 1 && urlMask(input.value)) {
                             
                             picture.src = input.value;
                             imglabel.style.display = 'block';
                             picture.onload = function(){
-                            picture.style.display = 'block';
+                                picture.style.display = 'block';
+                                errormessage.style.display = 'none';
                             }
 
                         }
