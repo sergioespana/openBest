@@ -3,6 +3,8 @@ A model-driven repository of best practices. It can be configured to store best 
 
 This project is steered by University of Utrecht. We welcome collaboration with organisations and individuals.
 
+openBest is being refactored and piloted within the [SCENTISS project](https://scentiss.nl): Boosting Social and Community-driven Entrepreneurship for the Transition to an Inclusive and Sustainable Society (KICH1.MV01.20.018); funded by the Dutch Research Council ([NWO](https://www.nwo.nl/en/projects/kich1mv0120018).
+
 ## Prerequisites
 
 The following is definitely required for running the project. 
@@ -50,3 +52,13 @@ after which the tool will be available at a public domain
 Certain functions cannot be executed client-side. We use [Cloud Functions](https://firebase.google.com/docs/hosting/functions#direct_hosting_requests_to_your_function) connected to Firebase hosting for executing scripts server-side. These functions are deployed on Firebase and can be called from our web-app. We use Cloud Functions on Firebase Hosting to overcome any CORS-related problems. Functions can be added to index.js in the functions folder and then called from any JavaScript file. 
 
 It may be required to install and initialize Firebase functions when pulling this project. More info can be found in Google's documentation following the previous link or by looking at the Troubleshooting section above. 
+
+## Contributors
+The following people made valuable contributions, commiting code to the project, acquiring knowledge, performing validations or running pilots.
+
+- May Taherzadeh contributed a framework for establishing and maintaining knowledge sharing communities for social enterprises.
+- Stefan van der Pijl contributed a major refactoring (e.g. good practive rating mechanisms to and community-based feedback) and a framework for evaluating knowledge sharing behavior enabled by openBest.
+- Alexander Jacobs enabled situational characterisation and retrieval of best practices from openBest.
+- Milo Plomp developed and validated the backbone of openBest
+- Zoë Coenen analysed good practice repositories for responsible enterprises.
+
