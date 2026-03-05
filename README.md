@@ -61,4 +61,5 @@ The following people made valuable contributions, commiting code to the project,
 - Alexander Jacobs enabled situational characterisation and retrieval of best practices from openBest.
 - Milo Plomp developed and validated the backbone of openBest
 - Zoë Coenen analysed good practice repositories for responsible enterprises.
+- Mariëlle Adèr	investigated how responsible enterprises define sustainability improvement plans, and the role openBest can play
 
